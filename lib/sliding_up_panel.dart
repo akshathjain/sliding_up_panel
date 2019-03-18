@@ -1,7 +1,9 @@
-library sliding_up_panel;
+/*
+Name: Akshath Jain
+Date: 3/18/19
+Purpose: defines the package: grouped_buttons
+Copyright: © 2019, Akshath Jain. All rights reserved.
+Licensing: More information can be found here: https://github.com/akshathjain/sliding_up_panel/blob/master/LICENSE
+*/
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+library sliding_up_panel;
