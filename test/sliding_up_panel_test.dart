@@ -1,13 +1,10 @@
-import 'package:flutter_test/flutter_test.dart';
-
-import 'package:sliding_up_panel/sliding_up_panel.dart';
+/*
+Name: Akshath Jain
+Date: 3/18/19
+Purpose: defines the package: grouped_buttons
+Copyright: © 2019, Akshath Jain. All rights reserved.
+Licensing: More information can be found here: https://github.com/akshathjain/sliding_up_panel/blob/master/LICENSE
+*/
 
 void main() {
-  test('adds one to input values', () {
-    final calculator = Calculator();
-    expect(calculator.addOne(2), 3);
-    expect(calculator.addOne(-7), -6);
-    expect(calculator.addOne(0), 1);
-    expect(() => calculator.addOne(null), throwsNoSuchMethodError);
-  });
 }
