@@ -43,8 +43,91 @@ class SlidingUpPanel extends StatefulWidget {
 class _SlidingUpPanelState extends State<SlidingUpPanel> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: <Widget>[
+
+        //make the back widget take up the entire back side
+        Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          color: Colors.grey,
+          child: widget.back,
+        ),
+
+        _Slider(
+          closedHeight: widget.panelHeightCollapsed,
+          openHeight: widget.panelHeightOpen,
+          collapsed: widget.frontCollapsed,
+          full: widget.frontFull,
+        ),
+      ],
     );
+  }
+}
+
+
+class _Slider extends StatefulWidget {
+  
+  final double closedHeight;
+  final double openHeight;
+  final Widget collapsed;
+  final Widget full;
+
+  _Slider({
+    Key key,
+    @required this.closedHeight,
+    @required this.openHeight,
+    @required this.collapsed,
+    @required this.full,
+  }) : super (key: key);
+
+  @override
+  _SliderState createState() => _SliderState();
+}
+
+class _SliderState extends State<_Slider> {
+
+  double _height; //store panel height
+  double _y0; //store previous position
+  int _t0; //store previous time
+  int _dt;
+
+  @override
+  void initState(){
+    super.initState();
+
+    _height = widget.closedHeight;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: _dt),
+        curve: Curves.easeOutExpo,
+        height: _height,
+        color: Colors.orange,
+      ),
+      onVerticalDragUpdate: _onDrag,
+      onVerticalDragStart: (DragStartDetails dets){
+        _t0 = dets.sourceTimeStamp.inMilliseconds;
+      },
+    );
+  }
+
+  void _onDrag(DragUpdateDetails details){
+    //print(_height);
+    //print(details.delta.dy);
+    // setState((){_height = widget.openHeight;});
+    // print(details.sourceTimeStamp.inMilliseconds.toString());
+
+    setState(() {
+      double newHeight = _height - details.delta.dy;
+      if(widget.closedHeight <= newHeight && newHeight <= widget.openHeight)
+        _height = newHeight;
+      _dt = details.sourceTimeStamp.inMilliseconds - _t0;
+      _t0 = details.sourceTimeStamp.inMilliseconds;
+    });
   }
 }

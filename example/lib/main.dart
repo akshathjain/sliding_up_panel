@@ -44,9 +44,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _body(){
     return SlidingUpPanel(
-      back: Center(
-        child: Text("This is the back")
-      ),
+      back: Text("This is the back"),
       frontCollapsed: Center(
         child: Text("Swipe up for more info")
       ),
