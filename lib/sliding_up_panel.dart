@@ -91,7 +91,7 @@ class _SliderState extends State<_Slider> {
   double _height; //store panel height
   double _y0; //store previous position
   int _t0; //store previous time
-  int _dt;
+  int _dt = 200;
 
   @override
   void initState(){
@@ -113,6 +113,14 @@ class _SliderState extends State<_Slider> {
       onVerticalDragStart: (DragStartDetails dets){
         _t0 = dets.sourceTimeStamp.inMilliseconds;
       },
+      onVerticalDragEnd: (DragEndDetails dets){
+        setState(() {
+          if(_y0 < 0.0) _height = widget.openHeight;
+          else _height = widget.closedHeight;
+          _dt = 200;
+        });
+      },
+      
     );
   }
 
@@ -126,6 +134,7 @@ class _SliderState extends State<_Slider> {
       double newHeight = _height - details.delta.dy;
       if(widget.closedHeight <= newHeight && newHeight <= widget.openHeight)
         _height = newHeight;
+      _y0 = details.delta.dy;
       _dt = details.sourceTimeStamp.inMilliseconds - _t0;
       _t0 = details.sourceTimeStamp.inMilliseconds;
     });
