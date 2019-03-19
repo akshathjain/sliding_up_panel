@@ -108,6 +108,7 @@ class _SliderState extends State<_Slider> {
         curve: Curves.easeOutExpo,
         height: _height,
         color: Colors.orange,
+        child: widget.full,
       ),
       onVerticalDragUpdate: _onDrag,
       onVerticalDragStart: (DragStartDetails dets){
