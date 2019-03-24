@@ -39,6 +39,7 @@ class _HomePageState extends State<HomePage> {
         title: Text("SlidingUpPanelExample"),
       ),
       body: _body(),
+      drawer: Drawer(),
     );
   }
 
