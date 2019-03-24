@@ -51,7 +51,6 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> {
         Container(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
-          color: Colors.grey,
           child: widget.back,
         ),
 
@@ -111,6 +110,13 @@ class _SliderState extends State<_Slider> with SingleTickerProviderStateMixin{
       child: Container(
         height: _controller.value * (widget.openHeight - widget.closedHeight) + widget.closedHeight,
         color: Colors.orange,
+        child: Stack(
+          children: <Widget>[
+            Align(
+              child: widget.full,
+            ),
+          ],
+        ),
       ),
     );
   }

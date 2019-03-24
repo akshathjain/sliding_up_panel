@@ -52,6 +52,7 @@ class _HomePageState extends State<HomePage> {
       frontFull: Center(
         child: Text("This is the sliding panel"),
       ),
+      panelHeightOpen: MediaQuery.of(context).size.height,
     );
   }
 }
