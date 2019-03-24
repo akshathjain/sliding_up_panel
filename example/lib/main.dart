@@ -45,12 +45,15 @@ class _HomePageState extends State<HomePage> {
 
   Widget _body(){
     return SlidingUpPanel(
-      back: Text("This is the back"),
+      back: Center(child: RaisedButton(child: Text("Push"), onPressed: (){},),),
       frontCollapsed: Center(
         child: Text("Swipe up for more info")
       ),
-      frontFull: Center(
-        child: Text("This is the sliding panel"),
+      frontFull: ListView.builder(
+        itemCount: 15,
+        itemBuilder: (BuildContext context, int i){
+          return Text("$i");
+        },
       ),
       panelHeightOpen: MediaQuery.of(context).size.height,
     );

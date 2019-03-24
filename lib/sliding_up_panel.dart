@@ -112,14 +112,15 @@ class _SliderState extends State<_Slider> with SingleTickerProviderStateMixin{
         color: Colors.orange,
         child: Stack(
           children: <Widget>[
-            Align(
-              child: widget.full,
-            ),
+            widget.full,
+            widget.collapsed,
           ],
         ),
       ),
     );
   }
+
+  //,
 
   @override
   void dispose(){
