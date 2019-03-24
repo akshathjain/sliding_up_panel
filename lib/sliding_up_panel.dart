@@ -133,7 +133,14 @@ class _SliderState extends State<_Slider> with SingleTickerProviderStateMixin{
     if(details.velocity.pixelsPerSecond.dy.abs() >=_minFlingVelocity){
       double visualVelocity = - details.velocity.pixelsPerSecond.dy / (widget.openHeight - widget.closedHeight);
       _controller.fling(velocity: visualVelocity);
+      return;
     }
+
+    //check if the controller is already halfway there
+    if(_controller.value > 0.5)
+      _controller.fling();
+    else
+      _controller.fling(velocity: -1);
   }
 
 }
