@@ -123,7 +123,7 @@ class _SliderState extends State<_Slider> with SingleTickerProviderStateMixin{
 
   void _onDrag(DragUpdateDetails details){
     _controller.value -= details.primaryDelta / (widget.openHeight - widget.closedHeight);
-    print(_controller);
+    //print(_controller);
   }
 
   double _minFlingVelocity = 365.0;
