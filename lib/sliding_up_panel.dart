@@ -1,7 +1,7 @@
 /*
 Name: Akshath Jain
 Date: 3/18/19
-Purpose: defines the package: grouped_buttons
+Purpose: defines the package: sliding_up_panel
 Copyright: © 2019, Akshath Jain. All rights reserved.
 Licensing: More information can be found here: https://github.com/akshathjain/sliding_up_panel/blob/master/LICENSE
 */
@@ -86,58 +86,54 @@ class _Slider extends StatefulWidget {
   _SliderState createState() => _SliderState();
 }
 
-class _SliderState extends State<_Slider> {
-
-  double _height; //store panel height
-  double _y0; //store previous position
-  int _t0; //store previous time
-  int _dt = 200;
+class _SliderState extends State<_Slider> with SingleTickerProviderStateMixin{
+  AnimationController _controller;
 
   @override
   void initState(){
     super.initState();
 
-    _height = widget.closedHeight;
+    _controller = new AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    )..addListener((){
+      setState((){});
+    });
+    _controller.value = 0.0;
+    print(_controller.value);
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: _dt),
-        curve: Curves.easeOutExpo,
-        height: _height,
-        color: Colors.orange,
-        child: widget.full,
-      ),
       onVerticalDragUpdate: _onDrag,
-      onVerticalDragStart: (DragStartDetails dets){
-        _t0 = dets.sourceTimeStamp.inMilliseconds;
-      },
-      onVerticalDragEnd: (DragEndDetails dets){
-        setState(() {
-          if(_y0 < 0.0) _height = widget.openHeight;
-          else _height = widget.closedHeight;
-          _dt = 200;
-        });
-      },
-      
+      onVerticalDragEnd: _settle,
+      child: Container(
+        height: _controller.value * (widget.openHeight - widget.closedHeight) + widget.closedHeight,
+        color: Colors.orange,
+      ),
     );
   }
 
-  void _onDrag(DragUpdateDetails details){
-    //print(_height);
-    //print(details.delta.dy);
-    // setState((){_height = widget.openHeight;});
-    // print(details.sourceTimeStamp.inMilliseconds.toString());
-
-    setState(() {
-      double newHeight = _height - details.delta.dy;
-      if(widget.closedHeight <= newHeight && newHeight <= widget.openHeight)
-        _height = newHeight;
-      _y0 = details.delta.dy;
-      _dt = details.sourceTimeStamp.inMilliseconds - _t0;
-      _t0 = details.sourceTimeStamp.inMilliseconds;
-    });
+  @override
+  void dispose(){
+    _controller.dispose();
+    super.dispose();
   }
+
+  void _onDrag(DragUpdateDetails details){
+    _controller.value -= details.primaryDelta / (widget.openHeight - widget.closedHeight);
+    //print(_controller);
+  }
+
+  double _minFlingVelocity = 365.0;
+
+  void _settle(DragEndDetails details){
+    //check if the velocity is sufficient to constitute fling
+    if(details.velocity.pixelsPerSecond.dy.abs() >=_minFlingVelocity){
+      double visualVelocity = - details.velocity.pixelsPerSecond.dy / (widget.openHeight - widget.closedHeight);
+      _controller.fling(velocity: visualVelocity);
+    }
+  }
+
 }
