@@ -16,10 +16,10 @@ class SlidingUpPanel extends StatefulWidget {
   final Widget back;
 
   /// The Widget displayed in the sliding panel when collapsed.
-  final Widget frontCollapsed;
+  final Widget panelCollapsed;
 
   /// The Widget displayed when the sliding panel is fully opened.
-  final Widget frontFull;
+  final Widget panelOpen;
 
   /// The height of the sliding panel when fully collapsed.
   final double panelHeightCollapsed;
@@ -27,13 +27,45 @@ class SlidingUpPanel extends StatefulWidget {
   /// The height of the sliding panel when fully open.
   final double panelHeightOpen;
 
+  /// A border to draw around the sliding panel sheet.
+  final Border border;
+
+  /// If non-null, the corners of the sliding panel sheet are rounded by this [BorderRadius].
+  final BorderRadiusGeometry borderRadius;
+
+  /// A list of shadows cast behind the sliding panel.
+  final List<BoxShadow> boxShadows;
+
+  /// The color to fill the background of the sliding panel.
+  final Color color;
+
+  /// The amount to inset the children of the sliding panel.
+  final EdgeInsetsGeometry padding;
+
+  /// Signals whether or not to render the sliding panel sheet.
+  /// Setting this to false means that only [back], [panelCollapsed], and the [panelOpen] Widgets will be rendered.
+  /// Set this to false if you want to achieve a floating effect or want more customization over how the sliding panel
+  /// looks like.
+  final bool renderSheet;
+
   SlidingUpPanel({
     Key key,
     @required this.back,
-    @required this.frontCollapsed,
-    @required this.frontFull,
+    this.panelCollapsed,
+    @required this.panelOpen,
     this.panelHeightCollapsed = 100.0,
     this.panelHeightOpen = 500.0,
+    this.border,
+    this.borderRadius,
+    this.boxShadows = const <BoxShadow>[
+      BoxShadow(
+        blurRadius: 12.0,
+        color: Colors.grey,
+      )
+    ],
+    this.color,
+    this.padding,
+    this.renderSheet = true,
   }) : super(key: key);
 
   @override
@@ -57,9 +89,16 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> {
         _Slider(
           closedHeight: widget.panelHeightCollapsed,
           openHeight: widget.panelHeightOpen,
-          collapsed: widget.frontCollapsed,
-          full: widget.frontFull,
+          collapsed: widget.panelCollapsed,
+          full: widget.panelOpen,
+          border: widget.border,
+          borderRadius: widget.borderRadius,
+          boxShadows: widget.boxShadows,
+          color: widget.color,
+          padding: widget.padding,
+          renderSheet: widget.renderSheet,
         ),
+
       ],
     );
   }
@@ -72,6 +111,12 @@ class _Slider extends StatefulWidget {
   final double openHeight;
   final Widget collapsed;
   final Widget full;
+  final Border border;
+  final BorderRadiusGeometry borderRadius;
+  final List<BoxShadow> boxShadows;
+  final Color color;
+  final EdgeInsetsGeometry padding;
+  final bool renderSheet;
 
   _Slider({
     Key key,
@@ -79,6 +124,12 @@ class _Slider extends StatefulWidget {
     @required this.openHeight,
     @required this.collapsed,
     @required this.full,
+    this.border,
+    this.borderRadius,
+    this.boxShadows,
+    this.color,
+    this.padding,
+    this.renderSheet,
   }) : super (key: key);
 
   @override
@@ -108,18 +159,13 @@ class _SliderState extends State<_Slider> with SingleTickerProviderStateMixin{
       onVerticalDragEnd: _settle,
       child: Container(
         height: _controller.value * (widget.openHeight - widget.closedHeight) + widget.closedHeight,
-
+        padding: widget.padding,
         decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-              blurRadius: 12.0,
-              color: Colors.grey,
-            )
-          ],
-          borderRadius: BorderRadius.only(topLeft: Radius.circular(24.0), topRight: Radius.circular(24.0)),
+          border: widget.border,
+          borderRadius: widget.borderRadius,
+          boxShadow: widget.boxShadows,
+          color: widget.color,
         ),
-
         child: Stack(
           children: <Widget>[
 
@@ -160,7 +206,6 @@ class _SliderState extends State<_Slider> with SingleTickerProviderStateMixin{
 
   void _onDrag(DragUpdateDetails details){
     _controller.value -= details.primaryDelta / (widget.openHeight - widget.closedHeight);
-    //print(_controller);
   }
 
   double _minFlingVelocity = 365.0;

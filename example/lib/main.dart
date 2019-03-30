@@ -46,7 +46,7 @@ class _HomePageState extends State<HomePage> {
   Widget _body(){
     return SlidingUpPanel(
       back: Center(child: Text("This is the back"),),
-      frontCollapsed: Container(
+      panelCollapsed: Container(
         decoration: BoxDecoration(
           color: Colors.blueGrey,
           borderRadius: BorderRadius.only(topLeft: Radius.circular(24.0), topRight: Radius.circular(24.0)),
@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> {
           child: Text("This is the SlidingUpPanel when closed", style: TextStyle(color: Colors.white),),
         ),
       ),
-      frontFull: _full(),
+      panelOpen: _full(),
       panelHeightCollapsed: 100.0,
       panelHeightOpen: 500.0,//MediaQuery.of(context).size.height,
     );
