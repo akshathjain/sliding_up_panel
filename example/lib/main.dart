@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
   Widget _body(){
     return SlidingUpPanel(
       back: Center(child: Text("This is the back"),),
-      //panelCollapsed: _floatingClosed(),
+      panelCollapsed: _floatingClosed(),
       renderSheet: false,
       panelOpen: _floatingOpen(),
     );
@@ -55,9 +55,9 @@ class _HomePageState extends State<HomePage> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.blueGrey,
-        borderRadius: BorderRadius.all(Radius.circular(24.0)),
+        borderRadius: BorderRadius.only(topLeft: Radius.circular(24.0), topRight: Radius.circular(24.0)),
       ),
-      margin: const EdgeInsets.all(10.0),
+      margin: const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 0.0),
       child: Center(
         child: Text("This is the SlidingUpPanel when closed", style: TextStyle(color: Colors.white),),
       ),
@@ -68,7 +68,7 @@ class _HomePageState extends State<HomePage> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(36.0)),
+        borderRadius: BorderRadius.all(Radius.circular(30.0)),
         boxShadow: [
           BoxShadow(
             blurRadius: 20.0,

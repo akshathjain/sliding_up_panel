@@ -34,7 +34,7 @@ class SlidingUpPanel extends StatefulWidget {
   final BorderRadiusGeometry borderRadius;
 
   /// A list of shadows cast behind the sliding panel.
-  final List<BoxShadow> boxShadows;
+  final List<BoxShadow> boxShadow;
 
   /// The color to fill the background of the sliding panel.
   final Color color;
@@ -60,7 +60,7 @@ class SlidingUpPanel extends StatefulWidget {
     this.panelHeightOpen = 500.0,
     this.border,
     this.borderRadius,
-    this.boxShadows = const <BoxShadow>[
+    this.boxShadow = const <BoxShadow>[
       BoxShadow(
         blurRadius: 12.0,
         color: Colors.grey,
@@ -97,7 +97,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> {
           full: widget.panelOpen,
           border: widget.border,
           borderRadius: widget.borderRadius,
-          boxShadows: widget.boxShadows,
+          boxShadows: widget.boxShadow,
           color: widget.color,
           padding: widget.padding,
           renderSheet: widget.renderSheet,
