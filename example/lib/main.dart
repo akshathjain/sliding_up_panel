@@ -38,42 +38,67 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text("SlidingUpPanelExample"),
       ),
-      drawer: Drawer(),
       body: _body(),
     );
   }
 
   Widget _body(){
-    return SlidingUpPanel(
-      back: Center(child: Text("This is the back"),),
-      frontCollapsed: Container(
-        decoration: BoxDecoration(
-          color: Colors.blueGrey,
-          borderRadius: BorderRadius.only(topLeft: Radius.circular(24.0), topRight: Radius.circular(24.0)),
+    return Stack(
+      children: <Widget>[
+        Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          color: Colors.orange,
+          child: Center(
+            child: RaisedButton(
+              child: Text("Button"),
+              onPressed: (){},
+            ),
+          ),
         ),
-        child: Center(
-          child: Text("This is the front panel", style: TextStyle(color: Colors.white),),
+        SlidingUpPanel(
+          childWhenCollapsed: Center(child: Text("This is the panel when closed"),),
+          child: Center(child: Text("This is the panel when open"),),
         ),
+      ],
+    );
+    // return SlidingUpPanel(
+    //   //back: Center(child: Text("This is the back"),),
+    //   panelCollapsed: Center(child: Text("This is the panel when closed"),),
+    //   panelOpen: Center(child: Text("This is the panel when open"),),
+    // );
+  }
+
+  Widget _floatingClosed(){
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.blueGrey,
+        borderRadius: BorderRadius.only(topLeft: Radius.circular(24.0), topRight: Radius.circular(24.0)),
       ),
-      frontFull: _full(),
-      panelHeightOpen: 500.0,//MediaQuery.of(context).size.height,
+      margin: const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 0.0),
+      child: Center(
+        child: Text("This is the SlidingUpPanel when closed", style: TextStyle(color: Colors.white),),
+      ),
     );
   }
 
-  Widget _full(){
+  Widget _floatingOpen(){
     return Container(
-      padding: const EdgeInsets.all(24.0),
-      height: 500.0,
-      width: MediaQuery.of(context).size.width,
-      child: Container(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text("This is the sliding panel"),
-          ],
-        ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.all(Radius.circular(30.0)),
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 20.0,
+            color: Colors.grey,
+          ),
+        ]
+      ),
+      margin: const EdgeInsets.all(24.0),
+      child: Center(
+        child: Text("This is the SlidingUpPanel when open"),
       ),
     );
   }
+
 }
