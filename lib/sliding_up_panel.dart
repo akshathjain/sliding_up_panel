@@ -99,7 +99,6 @@ class _SliderState extends State<_Slider> with SingleTickerProviderStateMixin{
       setState((){});
     });
     _controller.value = 0.0;
-    print(_controller.value);
   }
 
   @override
