@@ -43,12 +43,30 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _body(){
-    return SlidingUpPanel(
-      back: Center(child: Text("This is the back"),),
-      panelCollapsed: Center(child: Text("This is the panel when closed"),),
-      panelOpen: Center(child: Text("This is the panel when open"),),
-      panelHeightOpen: MediaQuery.of(context).size.height,
+    return Stack(
+      children: <Widget>[
+        Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          color: Colors.orange,
+          child: Center(
+            child: RaisedButton(
+              child: Text("Button"),
+              onPressed: (){},
+            ),
+          ),
+        ),
+        SlidingUpPanel(
+          panelCollapsed: Center(child: Text("This is the panel when closed"),),
+          panelOpen: Center(child: Text("This is the panel when open"),),
+        ),
+      ],
     );
+    // return SlidingUpPanel(
+    //   //back: Center(child: Text("This is the back"),),
+    //   panelCollapsed: Center(child: Text("This is the panel when closed"),),
+    //   panelOpen: Center(child: Text("This is the panel when open"),),
+    // );
   }
 
   Widget _floatingClosed(){

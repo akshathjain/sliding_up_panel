@@ -57,7 +57,7 @@ class SlidingUpPanel extends StatefulWidget {
 
   SlidingUpPanel({
     Key key,
-    @required this.back,
+    this.back,
     this.panelCollapsed,
     @required this.panelOpen,
     this.panelHeightCollapsed = 100.0,
@@ -89,11 +89,11 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> {
       children: <Widget>[
 
         //make the back widget take up the entire back side
-        Container(
+        widget.back != null ? Container(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           child: widget.back,
-        ),
+        ) : Container(),
 
         _Slider(
           closedHeight: widget.panelHeightCollapsed,
@@ -236,7 +236,7 @@ class _SliderState extends State<_Slider> with SingleTickerProviderStateMixin{
         if(widget.panelSnapping)
           _controller.fling(velocity: visualVelocity);
         else{
-          // actual physics, will be implemented in a future release
+          // actual scroll physics, will be implemented in a future release
 
           // double g = 9.8;
           // double u = .01;
