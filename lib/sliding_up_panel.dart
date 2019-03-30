@@ -11,7 +11,7 @@ library sliding_up_panel;
 import 'package:flutter/material.dart';
 
 class SlidingUpPanel extends StatefulWidget {
-  
+
   /// The Widget that lies underneath the sliding panel.
   final Widget back;
 
@@ -22,7 +22,7 @@ class SlidingUpPanel extends StatefulWidget {
   final Widget frontFull;
 
   /// The height of the sliding panel when fully collapsed.
-  final double panelHeightCollapsed; 
+  final double panelHeightCollapsed;
 
   /// The height of the sliding panel when fully open.
   final double panelHeightOpen;
@@ -33,7 +33,7 @@ class SlidingUpPanel extends StatefulWidget {
     @required this.frontCollapsed,
     @required this.frontFull,
     this.panelHeightCollapsed = 100.0,
-    this.panelHeightOpen = 500.0, 
+    this.panelHeightOpen = 500.0,
   }) : super(key: key);
 
   @override
@@ -67,7 +67,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> {
 
 
 class _Slider extends StatefulWidget {
-  
+
   final double closedHeight;
   final double openHeight;
   final Widget collapsed;
@@ -112,7 +112,10 @@ class _SliderState extends State<_Slider> with SingleTickerProviderStateMixin{
         color: Colors.orange,
         child: Stack(
           children: <Widget>[
-            widget.full,
+            Positioned(
+              top: 0.0,
+              child: widget.full,
+            ),
             widget.collapsed,
           ],
         ),
