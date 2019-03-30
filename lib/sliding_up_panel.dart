@@ -63,7 +63,7 @@ class SlidingUpPanel extends StatefulWidget {
         color: Colors.grey,
       )
     ],
-    this.color,
+    this.color = Colors.white,
     this.padding,
     this.renderSheet = true,
   }) : super(key: key);
@@ -169,24 +169,22 @@ class _SliderState extends State<_Slider> with SingleTickerProviderStateMixin{
         child: Stack(
           children: <Widget>[
 
-
+            //open panel
             Positioned(
               top: 0.0,
               child: Container(
                 height: widget.openHeight,
+                width: MediaQuery.of(context).size.width,
                 child: widget.full,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(24.0),
-                ),
               )
             ),
 
-
+            // collapsed panel
             Container(
               height: widget.closedHeight,
               child: Opacity(
                 opacity: 1.0 - _controller.value,
-                child: widget.collapsed
+                child: widget.collapsed ?? Container()
               ),
             ),
 
