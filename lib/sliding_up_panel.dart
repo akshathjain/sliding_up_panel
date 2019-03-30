@@ -9,18 +9,21 @@ Licensing: More information can be found here: https://github.com/akshathjain/sl
 library sliding_up_panel;
 
 import 'package:flutter/material.dart';
-import 'dart:math';
+// import 'dart:math';
 
 class SlidingUpPanel extends StatefulWidget {
 
-  /// The Widget that lies underneath the sliding panel.
-  final Widget back;
+  /// The Widget that lies underneath the sliding panel. This widget automatically sizes itself
+  /// to be in an area
+  final Widget childBehind;
 
   /// The Widget displayed in the sliding panel when collapsed. This dissappears as the panel is opened.
-  final Widget panelCollapsed;
+  final Widget childWhenCollapsed;
 
-  /// The Widget displayed when the sliding panel is fully opened.
-  final Widget panelOpen;
+  /// The Widget displayed when the sliding panel is fully opened. This slides into view as the panel is opened.
+  /// When the panel is collased and if the [childWhenCollapsed] is null, then top portion of this Widget
+  /// will be displayed on the panel; otherwise, the [childWhenCollapsed] will be displayed overtop of this Widget.
+  final Widget child;
 
   /// The height of the sliding panel when fully collapsed.
   final double panelHeightCollapsed;
@@ -47,7 +50,7 @@ class SlidingUpPanel extends StatefulWidget {
   final EdgeInsetsGeometry margin;
 
   /// Set to false to not to render the sliding panel sheet.
-  /// This means that only [back], [panelCollapsed], and the [panelOpen] Widgets will be rendered.
+  /// This means that only [childBehind], [childWhenCollapsed], and the [child] Widgets will be rendered.
   /// Set this to false if you want to achieve a floating effect or want more customization over how the sliding panel
   /// looks like.
   final bool renderSheet;
@@ -57,9 +60,9 @@ class SlidingUpPanel extends StatefulWidget {
 
   SlidingUpPanel({
     Key key,
-    this.back,
-    this.panelCollapsed,
-    @required this.panelOpen,
+    this.childBehind,
+    this.childWhenCollapsed,
+    @required this.child,
     this.panelHeightCollapsed = 100.0,
     this.panelHeightOpen = 500.0,
     this.border,
@@ -89,17 +92,17 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> {
       children: <Widget>[
 
         //make the back widget take up the entire back side
-        widget.back != null ? Container(
+        widget.childBehind != null ? Container(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
-          child: widget.back,
+          child: widget.childBehind,
         ) : Container(),
 
         _Slider(
           closedHeight: widget.panelHeightCollapsed,
           openHeight: widget.panelHeightOpen,
-          collapsed: widget.panelCollapsed,
-          full: widget.panelOpen,
+          collapsed: widget.childWhenCollapsed,
+          full: widget.child,
           border: widget.border,
           borderRadius: widget.borderRadius,
           boxShadows: widget.boxShadow,

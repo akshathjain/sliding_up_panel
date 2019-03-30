@@ -57,8 +57,8 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         SlidingUpPanel(
-          panelCollapsed: Center(child: Text("This is the panel when closed"),),
-          panelOpen: Center(child: Text("This is the panel when open"),),
+          childWhenCollapsed: Center(child: Text("This is the panel when closed"),),
+          child: Center(child: Text("This is the panel when open"),),
         ),
       ],
     );
