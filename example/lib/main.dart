@@ -31,28 +31,49 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("SlidingUpPanelExample"),
       ),
-      body: _body(),
       drawer: Drawer(),
+      body: _body(),
     );
   }
 
   Widget _body(){
     return SlidingUpPanel(
-      back: Text("This is the back"),
-      frontCollapsed: Center(
-        child: Text("Swipe up for more info")
+      back: Center(child: Text("This is the back"),),
+      frontCollapsed: Container(
+        decoration: BoxDecoration(
+          color: Colors.blueGrey,
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(24.0), topRight: Radius.circular(24.0)),
+        ),
+        child: Center(
+          child: Text("This is the front panel", style: TextStyle(color: Colors.white),),
+        ),
       ),
-      frontFull: Center(
-        child: Text("This is the sliding panel"),
+      frontFull: _full(),
+      panelHeightOpen: 500.0,//MediaQuery.of(context).size.height,
+    );
+  }
+
+  Widget _full(){
+    return Container(
+      padding: const EdgeInsets.all(24.0),
+      height: 500.0,
+      width: MediaQuery.of(context).size.width,
+      child: Container(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text("This is the sliding panel"),
+          ],
+        ),
       ),
-      panelHeightOpen: MediaQuery.of(context).size.height,
     );
   }
 }
