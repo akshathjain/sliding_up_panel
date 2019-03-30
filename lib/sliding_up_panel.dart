@@ -15,7 +15,7 @@ class SlidingUpPanel extends StatefulWidget {
   /// The Widget that lies underneath the sliding panel.
   final Widget back;
 
-  /// The Widget displayed in the sliding panel when collapsed.
+  /// The Widget displayed in the sliding panel when collapsed. This dissappears as the panel is opened.
   final Widget panelCollapsed;
 
   /// The Widget displayed when the sliding panel is fully opened.
@@ -45,11 +45,14 @@ class SlidingUpPanel extends StatefulWidget {
   /// Empty space surrounding the sliding panel.
   final EdgeInsetsGeometry margin;
 
-  /// Signals whether or not to render the sliding panel sheet.
-  /// Setting this to false means that only [back], [panelCollapsed], and the [panelOpen] Widgets will be rendered.
+  /// Set to false to not to render the sliding panel sheet.
+  /// This means that only [back], [panelCollapsed], and the [panelOpen] Widgets will be rendered.
   /// Set this to false if you want to achieve a floating effect or want more customization over how the sliding panel
   /// looks like.
   final bool renderSheet;
+
+  /// Set to false to disable the panel from snapping open or closed.
+  final bool panelSnapping;
 
   SlidingUpPanel({
     Key key,
@@ -70,6 +73,7 @@ class SlidingUpPanel extends StatefulWidget {
     this.padding,
     this.margin,
     this.renderSheet = true,
+    this.panelSnapping = true,
   }) : super(key: key);
 
   @override
@@ -101,6 +105,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> {
           color: widget.color,
           padding: widget.padding,
           renderSheet: widget.renderSheet,
+          panelSnapping: widget.panelSnapping,
         ),
 
       ],
@@ -122,6 +127,7 @@ class _Slider extends StatefulWidget {
   final EdgeInsetsGeometry padding;
   final EdgeInsetsGeometry margin;
   final bool renderSheet;
+  final bool panelSnapping;
 
   _Slider({
     Key key,
@@ -129,13 +135,14 @@ class _Slider extends StatefulWidget {
     @required this.openHeight,
     @required this.collapsed,
     @required this.full,
-    this.border,
-    this.borderRadius,
-    this.boxShadows,
-    this.color,
-    this.padding,
-    this.margin,
-    this.renderSheet,
+    @required this.border,
+    @required this.borderRadius,
+    @required this.boxShadows,
+    @required this.color,
+    @required this.padding,
+    @required this.margin,
+    @required this.renderSheet,
+    @required this.panelSnapping,
   }) : super (key: key);
 
   @override
@@ -216,18 +223,20 @@ class _SliderState extends State<_Slider> with SingleTickerProviderStateMixin{
   double _minFlingVelocity = 365.0;
 
   void _settle(DragEndDetails details){
-    //check if the velocity is sufficient to constitute fling
-    if(details.velocity.pixelsPerSecond.dy.abs() >=_minFlingVelocity){
-      double visualVelocity = - details.velocity.pixelsPerSecond.dy / (widget.openHeight - widget.closedHeight);
-      _controller.fling(velocity: visualVelocity);
-      return;
-    }
 
-    //check if the controller is already halfway there
-    if(_controller.value > 0.5)
-      _controller.fling();
-    else
-      _controller.fling(velocity: -1);
+      //check if the velocity is sufficient to constitute fling
+      if(details.velocity.pixelsPerSecond.dy.abs() >=_minFlingVelocity){
+        double visualVelocity = - details.velocity.pixelsPerSecond.dy / (widget.openHeight - widget.closedHeight);
+        _controller.fling(velocity: visualVelocity);
+        return;
+      }
+
+      //check if the controller is already halfway there
+      if(_controller.value > 0.5)
+        _controller.fling();
+      else
+        _controller.fling(velocity: -1);
+
   }
 
 }
