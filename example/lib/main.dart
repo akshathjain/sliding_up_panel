@@ -32,6 +32,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
+  PanelController pc = new PanelController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

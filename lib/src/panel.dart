@@ -6,8 +6,6 @@ Copyright: © 2019, Akshath Jain. All rights reserved.
 Licensing: More information can be found here: https://github.com/akshathjain/sliding_up_panel/blob/master/LICENSE
 */
 
-library sliding_up_panel;
-
 import 'package:flutter/material.dart';
 // import 'dart:math';
 
@@ -58,6 +56,9 @@ class SlidingUpPanel extends StatefulWidget {
   /// Set to false to disable the panel from snapping open or closed.
   final bool panelSnapping;
 
+  /// If non-null, this can be used to control the state of the panel.
+  final PanelController controller;
+
   SlidingUpPanel({
     Key key,
     this.childBehind,
@@ -78,6 +79,7 @@ class SlidingUpPanel extends StatefulWidget {
     this.margin,
     this.renderSheet = true,
     this.panelSnapping = true,
+    this.controller,
   }) : super(key: key);
 
   @override
@@ -111,12 +113,29 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> {
           margin: widget.margin,
           renderSheet: widget.renderSheet,
           panelSnapping: widget.panelSnapping,
+          controller: widget.controller,
         ),
 
       ],
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class _Slider extends StatefulWidget {
@@ -133,6 +152,7 @@ class _Slider extends StatefulWidget {
   final EdgeInsetsGeometry margin;
   final bool renderSheet;
   final bool panelSnapping;
+  final PanelController controller;
 
   _Slider({
     Key key,
@@ -148,6 +168,7 @@ class _Slider extends StatefulWidget {
     @required this.margin,
     @required this.renderSheet,
     @required this.panelSnapping,
+    @required this.controller,
   }) : super (key: key);
 
   @override
@@ -155,19 +176,22 @@ class _Slider extends StatefulWidget {
 }
 
 class _SliderState extends State<_Slider> with SingleTickerProviderStateMixin{
-  AnimationController _controller;
+  AnimationController _ac;
+  double _closedHeight; //this can change depending on whether or not the user hides the sliding panel
 
   @override
   void initState(){
     super.initState();
 
-    _controller = new AnimationController(
+    _ac = new AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
     )..addListener((){
       setState((){});
     });
-    _controller.value = 0.0;
+    _ac.value = 0.0;
+
+    _closedHeight = widget.closedHeight;
   }
 
   @override
@@ -176,7 +200,7 @@ class _SliderState extends State<_Slider> with SingleTickerProviderStateMixin{
       onVerticalDragUpdate: _onDrag,
       onVerticalDragEnd: _settle,
       child: Container(
-        height: _controller.value * (widget.openHeight - widget.closedHeight) + widget.closedHeight,
+        height: _ac.value * (widget.openHeight - _closedHeight) + _closedHeight,
         margin: widget.margin,
         padding: widget.padding,
         decoration: widget.renderSheet ? BoxDecoration(
@@ -200,9 +224,9 @@ class _SliderState extends State<_Slider> with SingleTickerProviderStateMixin{
 
             // collapsed panel
             Container(
-              height: widget.closedHeight,
+              height: _closedHeight,
               child: Opacity(
-                opacity: 1.0 - _controller.value,
+                opacity: 1.0 - _ac.value,
                 child: widget.collapsed ?? Container()
               ),
             ),
@@ -217,27 +241,26 @@ class _SliderState extends State<_Slider> with SingleTickerProviderStateMixin{
 
   @override
   void dispose(){
-    _controller.dispose();
+    _ac.dispose();
     super.dispose();
   }
 
   void _onDrag(DragUpdateDetails details){
-    _controller.value -= details.primaryDelta / (widget.openHeight - widget.closedHeight);
+    _ac.value -= details.primaryDelta / (widget.openHeight - _closedHeight);
   }
 
   double _minFlingVelocity = 365.0;
-
   void _settle(DragEndDetails details){
 
       //let the current animation finish before starting a new one
-      if(_controller.isAnimating) return;
+      if(_ac.isAnimating) return;
 
       //check if the velocity is sufficient to constitute fling
       if(details.velocity.pixelsPerSecond.dy.abs() >= _minFlingVelocity){
-        double visualVelocity = - details.velocity.pixelsPerSecond.dy / (widget.openHeight - widget.closedHeight);
+        double visualVelocity = - details.velocity.pixelsPerSecond.dy / (widget.openHeight - _closedHeight);
 
         if(widget.panelSnapping)
-          _controller.fling(velocity: visualVelocity);
+          _ac.fling(velocity: visualVelocity);
         else{
           // actual scroll physics, will be implemented in a future release
 
@@ -248,8 +271,8 @@ class _SliderState extends State<_Slider> with SingleTickerProviderStateMixin{
           // double t = sqrt(2 *  max(dx, -dx) / u / g);
           // print((t*1000).toInt());
 
-          _controller.animateTo(
-            _controller.value + visualVelocity * 0.16,
+          _ac.animateTo(
+            _ac.value + visualVelocity * 0.16,
             duration: Duration(milliseconds: 410),
             curve: Curves.decelerate,
           );
@@ -260,12 +283,100 @@ class _SliderState extends State<_Slider> with SingleTickerProviderStateMixin{
 
       // check if the controller is already halfway there
       if (widget.panelSnapping) {
-        if(_controller.value > 0.5)
-          _controller.fling();
+        if(_ac.value > 0.5)
+          _ac.fling();
         else
-          _controller.fling(velocity: -1);
+          _ac.fling(velocity: -1);
       }
 
+  }
+
+  void _close(){
+    _ac.fling(velocity: -1.0);
+  }
+
+  void _open(){
+    _ac.fling(velocity: -1.0);
+  }
+
+  void _hide(){
+    setState(() {
+
+    });
+  }
+
+  void _show(){
+    setState(() {
+
+    });
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class PanelController{
+  VoidCallback _closeListener;
+  VoidCallback _openListener;
+  VoidCallback _hideListener;
+  VoidCallback _showListener;
+
+  void _addCloseListener(VoidCallback listener){
+    this._closeListener = listener;
+  }
+
+  void close(){
+    _closeListener();
+  }
+
+  void _addOpenListener(VoidCallback listener){
+    this._openListener = listener;
+  }
+
+  void open(){
+    _openListener();
+  }
+
+  void _addHideListener(VoidCallback listener){
+    this._hideListener = listener;
+  }
+
+  void hide(){
+    _hideListener();
+  }
+
+  void _addShowListener(VoidCallback listener){
+    this._showListener = listener;
+  }
+
+  void show(){
+    _showListener();
   }
 
 }
