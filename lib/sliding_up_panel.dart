@@ -109,6 +109,7 @@ class _SliderState extends State<_Slider> with SingleTickerProviderStateMixin{
       onVerticalDragEnd: _settle,
       child: Container(
         height: _controller.value * (widget.openHeight - widget.closedHeight) + widget.closedHeight,
+
         decoration: BoxDecoration(
           color: Colors.white,
           boxShadow: <BoxShadow>[
@@ -117,8 +118,9 @@ class _SliderState extends State<_Slider> with SingleTickerProviderStateMixin{
               color: Colors.grey,
             )
           ],
-          borderRadius: BorderRadius.circular(24.0),
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(24.0), topRight: Radius.circular(24.0)),
         ),
+
         child: Stack(
           children: <Widget>[
 
