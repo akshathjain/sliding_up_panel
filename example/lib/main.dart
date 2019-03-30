@@ -38,7 +38,6 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text("SlidingUpPanelExample"),
       ),
-      drawer: Drawer(),
       body: _body(),
     );
   }
@@ -46,15 +45,39 @@ class _HomePageState extends State<HomePage> {
   Widget _body(){
     return SlidingUpPanel(
       back: Center(child: Text("This is the back"),),
-      // panelCollapsed: Container(
-      //   decoration: BoxDecoration(
-      //     color: Colors.blueGrey,
-      //   ),
-      //   child: Center(
-      //     child: Text("This is the SlidingUpPanel when closed", style: TextStyle(color: Colors.white),),
-      //   ),
-      // ),
-      panelOpen: Center(
+      //panelCollapsed: _floatingClosed(),
+      renderSheet: false,
+      panelOpen: _floatingOpen(),
+    );
+  }
+
+  Widget _floatingClosed(){
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.blueGrey,
+        borderRadius: BorderRadius.all(Radius.circular(24.0)),
+      ),
+      margin: const EdgeInsets.all(10.0),
+      child: Center(
+        child: Text("This is the SlidingUpPanel when closed", style: TextStyle(color: Colors.white),),
+      ),
+    );
+  }
+
+  Widget _floatingOpen(){
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.all(Radius.circular(36.0)),
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 20.0,
+            color: Colors.grey,
+          ),
+        ]
+      ),
+      margin: const EdgeInsets.all(24.0),
+      child: Center(
         child: Text("This is the SlidingUpPanel when open"),
       ),
     );

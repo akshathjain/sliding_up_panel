@@ -42,6 +42,9 @@ class SlidingUpPanel extends StatefulWidget {
   /// The amount to inset the children of the sliding panel.
   final EdgeInsetsGeometry padding;
 
+  /// Empty space surrounding the sliding panel.
+  final EdgeInsetsGeometry margin;
+
   /// Signals whether or not to render the sliding panel sheet.
   /// Setting this to false means that only [back], [panelCollapsed], and the [panelOpen] Widgets will be rendered.
   /// Set this to false if you want to achieve a floating effect or want more customization over how the sliding panel
@@ -65,6 +68,7 @@ class SlidingUpPanel extends StatefulWidget {
     ],
     this.color = Colors.white,
     this.padding,
+    this.margin,
     this.renderSheet = true,
   }) : super(key: key);
 
@@ -116,6 +120,7 @@ class _Slider extends StatefulWidget {
   final List<BoxShadow> boxShadows;
   final Color color;
   final EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry margin;
   final bool renderSheet;
 
   _Slider({
@@ -129,6 +134,7 @@ class _Slider extends StatefulWidget {
     this.boxShadows,
     this.color,
     this.padding,
+    this.margin,
     this.renderSheet,
   }) : super (key: key);
 
@@ -159,22 +165,23 @@ class _SliderState extends State<_Slider> with SingleTickerProviderStateMixin{
       onVerticalDragEnd: _settle,
       child: Container(
         height: _controller.value * (widget.openHeight - widget.closedHeight) + widget.closedHeight,
+        margin: widget.margin,
         padding: widget.padding,
-        decoration: BoxDecoration(
+        decoration: widget.renderSheet ? BoxDecoration(
           border: widget.border,
           borderRadius: widget.borderRadius,
           boxShadow: widget.boxShadows,
           color: widget.color,
-        ),
+        ) : null,
         child: Stack(
           children: <Widget>[
 
             //open panel
             Positioned(
               top: 0.0,
+              width: MediaQuery.of(context).size.width,
               child: Container(
                 height: widget.openHeight,
-                width: MediaQuery.of(context).size.width,
                 child: widget.full,
               )
             ),
