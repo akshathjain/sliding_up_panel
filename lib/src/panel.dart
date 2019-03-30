@@ -86,98 +86,13 @@ class SlidingUpPanel extends StatefulWidget {
   _SlidingUpPanelState createState() => _SlidingUpPanelState();
 }
 
-class _SlidingUpPanelState extends State<SlidingUpPanel> {
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.bottomCenter,
-      children: <Widget>[
+class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProviderStateMixin{
 
-        //make the back widget take up the entire back side
-        widget.childBehind != null ? Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          child: widget.childBehind,
-        ) : Container(),
-
-        _Slider(
-          closedHeight: widget.panelHeightCollapsed,
-          openHeight: widget.panelHeightOpen,
-          collapsed: widget.childWhenCollapsed,
-          full: widget.child,
-          border: widget.border,
-          borderRadius: widget.borderRadius,
-          boxShadows: widget.boxShadow,
-          color: widget.color,
-          padding: widget.padding,
-          margin: widget.margin,
-          renderSheet: widget.renderSheet,
-          panelSnapping: widget.panelSnapping,
-          controller: widget.controller,
-        ),
-
-      ],
-    );
-  }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class _Slider extends StatefulWidget {
-
-  final double closedHeight;
-  final double openHeight;
-  final Widget collapsed;
-  final Widget full;
-  final Border border;
-  final BorderRadiusGeometry borderRadius;
-  final List<BoxShadow> boxShadows;
-  final Color color;
-  final EdgeInsetsGeometry padding;
-  final EdgeInsetsGeometry margin;
-  final bool renderSheet;
-  final bool panelSnapping;
-  final PanelController controller;
-
-  _Slider({
-    Key key,
-    @required this.closedHeight,
-    @required this.openHeight,
-    @required this.collapsed,
-    @required this.full,
-    @required this.border,
-    @required this.borderRadius,
-    @required this.boxShadows,
-    @required this.color,
-    @required this.padding,
-    @required this.margin,
-    @required this.renderSheet,
-    @required this.panelSnapping,
-    @required this.controller,
-  }) : super (key: key);
-
-  @override
-  _SliderState createState() => _SliderState();
-}
-
-class _SliderState extends State<_Slider> with SingleTickerProviderStateMixin{
   AnimationController _ac;
+
   double _closedHeight; //this can change depending on whether or not the user hides the sliding panel
+  double _openHeight; //this can change depending on whether or not the user hides the sliding panel
+
 
   @override
   void initState(){
@@ -191,53 +106,75 @@ class _SliderState extends State<_Slider> with SingleTickerProviderStateMixin{
     });
     _ac.value = 0.0;
 
-    _closedHeight = widget.closedHeight;
+    _closedHeight = widget.panelHeightCollapsed;
+    _openHeight = widget.panelHeightOpen;
+
+    widget.controller?._addCloseListener(_close);
+    widget.controller?._addOpenListener(_open);
+    widget.controller?._addHideListener(_hide);
+    widget.controller?._addShowListener(_show);
+
   }
+
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onVerticalDragUpdate: _onDrag,
-      onVerticalDragEnd: _settle,
-      child: Container(
-        height: _ac.value * (widget.openHeight - _closedHeight) + _closedHeight,
-        margin: widget.margin,
-        padding: widget.padding,
-        decoration: widget.renderSheet ? BoxDecoration(
-          border: widget.border,
-          borderRadius: widget.borderRadius,
-          boxShadow: widget.boxShadows,
-          color: widget.color,
-        ) : null,
-        child: Stack(
-          children: <Widget>[
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: <Widget>[
 
-            //open panel
-            Positioned(
-              top: 0.0,
-              width: MediaQuery.of(context).size.width,
-              child: Container(
-                height: widget.openHeight,
-                child: widget.full,
-              )
+        //make the back widget take up the entire back side
+        widget.childBehind != null ? Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: widget.childBehind,
+        ) : Container(),
+
+        //the actual sliding part
+        GestureDetector(
+          onVerticalDragUpdate: _onDrag,
+          onVerticalDragEnd: _settle,
+          child: Container(
+            height: _ac.value * (_openHeight - _closedHeight) + _closedHeight,
+            margin: widget.margin,
+            padding: widget.padding,
+            decoration: widget.renderSheet ? BoxDecoration(
+              border: widget.border,
+              borderRadius: widget.borderRadius,
+              boxShadow: widget.boxShadow,
+              color: widget.color,
+            ) : null,
+            child: Stack(
+              children: <Widget>[
+
+                //open panel
+                Positioned(
+                  top: 0.0,
+                  width: MediaQuery.of(context).size.width,
+                  child: Container(
+                    height: widget.panelHeightOpen,
+                    child: widget.child,
+                  )
+                ),
+
+                // collapsed panel
+                Container(
+                  height: widget.panelHeightCollapsed,
+                  child: Opacity(
+                    opacity: 1.0 - _ac.value,
+                    child: widget.childWhenCollapsed ?? Container()
+                  ),
+                ),
+
+
+              ],
             ),
-
-            // collapsed panel
-            Container(
-              height: _closedHeight,
-              child: Opacity(
-                opacity: 1.0 - _ac.value,
-                child: widget.collapsed ?? Container()
-              ),
-            ),
-
-
-          ],
+          ),
         ),
-      ),
+
+      ],
     );
   }
-
 
   @override
   void dispose(){
@@ -246,71 +183,101 @@ class _SliderState extends State<_Slider> with SingleTickerProviderStateMixin{
   }
 
   void _onDrag(DragUpdateDetails details){
-    _ac.value -= details.primaryDelta / (widget.openHeight - _closedHeight);
+    _ac.value -= details.primaryDelta / (_openHeight - _closedHeight);
   }
 
   double _minFlingVelocity = 365.0;
   void _settle(DragEndDetails details){
 
-      //let the current animation finish before starting a new one
-      if(_ac.isAnimating) return;
+    //let the current animation finish before starting a new one
+    if(_ac.isAnimating) return;
 
-      //check if the velocity is sufficient to constitute fling
-      if(details.velocity.pixelsPerSecond.dy.abs() >= _minFlingVelocity){
-        double visualVelocity = - details.velocity.pixelsPerSecond.dy / (widget.openHeight - _closedHeight);
+    //check if the velocity is sufficient to constitute fling
+    if(details.velocity.pixelsPerSecond.dy.abs() >= _minFlingVelocity){
+      double visualVelocity = - details.velocity.pixelsPerSecond.dy / (_openHeight - _closedHeight);
 
-        if(widget.panelSnapping)
-          _ac.fling(velocity: visualVelocity);
-        else{
-          // actual scroll physics, will be implemented in a future release
+      if(widget.panelSnapping)
+        _ac.fling(velocity: visualVelocity);
+      else{
+        // actual scroll physics, will be implemented in a future release
 
-          // double g = 9.8;
-          // double u = .01;
-          // double a = u * g;
-          // double dx = visualVelocity * visualVelocity / (-2 * u * g);
-          // double t = sqrt(2 *  max(dx, -dx) / u / g);
-          // print((t*1000).toInt());
+        // double g = 9.8;
+        // double u = .01;
+        // double a = u * g;
+        // double dx = visualVelocity * visualVelocity / (-2 * u * g);
+        // double t = sqrt(2 *  max(dx, -dx) / u / g);
+        // print((t*1000).toInt());
 
-          _ac.animateTo(
-            _ac.value + visualVelocity * 0.16,
-            duration: Duration(milliseconds: 410),
-            curve: Curves.decelerate,
-          );
-        }
-
-        return;
+        _ac.animateTo(
+          _ac.value + visualVelocity * 0.16,
+          duration: Duration(milliseconds: 410),
+          curve: Curves.decelerate,
+        );
       }
 
-      // check if the controller is already halfway there
-      if (widget.panelSnapping) {
-        if(_ac.value > 0.5)
-          _ac.fling();
-        else
-          _ac.fling(velocity: -1);
-      }
+      return;
+    }
+
+    // check if the controller is already halfway there
+    if (widget.panelSnapping) {
+      if(_ac.value > 0.5)
+        _open();
+      else
+        _close();
+    }
 
   }
 
+  //close the panel
   void _close(){
+    _openHeight = widget.panelHeightOpen; //set open height to original
+    _closedHeight = widget.panelHeightCollapsed; //set closed height to original
     _ac.fling(velocity: -1.0);
   }
 
+  //open the panel
   void _open(){
+    _openHeight = widget.panelHeightOpen; //set open height to original
+    _closedHeight = widget.panelHeightCollapsed; //set closed height to original
+    _ac.fling(velocity: 1.0);
+  }
+
+  //hide the panel (completely offscreen)
+  void _hide(){
+    _openHeight = widget.panelHeightCollapsed;
+    _closedHeight = 0.0;
+    _ac.value = 1.0;
     _ac.fling(velocity: -1.0);
   }
 
-  void _hide(){
-    setState(() {
-
-    });
-  }
-
+  //show the panel (in collapsed mode)
   void _show(){
-    setState(() {
+    _openHeight = widget.panelHeightCollapsed;
+    _closedHeight = 0.0;
+    _ac.value = 0.0; //reset animation controller to "closed"
+    _ac.fling(velocity: 1.0);
 
-    });
+    // _ac.value = 0.0; //reset animation controller to "closed"
+    // _openHeight = widget.panelHeightOpen; //set open height to original
+    // _closedHeight = widget.panelHeightCollapsed; //set closed height to original
   }
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

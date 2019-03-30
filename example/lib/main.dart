@@ -32,7 +32,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-  PanelController pc = new PanelController();
+  PanelController _pc = new PanelController();
 
   @override
   Widget build(BuildContext context) {
@@ -51,24 +51,43 @@ class _HomePageState extends State<HomePage> {
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           color: Colors.orange,
-          child: Center(
-            child: RaisedButton(
-              child: Text("Button"),
-              onPressed: (){},
-            ),
+          child: Column(
+            children: <Widget>[
+              RaisedButton(
+                child: Text("Open"),
+                onPressed: () => _pc.open(),
+              ),
+              RaisedButton(
+                child: Text("Close"),
+                onPressed: () => _pc.close(),
+              ),
+              RaisedButton(
+                child: Text("Show"),
+                onPressed: () => _pc.show(),
+              ),
+              RaisedButton(
+                child: Text("Hide"),
+                onPressed: () => _pc.hide(),
+              ),
+            ],
           ),
         ),
         SlidingUpPanel(
           childWhenCollapsed: Center(child: Text("This is the panel when closed"),),
           child: Center(child: Text("This is the panel when open"),),
+          controller: _pc,
         ),
       ],
     );
+
+
     // return SlidingUpPanel(
     //   //back: Center(child: Text("This is the back"),),
     //   panelCollapsed: Center(child: Text("This is the panel when closed"),),
     //   panelOpen: Center(child: Text("This is the panel when open"),),
     // );
+
+
   }
 
   Widget _floatingClosed(){
