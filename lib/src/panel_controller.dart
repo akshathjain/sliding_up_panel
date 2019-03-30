@@ -24,7 +24,7 @@ class PanelController{
 
   @protected
   void addOpenListener(VoidCallback listener){
-    this._closeListener = listener;
+    this._openListener = listener;
   }
 
   void open(){
@@ -33,7 +33,7 @@ class PanelController{
 
   @protected
   void addHideListener(VoidCallback listener){
-    this._closeListener = listener;
+    this._hideListener = listener;
   }
 
   void hide(){
