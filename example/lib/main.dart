@@ -46,7 +46,12 @@ class _HomePageState extends State<HomePage> {
   Widget _body(){
     return SlidingUpPanel(
       back: Center(child: RaisedButton(child: Text("Push"), onPressed: (){},),),
-      frontCollapsed: Container(),
+      frontCollapsed: Container(
+        decoration: BoxDecoration(
+          color: Colors.blueGrey,
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(24.0), topRight: Radius.circular(24.0)),
+        ),
+      ),
       frontFull: _full(),
       panelHeightOpen: 500.0,//MediaQuery.of(context).size.height,
     );
