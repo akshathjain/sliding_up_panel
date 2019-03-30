@@ -45,11 +45,14 @@ class _HomePageState extends State<HomePage> {
 
   Widget _body(){
     return SlidingUpPanel(
-      back: Center(child: RaisedButton(child: Text("Push"), onPressed: (){},),),
+      back: Center(child: Text("This is the back"),),
       frontCollapsed: Container(
         decoration: BoxDecoration(
           color: Colors.blueGrey,
           borderRadius: BorderRadius.only(topLeft: Radius.circular(24.0), topRight: Radius.circular(24.0)),
+        ),
+        child: Center(
+          child: Text("This is the front panel", style: TextStyle(color: Colors.white),),
         ),
       ),
       frontFull: _full(),
@@ -62,25 +65,14 @@ class _HomePageState extends State<HomePage> {
       padding: const EdgeInsets.all(24.0),
       height: 500.0,
       width: MediaQuery.of(context).size.width,
-      child: Card(
-        child: Container(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            children: <Widget>[
-              Text("This is a title"),
-              SizedBox(height: 50.0,),
-              Text("This is something else"),
-              SizedBox(height: 50.0,),
-              RaisedButton(
-                child: Text("Button"),
-                color: Colors.green,
-                onPressed: (){},
-              ),
-              SizedBox(height: 50.0,),
-              Text("Another Piece of Text"),
-            ],
-          ),
-        )
+      child: Container(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text("This is the sliding panel"),
+          ],
+        ),
       ),
     );
   }
