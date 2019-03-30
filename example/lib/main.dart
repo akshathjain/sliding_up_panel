@@ -45,9 +45,9 @@ class _HomePageState extends State<HomePage> {
   Widget _body(){
     return SlidingUpPanel(
       back: Center(child: Text("This is the back"),),
-      panelCollapsed: _floatingClosed(),
-      renderSheet: false,
-      panelOpen: _floatingOpen(),
+      panelCollapsed: Center(child: Text("This is the panel when closed"),),
+      panelOpen: Center(child: Text("This is the panel when open"),),
+      panelHeightOpen: MediaQuery.of(context).size.height,
     );
   }
 

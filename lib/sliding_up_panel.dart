@@ -9,6 +9,7 @@ Licensing: More information can be found here: https://github.com/akshathjain/sl
 library sliding_up_panel;
 
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 class SlidingUpPanel extends StatefulWidget {
 
@@ -104,6 +105,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> {
           boxShadows: widget.boxShadow,
           color: widget.color,
           padding: widget.padding,
+          margin: widget.margin,
           renderSheet: widget.renderSheet,
           panelSnapping: widget.panelSnapping,
         ),
@@ -224,18 +226,42 @@ class _SliderState extends State<_Slider> with SingleTickerProviderStateMixin{
 
   void _settle(DragEndDetails details){
 
+      //let the current animation finish before starting a new one
+      if(_controller.isAnimating) return;
+
       //check if the velocity is sufficient to constitute fling
-      if(details.velocity.pixelsPerSecond.dy.abs() >=_minFlingVelocity){
+      if(details.velocity.pixelsPerSecond.dy.abs() >= _minFlingVelocity){
         double visualVelocity = - details.velocity.pixelsPerSecond.dy / (widget.openHeight - widget.closedHeight);
-        _controller.fling(velocity: visualVelocity);
+
+        if(widget.panelSnapping)
+          _controller.fling(velocity: visualVelocity);
+        else{
+          // actual physics, will be implemented in a future release
+
+          // double g = 9.8;
+          // double u = .01;
+          // double a = u * g;
+          // double dx = visualVelocity * visualVelocity / (-2 * u * g);
+          // double t = sqrt(2 *  max(dx, -dx) / u / g);
+          // print((t*1000).toInt());
+
+          _controller.animateTo(
+            _controller.value + visualVelocity * 0.16,
+            duration: Duration(milliseconds: 410),
+            curve: Curves.decelerate,
+          );
+        }
+
         return;
       }
 
-      //check if the controller is already halfway there
-      if(_controller.value > 0.5)
-        _controller.fling();
-      else
-        _controller.fling(velocity: -1);
+      // check if the controller is already halfway there
+      if (widget.panelSnapping) {
+        if(_controller.value > 0.5)
+          _controller.fling();
+        else
+          _controller.fling(velocity: -1);
+      }
 
   }
 
