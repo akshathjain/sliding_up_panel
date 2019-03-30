@@ -52,10 +52,11 @@ class _HomePageState extends State<HomePage> {
           borderRadius: BorderRadius.only(topLeft: Radius.circular(24.0), topRight: Radius.circular(24.0)),
         ),
         child: Center(
-          child: Text("This is the front panel", style: TextStyle(color: Colors.white),),
+          child: Text("This is the SlidingUpPanel when closed", style: TextStyle(color: Colors.white),),
         ),
       ),
       frontFull: _full(),
+      panelHeightCollapsed: 100.0,
       panelHeightOpen: 500.0,//MediaQuery.of(context).size.height,
     );
   }
@@ -70,7 +71,7 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text("This is the sliding panel"),
+            Text("This is the SlidingUpPanel when open"),
           ],
         ),
       ),
