@@ -1,7 +1,7 @@
 /*
 Name: Akshath Jain
 Date: 3/18/19
-Purpose: defines the sliding_up_panel widget
+Purpose: Defines the sliding_up_panel widget
 Copyright: © 2019, Akshath Jain. All rights reserved.
 Licensing: More information can be found here: https://github.com/akshathjain/sliding_up_panel/blob/master/LICENSE
 */
@@ -14,22 +14,22 @@ class SlidingUpPanel extends StatefulWidget {
   /// The Widget displayed when the sliding panel is fully opened. This slides into view as the panel is opened.
   /// When the panel is collased and if the [childCollapsed] is null, then top portion of this Widget
   /// will be displayed on the panel; otherwise, the [childCollapsed] will be displayed overtop of this Widget.
-  final Widget child;
+  final Widget childFront;
 
-  /// The Widget displayed in the sliding panel when collapsed. This dissappears as the panel is opened.
+  /// The Widget displayed in the sliding panel when collapsed. This fades out as the panel is opened.
   final Widget childCollapsed;
 
   /// The Widget that lies underneath the sliding panel. This widget automatically sizes itself
-  /// to be in an area
+  /// to fill the screen.
   final Widget childBehind;
 
   /// The height of the sliding panel when fully collapsed.
-  final double panelHeightCollapsed;
+  final double minHeight;
 
   /// The height of the sliding panel when fully open.
-  final double panelHeightOpen;
+  final double maxHeight;
 
-  /// A border to draw around the sliding panel sheet.
+  /// A border to draw around the sliding panel.
   final Border border;
 
   /// If non-null, the corners of the sliding panel sheet are rounded by this [BorderRadius].
@@ -48,7 +48,7 @@ class SlidingUpPanel extends StatefulWidget {
   final EdgeInsetsGeometry margin;
 
   /// Set to false to not to render the sliding panel.
-  /// This means that only [childBehind], [childCollapsed], and the [child] Widgets will be rendered.
+  /// This means that only [childBehind], [childCollapsed], and the [childFront] Widgets will be rendered.
   /// Set this to false if you want to achieve a floating effect or want more customization over how the sliding panel
   /// looks like.
   final bool renderPanel;
@@ -61,11 +61,11 @@ class SlidingUpPanel extends StatefulWidget {
 
   SlidingUpPanel({
     Key key,
-    @required this.child,
+    @required this.childFront,
     this.childBehind,
     this.childCollapsed,
-    this.panelHeightCollapsed = 100.0,
-    this.panelHeightOpen = 500.0,
+    this.minHeight = 100.0,
+    this.maxHeight = 500.0,
     this.border,
     this.borderRadius,
     this.boxShadow = const <BoxShadow>[
@@ -107,8 +107,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     });
     _ac.value = 0.0;
 
-    _closedHeight = widget.panelHeightCollapsed;
-    _openHeight = widget.panelHeightOpen;
+    _closedHeight = widget.minHeight;
+    _openHeight = widget.maxHeight;
 
     widget.controller?._addCloseListener(_close);
     widget.controller?._addOpenListener(_open);
@@ -150,16 +150,18 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                 //open panel
                 Positioned(
                   top: 0.0,
-                  width: MediaQuery.of(context).size.width,
+                  width:  MediaQuery.of(context).size.width -
+                          (widget.margin != null ? widget.margin.horizontal : 0) -
+                          (widget.padding != null ? widget.padding.horizontal : 0),
                   child: Container(
-                    height: widget.panelHeightOpen,
-                    child: widget.child,
+                    height: widget.maxHeight,
+                    child: widget.childFront,
                   )
                 ),
 
                 // collapsed panel
                 Container(
-                  height: widget.panelHeightCollapsed,
+                  height: widget.minHeight,
                   child: Opacity(
                     opacity: 1.0 - _ac.value,
                     child: widget.childCollapsed ?? Container()
@@ -303,7 +305,7 @@ class PanelController{
     this._closeListener = listener;
   }
 
-  /// Closes the sliding panel to its collapsed state
+  /// Closes the sliding panel to its collapsed state (i.e. to the  minHeight)
   void close(){
     _closeListener();
   }
@@ -312,7 +314,7 @@ class PanelController{
     this._openListener = listener;
   }
 
-  /// Opens the sliding panel fully
+  /// Opens the sliding panel fully (i.e. to the maxHeight)
   void open(){
     _openListener();
   }
@@ -321,7 +323,7 @@ class PanelController{
     this._hideListener = listener;
   }
 
-  /// Hides the sliding panel (is invisible)
+  /// Hides the sliding panel (i.e. is invisible)
   void hide(){
     _hideListener();
   }
@@ -330,7 +332,7 @@ class PanelController{
     this._showListener = listener;
   }
 
-  /// Shows the hiding panel in its collapsed state
+  /// Shows the sliding panel in its collapsed state (i.e. "un-hide" the sliding panel)
   void show(){
     _showListener();
   }

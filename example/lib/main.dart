@@ -34,63 +34,59 @@ class _HomePageState extends State<HomePage> {
 
   PanelController _pc = new PanelController();
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("SlidingUpPanelExample"),
-      ),
-      body: _body(),
-    );
-  }
 
-  Widget _body(){
-    return Stack(
-      children: <Widget>[
-        Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          color: Colors.orange,
-          child: Column(
-            children: <Widget>[
-              RaisedButton(
-                child: Text("Open"),
-                onPressed: () => _pc.open(),
-              ),
-              RaisedButton(
-                child: Text("Close"),
-                onPressed: () => _pc.close(),
-              ),
-              RaisedButton(
-                child: Text("Show"),
-                onPressed: () => _pc.show(),
-              ),
-              RaisedButton(
-                child: Text("Hide"),
-                onPressed: () => _pc.hide(),
-              ),
-            ],
+  @override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Text("SlidingUpPanelExample"),
+    ),
+    body: SlidingUpPanel(
+      childFront: Center(
+        child: Text("This is the sliding portion"),
+      ),
+      childCollapsed: Container(
+        color: Colors.blueGrey,
+        child: Center(
+          child: Text(
+            "This is the collapsed Widget",
+            style: TextStyle(color: Colors.white),
           ),
         ),
-        SlidingUpPanel(
-          childCollapsed: Center(child: Text("This is the panel when closed"),),
-          child: Center(child: Text("This is the panel when open"),),
-          controller: _pc,
-        ),
-      ],
+      ),
+      childBehind: Center(
+        child: Text("This is the portion behind the sliding panel"),
+      ),
+    ),
+  );
+}
+
+  Widget _body(){
+    return Container(
+      child: Column(
+        children: <Widget>[
+          RaisedButton(
+            child: Text("Open"),
+            onPressed: () => _pc.open(),
+          ),
+          RaisedButton(
+            child: Text("Close"),
+            onPressed: () => _pc.close(),
+          ),
+          RaisedButton(
+            child: Text("Show"),
+            onPressed: () => _pc.show(),
+          ),
+          RaisedButton(
+            child: Text("Hide"),
+            onPressed: () => _pc.hide(),
+          ),
+        ],
+      ),
     );
-
-
-    // return SlidingUpPanel(
-    //   //back: Center(child: Text("This is the back"),),
-    //   panelCollapsed: Center(child: Text("This is the panel when closed"),),
-    //   panelOpen: Center(child: Text("This is the panel when open"),),
-    // );
-
-
   }
 
-  Widget _floatingClosed(){
+  Widget _floatingCollapsed(){
     return Container(
       decoration: BoxDecoration(
         color: Colors.blueGrey,
@@ -98,16 +94,19 @@ class _HomePageState extends State<HomePage> {
       ),
       margin: const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 0.0),
       child: Center(
-        child: Text("This is the SlidingUpPanel when closed", style: TextStyle(color: Colors.white),),
+        child: Text(
+          "This is the collapsed Widget",
+          style: TextStyle(color: Colors.white),
+        ),
       ),
     );
   }
 
-  Widget _floatingOpen(){
+  Widget _floatingFront(){
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(30.0)),
+        borderRadius: BorderRadius.all(Radius.circular(24.0)),
         boxShadow: [
           BoxShadow(
             blurRadius: 20.0,
@@ -118,6 +117,25 @@ class _HomePageState extends State<HomePage> {
       margin: const EdgeInsets.all(24.0),
       child: Center(
         child: Text("This is the SlidingUpPanel when open"),
+      ),
+    );
+  }
+
+  Widget _scrollingList(){
+    return Container(
+      //adding a margin to the top leaves an area where the user can swipe
+      //to open/close the sliding panel
+      margin: const EdgeInsets.only(top: 36.0),
+
+      color: Colors.white,
+      child: ListView.builder(
+        itemCount: 50,
+        itemBuilder: (BuildContext context, int i){
+          return Container(
+            padding: const EdgeInsets.all(12.0),
+            child: Text("$i"),
+          );
+        },
       ),
     );
   }
