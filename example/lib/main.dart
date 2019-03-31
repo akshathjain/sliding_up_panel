@@ -45,15 +45,15 @@ class _HomePageState extends State<HomePage> {
         renderPanel: false,
         childPanel: _floatingFront(),
         childCollapsed: _floatingCollapsed(),
-        childBehind: Center(
-          child: Text("This is the Widget behind the sliding panel"),
-        ),
+        childBehind: _body(),
+        controller: _pc,
       ),
     );
   }
 
   Widget _body(){
     return Container(
+      padding: const EdgeInsets.only(top: 20.0),
       child: Column(
         children: <Widget>[
           RaisedButton(
@@ -96,7 +96,7 @@ class _HomePageState extends State<HomePage> {
   Widget _floatingFront(){
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.blueGrey,
         borderRadius: BorderRadius.all(Radius.circular(24.0)),
         boxShadow: [
           BoxShadow(
@@ -106,9 +106,7 @@ class _HomePageState extends State<HomePage> {
         ]
       ),
       margin: const EdgeInsets.all(24.0),
-      child: Center(
-        child: Text("This is the SlidingUpPanel when open"),
-      ),
+      child: _scrollingList(),
     );
   }
 
@@ -117,12 +115,11 @@ class _HomePageState extends State<HomePage> {
       //adding a margin to the top leaves an area where the user can swipe
       //to open/close the sliding panel
       margin: const EdgeInsets.only(top: 36.0),
-
-      color: Colors.white,
       child: ListView.builder(
         itemCount: 50,
         itemBuilder: (BuildContext context, int i){
           return Container(
+            color: Colors.white,
             padding: const EdgeInsets.all(12.0),
             child: Text("$i"),
           );
