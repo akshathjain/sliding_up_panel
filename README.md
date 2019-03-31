@@ -21,7 +21,7 @@ There are two ways which the `SlidingUpPanel` can easily be added to your projec
 
 #### `SlidingUpPanel` as the Root (recommended)
 This method is recommended as it allows for greatest efficiency and least interference with the behavior of other UI elements. For example:
-```
+```dart
 @override
 Widget build(BuildContext context) {
   return Scaffold(
@@ -42,7 +42,7 @@ Widget build(BuildContext context) {
 
 #### Nesting the `SlidingUpPanel`
 This method isn't recommended but can still be used. Only use this to avoid refactoring large chunks of code or to implement custom scrolling behavior. For example, the `SlidingUpPanel` can be nested inside of a `Stack` (note that there are many other possible implementations that vary on a case-by-case basis).
-```
+```dart
 @override
 Widget build(BuildContext context) {
   return Scaffold(
@@ -101,7 +101,7 @@ There are several options that allow for more control:
 ### Displaying a Different Child When the Panel is Closed
 By assigning a non-null Widget to the `collapsed` property, you can add a Widget that displays overtop the `panel` when collapsed. As the `panel` is opened, this Widget will fade out to display the `panel` underneath. For example:
 
-```
+```dart
 @override
 Widget build(BuildContext context) {
   return Scaffold(
@@ -142,7 +142,7 @@ Widget build(BuildContext context) {
 Modern design principles (especially in the Material Design Refresh) emphasize rounded borders. A similar effect can be easily achieved by providing a non-null `BorderRadiusGeometry` to the `borderRadius` property. Note that this only curves the border on the underlying panel sheet: any children passed to `panel` or `collapsed` must also have their borders curved separately in order to achieve a uniform effect. For example:
 
 
-```
+```dart
 @override
 Widget build(BuildContext context) {
   BorderRadiusGeometry radius = BorderRadius.only(
@@ -194,7 +194,7 @@ Widget build(BuildContext context) {
 ### Creating A Floating Effect
 To create a fully custom effect, the default panel sheet can be completely hidden and only the children rendered (i.e. only `body`, `panel`, and `collapsed` are rendered). To do this, set the `renderPanelSheet` property to `false`. For example, to create a floating effect:
 
-```
+```dart
 @override
 Widget build(BuildContext context) {
   return Scaffold(
@@ -262,7 +262,7 @@ Note that a similar effect can be created by simply adding a `margin` to the `Sl
 ### Adding Scrollable Elements to the Sliding Panel
 The `panel` itself can contain Scrollable elements. However, it's important to note that when other Scrollable Widgets are nested inside of the `panel`, you need to incorporate some empty space (i.e. non-scrolling space) at the top which the user can swipe down on to close the `panel`. For example:
 
-```
+```dart
 @override
 Widget build(BuildContext context) {
   return Scaffold(
@@ -318,7 +318,7 @@ At times, it can be useful to manually change the state of the `SlidingUpPanel`.
 |`hide()`| Hides the sliding panel (i.e. is invisible) |
 |`show()`| Shows the sliding panel in its collapsed state (i.e. "un-hide" the sliding panel) |
 
-```
+```dart
 PanelController _pc = new PanelController();
 
 @override
