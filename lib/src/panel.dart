@@ -93,6 +93,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   double _closedHeight; //this can change depending on whether or not the user hides the sliding panel
   double _openHeight; //this can change depending on whether or not the user hides the sliding panel
 
+  bool _isVisible = true;
 
   @override
   void initState(){
@@ -131,7 +132,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
         ) : Container(),
 
         //the actual sliding part
-        GestureDetector(
+        !_isVisible ? Container() : GestureDetector(
           onVerticalDragUpdate: _onDrag,
           onVerticalDragEnd: _settle,
           child: Container(
@@ -186,28 +187,20 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     _ac.value -= details.primaryDelta / (_openHeight - _closedHeight);
   }
 
-  double _minFlingVelocity = 365.0;
   void _settle(DragEndDetails details){
+    double minFlingVelocity = 365.0;
 
     //let the current animation finish before starting a new one
     if(_ac.isAnimating) return;
 
     //check if the velocity is sufficient to constitute fling
-    if(details.velocity.pixelsPerSecond.dy.abs() >= _minFlingVelocity){
+    if(details.velocity.pixelsPerSecond.dy.abs() >= minFlingVelocity){
       double visualVelocity = - details.velocity.pixelsPerSecond.dy / (_openHeight - _closedHeight);
 
       if(widget.panelSnapping)
         _ac.fling(velocity: visualVelocity);
       else{
         // actual scroll physics, will be implemented in a future release
-
-        // double g = 9.8;
-        // double u = .01;
-        // double a = u * g;
-        // double dx = visualVelocity * visualVelocity / (-2 * u * g);
-        // double t = sqrt(2 *  max(dx, -dx) / u / g);
-        // print((t*1000).toInt());
-
         _ac.animateTo(
           _ac.value + visualVelocity * 0.16,
           duration: Duration(milliseconds: 410),
@@ -244,24 +237,29 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   //hide the panel (completely offscreen)
   void _hide(){
-    _openHeight = widget.panelHeightCollapsed;
-    _closedHeight = 0.0;
-    _ac.value = 1.0;
-    _ac.fling(velocity: -1.0);
+    setState(() {
+      _isVisible = false;
+    });
   }
 
   //show the panel (in collapsed mode)
   void _show(){
-    _openHeight = widget.panelHeightCollapsed;
-    _closedHeight = 0.0;
-    _ac.value = 0.0; //reset animation controller to "closed"
-    _ac.fling(velocity: 1.0);
-
-    // _ac.value = 0.0; //reset animation controller to "closed"
-    // _openHeight = widget.panelHeightOpen; //set open height to original
-    // _closedHeight = widget.panelHeightCollapsed; //set closed height to original
+    setState(() {
+      _isVisible = true;
+    });
   }
 
+  bool _isGone(){
+    return _closedHeight == 0.0;
+  }
+
+  bool _isCollapsed(){
+    return _closedHeight == widget.panelHeightCollapsed;
+  }
+
+  bool _isOpen(){
+    return _openHeight == widget.panelHeightOpen;
+  }
 
 }
 
