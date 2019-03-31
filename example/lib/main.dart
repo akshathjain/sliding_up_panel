@@ -42,10 +42,10 @@ class _HomePageState extends State<HomePage> {
         title: Text("SlidingUpPanelExample"),
       ),
       body: SlidingUpPanel(
-        renderPanel: false,
-        childPanel: _floatingFront(),
-        childCollapsed: _floatingCollapsed(),
-        childBehind: _body(),
+        renderPanelSheet: false,
+        panel: _floatingFront(),
+        collapsed: _floatingCollapsed(),
+        body: _body(),
         controller: _pc,
       ),
     );

@@ -25,10 +25,10 @@ Widget build(BuildContext context) {
       title: Text("SlidingUpPanelExample"),
     ),
     body: SlidingUpPanel(
-      childPanel: Center(
+      panel: Center(
         child: Text("This is the sliding Widget"),
       ),
-      childBehind: Center(
+      body: Center(
         child: Text("This is the Widget behind the sliding panel"),
       ),
     ),
@@ -50,7 +50,7 @@ Widget build(BuildContext context) {
         Center(child: Text("This is the Widget behind the sliding panel"),),
 
         SlidingUpPanel(
-          childPanel: Center(child: Text("This is the sliding Widget"),),
+          panel: Center(child: Text("This is the sliding Widget"),),
         )
       ],
     )
@@ -71,24 +71,28 @@ Both methods produce the same result:
 ## Custom Usage
 There are several options that allow for more control:
 
-| Properties| Description |
-|-----------|-------------|
-| `childPanel` | (required) The Widget displayed when the sliding panel is fully opened. This slides into view as the panel is opened. When the panel is collapsed and if `childCollapsed` is null, then top portion of this Widget will be displayed on the panel; otherwise, `childCollapsed` will be displayed overtop of this Widget. |
-| `childCollapsed` | The Widget displayed in the sliding panel when collapsed. This fades out as the panel is opened. |
-| `childBehind` | The Widget that lies underneath the sliding panel. This widget automatically sizes itself to fill the screen. |
+|  Properties  |   Description   |
+|--------------|-----------------|
+| `panel` | (required) The Widget that slides into view. When the `panel` is collapsed and if `collapsed` is null, then top portion of this Widget will be displayed; otherwise, `collapsed` will be displayed overtop of this Widget. |
+| `collapsed` | The Widget displayed overtop the `panel` when collapsed. This fades out as the `panel` is opened. |
+| `body` | The Widget that lies underneath the sliding panel. This Widget automatically sizes itself to fill the screen. |
 | `minHeight` | The height of the sliding panel when fully collapsed. |
 | `maxHeight` | The height of the sliding panel when fully open. |
 | `border` | A border to draw around the sliding panel sheet. |
-| `borderRadius` | If non-null, the corners of the sliding panel sheet are rounded by this BorderRadius. |
-| `boxShadow` | A list of shadows cast behind the sliding panel. |
-| `color` | The color to fill the background of the sliding panel. |
-| `padding` | The amount to inset the children of the sliding panel. |
-| `margin` | Empty space surrounding the sliding panel. |
-| `renderPanel` | Set to false to not to render the sliding panel. This means that only childBehind, childCollapsed, and the childPanel Widgets will be rendered. Set this to false if you want to achieve a floating effect or want more customization over how the sliding panel looks like. |
+| `borderRadius` | If non-null, the corners of the sliding panel sheet are rounded by this. |
+| `boxShadow` | A list of shadows cast behind the sliding panel sheet. |
+| `color` | The color to fill the background of the sliding panel sheet. |
+| `padding` | The amount to inset the children of the sliding panel sheet. |
+| `margin` | Empty space surrounding the sliding panel sheet. |
+| `renderPanelSheet` | Set to false to not to render the sheet the `panel` sits upon. This means that only `body`, `collapsed`, and the `panel` Widgets will be rendered. Set this to false if you want to achieve a floating effect or want more customization over how the sliding panel looks like. |
+| `panelSnapping` | Set to false to disable the panel from snapping open or closed. |
 | `controller` | If non-null, this can be used to control the state of the panel. |
 
-#### Displaying a Different Child When the Panel is Closed
-By assigning a non-null Widget to the `childCollapsed` property, you can add a Widget that displays when the panel is collapsed. As the panel is open, this Widget will fade out to display the `childPanel` underneath. For example:
+<br>
+<br>
+
+### Displaying a Different Child When the Panel is Closed
+By assigning a non-null Widget to the `collapsed` property, you can add a Widget that displays when the panel is collapsed. As the panel is open, this Widget will fade out to display the `panel` underneath. For example:
 
 ```
 @override
@@ -98,10 +102,10 @@ Widget build(BuildContext context) {
       title: Text("SlidingUpPanelExample"),
     ),
     body: SlidingUpPanel(
-      childPanel: Center(
+      panel: Center(
         child: Text("This is the sliding Widget"),
       ),
-      childCollapsed: Container(
+      collapsed: Container(
         color: Colors.blueGrey,
         child: Center(
           child: Text(
@@ -110,7 +114,7 @@ Widget build(BuildContext context) {
           ),
         ),
       ),
-      childBehind: Center(
+      body: Center(
         child: Text("This is the Widget behind the sliding panel"),
       ),
     ),
@@ -124,9 +128,11 @@ Widget build(BuildContext context) {
   <img alt="Panel Open" width="275px" src="screenshots/collapsedpanelopen.png">
 </p>
 
+<br>
+<br>
 
-#### Rounding the Borders
-Modern design principles (especially in the Material Design Refresh) emphasize rounded borders. A similar effect can be easily achieved by providing a non-null `BorderRadiusGeometry` to the `borderRadius` property. Note that this only curves the border on the underlying panel itself: any children passed to `childPanel` or `childCollapsed` must also have their borders curved separately in order to achieve a uniform effect. For example:
+### Rounding the Borders
+Modern design principles (especially in the Material Design Refresh) emphasize rounded borders. A similar effect can be easily achieved by providing a non-null `BorderRadiusGeometry` to the `borderRadius` property. Note that this only curves the border on the underlying panel itself: any children passed to `panel` or `collapsed` must also have their borders curved separately in order to achieve a uniform effect. For example:
 
 
 ```
@@ -142,11 +148,11 @@ Widget build(BuildContext context) {
       title: Text("SlidingUpPanelExample"),
     ),
     body: SlidingUpPanel(
-      childPanel: Center(
+      panel: Center(
         child: Text("This is the sliding Widget"),
       ),
 
-      childCollapsed: Container(
+      collapsed: Container(
         decoration: BoxDecoration(
           color: Colors.blueGrey,
           borderRadius: radius
@@ -159,7 +165,7 @@ Widget build(BuildContext context) {
         ),
       ),
 
-      childBehind: Center(
+      body: Center(
         child: Text("This is the Widget behind the sliding panel"),
       ),
 
@@ -175,9 +181,11 @@ Widget build(BuildContext context) {
   <img alt="Panel Open" width="275px" src="screenshots/borderopen.png">
 </p>
 
+<br>
+<br>
 
-#### Creating A Floating Effect
-To create a fully custom effect, the default panel can be completely hidden and only the children rendered. To do this, set the `renderPanel` property to `false`. For example, to create a floating effect:
+### Creating A Floating Effect
+To create a fully custom effect, the default panel can be completely hidden and only the children rendered. To do this, set the `renderPanelSheet` property to `false`. For example, to create a floating effect:
 
 ```
 @override
@@ -187,10 +195,10 @@ Widget build(BuildContext context) {
       title: Text("SlidingUpPanelExample"),
     ),
     body: SlidingUpPanel(
-      renderPanel: false,
-      childPanel: _floatingFront(),
-      childCollapsed: _floatingCollapsed(),
-      childBehind: Center(
+      renderPanelSheet: false,
+      panel: _floatingFront(),
+      collapsed: _floatingCollapsed(),
+      body: Center(
         child: Text("This is the Widget behind the sliding panel"),
       ),
     ),
@@ -241,8 +249,10 @@ Note that a similar effect can be created by simply adding a `margin` to the `Sl
   <img alt="Panel Open" width="275px" src="screenshots/floatingopen.png">
 </p>
 
+<br>
+<br>
 
-#### Using the `PanelController`
+### Using the `PanelController`
 At times, it can be useful to manually change the state of the `SlidingUpPanel`. This can be easily achieved by using a `PanelController` and attaching it to an instance of the `SlidingUpPanel`.
 
  Methods| Description |
@@ -263,10 +273,10 @@ Widget build(BuildContext context) {
     ),
     body: SlidingUpPanel(
       controller: _pc,
-      childPanel: Center(
+      panel: Center(
         child: Text("This is the sliding Widget"),
       ),
-      childBehind: _body(),
+      body: _body(),
     ),
   );
 }
@@ -297,7 +307,10 @@ Widget _body(){
 }
 ```
 
-#### Adding Scrollable Elements to the Sliding Panel
+<br>
+<br>
+
+### Adding Scrollable Elements to the Sliding Panel
 The panel itself can contain Scrollable elements. However, it's important to note that when other Scrollable Widgets are nested inside of the panel, you need to incorporate some empty space (i.e. non-scrolling space) at the top which the user can swipe down on to close the panel. For example:
 
 ```
@@ -309,8 +322,8 @@ Widget build(BuildContext context) {
     ),
     body: SlidingUpPanel(
       color: Colors.blueGrey,
-      childPanel: _scrollingList(),
-      childBehind: Center(
+      panel: _scrollingList(),
+      body: Center(
         child: Text("This is the Widget behind the sliding panel"),
       ),
     ),
