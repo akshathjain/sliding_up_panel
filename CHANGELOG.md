@@ -11,4 +11,4 @@ This is the initial release of the sliding_up_panel package. This includes featu
 
 ## [0.1.2] - March 31, 2019
 
- - Updated documentation to be more comprehensive
+- Updated documentation to be more comprehensive
