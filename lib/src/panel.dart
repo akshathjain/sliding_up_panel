@@ -11,17 +11,17 @@ import 'package:flutter/material.dart';
 
 class SlidingUpPanel extends StatefulWidget {
 
+  /// The Widget displayed when the sliding panel is fully opened. This slides into view as the panel is opened.
+  /// When the panel is collased and if the [childCollapsed] is null, then top portion of this Widget
+  /// will be displayed on the panel; otherwise, the [childCollapsed] will be displayed overtop of this Widget.
+  final Widget child;
+
+  /// The Widget displayed in the sliding panel when collapsed. This dissappears as the panel is opened.
+  final Widget childCollapsed;
+
   /// The Widget that lies underneath the sliding panel. This widget automatically sizes itself
   /// to be in an area
   final Widget childBehind;
-
-  /// The Widget displayed in the sliding panel when collapsed. This dissappears as the panel is opened.
-  final Widget childWhenCollapsed;
-
-  /// The Widget displayed when the sliding panel is fully opened. This slides into view as the panel is opened.
-  /// When the panel is collased and if the [childWhenCollapsed] is null, then top portion of this Widget
-  /// will be displayed on the panel; otherwise, the [childWhenCollapsed] will be displayed overtop of this Widget.
-  final Widget child;
 
   /// The height of the sliding panel when fully collapsed.
   final double panelHeightCollapsed;
@@ -47,11 +47,11 @@ class SlidingUpPanel extends StatefulWidget {
   /// Empty space surrounding the sliding panel.
   final EdgeInsetsGeometry margin;
 
-  /// Set to false to not to render the sliding panel sheet.
-  /// This means that only [childBehind], [childWhenCollapsed], and the [child] Widgets will be rendered.
+  /// Set to false to not to render the sliding panel.
+  /// This means that only [childBehind], [childCollapsed], and the [child] Widgets will be rendered.
   /// Set this to false if you want to achieve a floating effect or want more customization over how the sliding panel
   /// looks like.
-  final bool renderSheet;
+  final bool renderPanel;
 
   /// Set to false to disable the panel from snapping open or closed.
   final bool panelSnapping;
@@ -61,9 +61,9 @@ class SlidingUpPanel extends StatefulWidget {
 
   SlidingUpPanel({
     Key key,
-    this.childBehind,
-    this.childWhenCollapsed,
     @required this.child,
+    this.childBehind,
+    this.childCollapsed,
     this.panelHeightCollapsed = 100.0,
     this.panelHeightOpen = 500.0,
     this.border,
@@ -77,7 +77,7 @@ class SlidingUpPanel extends StatefulWidget {
     this.color = Colors.white,
     this.padding,
     this.margin,
-    this.renderSheet = true,
+    this.renderPanel = true,
     this.panelSnapping = true,
     this.controller,
   }) : super(key: key);
@@ -117,7 +117,6 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -139,7 +138,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
             height: _ac.value * (_openHeight - _closedHeight) + _closedHeight,
             margin: widget.margin,
             padding: widget.padding,
-            decoration: widget.renderSheet ? BoxDecoration(
+            decoration: widget.renderPanel ? BoxDecoration(
               border: widget.border,
               borderRadius: widget.borderRadius,
               boxShadow: widget.boxShadow,
@@ -163,7 +162,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                   height: widget.panelHeightCollapsed,
                   child: Opacity(
                     opacity: 1.0 - _ac.value,
-                    child: widget.childWhenCollapsed ?? Container()
+                    child: widget.childCollapsed ?? Container()
                   ),
                 ),
 
