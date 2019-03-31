@@ -66,9 +66,9 @@ Widget build(BuildContext context) {
 Both methods produce the same result:
 
 <p float="left">
-  <img alt="Panel Closed" width="250px" src="screenshots/simpleusageclosed.png">
-  <img alt="Panel Midway" width="250px" src="screenshots/simpleusagemidway.png">
-  <img alt="Panel Open" width="250px" src="screenshots/simpleusageopen.png">
+  <img alt="Panel Closed" width="250px" src="https:////raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/simpleusageclosed.png">
+  <img alt="Panel Midway" width="250px" src="https:////raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/simpleusagemidway.png">
+  <img alt="Panel Open" width="250px" src="https:////raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/simpleusageopen.png">
 </p>
 
 <br>
@@ -130,9 +130,9 @@ Widget build(BuildContext context) {
 ```
 
 <p float="left">
-  <img alt="Panel Closed" width="250px" src="screenshots/collapsedpanelclosed.png">
-  <img alt="Panel Midway" width="250px" src="screenshots/collapsedpanelmidway.png">
-  <img alt="Panel Open" width="250px" src="screenshots/collapsedpanelopen.png">
+  <img alt="Panel Closed" width="250px" src="https:////raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/collapsedpanelclosed.png">
+  <img alt="Panel Midway" width="250px" src="https:////raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/collapsedpanelmidway.png">
+  <img alt="Panel Open" width="250px" src="https:////raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/collapsedpanelopen.png">
 </p>
 
 <br>
@@ -183,9 +183,9 @@ Widget build(BuildContext context) {
 ```
 
 <p float="left">
-  <img alt="Panel Closed" width="250px" src="screenshots/borderclosed.png">
-  <img alt="Panel Midway" width="250px" src="screenshots/bordermidway.png">
-  <img alt="Panel Open" width="250px" src="screenshots/borderopen.png">
+  <img alt="Panel Closed" width="250px" src="https:////raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/borderclosed.png">
+  <img alt="Panel Midway" width="250px" src="https:////raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/bordermidway.png">
+  <img alt="Panel Open" width="250px" src="https:////raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/borderopen.png">
 </p>
 
 <br>
@@ -251,9 +251,9 @@ Widget _floatingPanel(){
 Note that a similar effect can be created by simply adding a `margin` to the `SlidingUpPanel`.
 
 <p float="left">
-  <img alt="Panel Closed" width="250px" src="screenshots/floatingclosed.png">
-  <img alt="Panel Midway" width="250px" src="screenshots/floatingmidway.png">
-  <img alt="Panel Open" width="250px" src="screenshots/floatingopen.png">
+  <img alt="Panel Closed" width="250px" src="https:////raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/floatingclosed.png">
+  <img alt="Panel Midway" width="250px" src="https:////raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/floatingmidway.png">
+  <img alt="Panel Open" width="250px" src="https:////raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/floatingopen.png">
 </p>
 
 <br>
@@ -300,9 +300,9 @@ Widget _scrollingList(){
 ```
 
 <p float="left">
-  <img alt="Panel Closed" width="250px" src="screenshots/scrollclosed.png">
-  <img alt="Panel Midway" width="250px" src="screenshots/scrollmidway.png">
-  <img alt="Panel Open" width="250px" src="screenshots/scrollopen.png">
+  <img alt="Panel Closed" width="250px" src="https:////raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/scrollclosed.png">
+  <img alt="Panel Midway" width="250px" src="https:////raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/scrollmidway.png">
+  <img alt="Panel Open" width="250px" src="https:////raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/scrollopen.png">
 </p>
 
 <br>
