@@ -134,7 +134,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
         //the actual sliding part
         !_isVisible ? Container() : GestureDetector(
           onVerticalDragUpdate: _onDrag,
-          onVerticalDragEnd: _settle,
+          onVerticalDragEnd: _onDragEnd,
           child: Container(
             height: _ac.value * (_openHeight - _closedHeight) + _closedHeight,
             margin: widget.margin,
@@ -187,7 +187,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     _ac.value -= details.primaryDelta / (_openHeight - _closedHeight);
   }
 
-  void _settle(DragEndDetails details){
+  void _onDragEnd(DragEndDetails details){
     double minFlingVelocity = 365.0;
 
     //let the current animation finish before starting a new one
@@ -223,42 +223,30 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   //close the panel
   void _close(){
-    _openHeight = widget.panelHeightOpen; //set open height to original
-    _closedHeight = widget.panelHeightCollapsed; //set closed height to original
     _ac.fling(velocity: -1.0);
   }
 
   //open the panel
   void _open(){
-    _openHeight = widget.panelHeightOpen; //set open height to original
-    _closedHeight = widget.panelHeightCollapsed; //set closed height to original
     _ac.fling(velocity: 1.0);
   }
 
   //hide the panel (completely offscreen)
   void _hide(){
-    setState(() {
-      _isVisible = false;
+    _ac.fling(velocity: -1.0).then((x){
+      setState(() {
+        _isVisible = false;
+      });
     });
   }
 
   //show the panel (in collapsed mode)
   void _show(){
-    setState(() {
-      _isVisible = true;
+    _ac.fling(velocity: -1.0).then((x){
+      setState(() {
+        _isVisible = true;
+      });
     });
-  }
-
-  bool _isGone(){
-    return _closedHeight == 0.0;
-  }
-
-  bool _isCollapsed(){
-    return _closedHeight == widget.panelHeightCollapsed;
-  }
-
-  bool _isOpen(){
-    return _openHeight == widget.panelHeightOpen;
   }
 
 }
@@ -316,6 +304,7 @@ class PanelController{
     this._closeListener = listener;
   }
 
+  /// Closes the sliding panel to its collapsed state
   void close(){
     _closeListener();
   }
@@ -324,6 +313,7 @@ class PanelController{
     this._openListener = listener;
   }
 
+  /// Opens the sliding panel fully
   void open(){
     _openListener();
   }
@@ -332,6 +322,7 @@ class PanelController{
     this._hideListener = listener;
   }
 
+  /// Hides the sliding panel (is invisible)
   void hide(){
     _hideListener();
   }
@@ -340,6 +331,7 @@ class PanelController{
     this._showListener = listener;
   }
 
+  /// Shows the hiding panel in its collapsed state
   void show(){
     _showListener();
   }
