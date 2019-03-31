@@ -43,7 +43,7 @@ class _HomePageState extends State<HomePage> {
       ),
       body: SlidingUpPanel(
         renderPanelSheet: false,
-        panel: _floatingFront(),
+        panel: _floatingPanel(),
         collapsed: _floatingCollapsed(),
         body: _body(),
         controller: _pc,
@@ -93,7 +93,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _floatingFront(){
+  Widget _floatingPanel(){
     return Container(
       decoration: BoxDecoration(
         color: Colors.blueGrey,

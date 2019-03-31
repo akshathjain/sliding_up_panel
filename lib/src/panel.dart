@@ -7,7 +7,6 @@ Licensing: More information can be found here: https://github.com/akshathjain/sl
 */
 
 import 'package:flutter/material.dart';
-// import 'dart:math';
 
 class SlidingUpPanel extends StatefulWidget {
 

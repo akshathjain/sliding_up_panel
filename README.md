@@ -191,7 +191,7 @@ Widget build(BuildContext context) {
 <br>
 
 ### Creating A Floating Effect
-To create a fully custom effect, the default panel can be completely hidden and only the children rendered. To do this, set the `renderPanelSheet` property to `false`. For example, to create a floating effect:
+To create a fully custom effect, the default panel sheet can be completely hidden and only the children rendered (i.e. only `body`, `panel`, and `collapsed` are rendered). To do this, set the `renderPanelSheet` property to `false`. For example, to create a floating effect:
 
 ```
 @override
@@ -202,7 +202,7 @@ Widget build(BuildContext context) {
     ),
     body: SlidingUpPanel(
       renderPanelSheet: false,
-      panel: _floatingFront(),
+      panel: _floatingPanel(),
       collapsed: _floatingCollapsed(),
       body: Center(
         child: Text("This is the Widget behind the sliding panel"),
@@ -227,7 +227,7 @@ Widget _floatingCollapsed(){
   );
 }
 
-Widget _floatingFront(){
+Widget _floatingPanel(){
   return Container(
     decoration: BoxDecoration(
       color: Colors.white,
@@ -253,6 +253,55 @@ Note that a similar effect can be created by simply adding a `margin` to the `Sl
   <img alt="Panel Closed" width="250px" src="screenshots/floatingclosed.png">
   <img alt="Panel Midway" width="250px" src="screenshots/floatingmidway.png">
   <img alt="Panel Open" width="250px" src="screenshots/floatingopen.png">
+</p>
+
+<br>
+<br>
+
+### Adding Scrollable Elements to the Sliding Panel
+The panel itself can contain Scrollable elements. However, it's important to note that when other Scrollable Widgets are nested inside of the panel, you need to incorporate some empty space (i.e. non-scrolling space) at the top which the user can swipe down on to close the panel. For example:
+
+```
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Text("SlidingUpPanelExample"),
+    ),
+    body: SlidingUpPanel(
+      color: Colors.blueGrey,
+      panel: _scrollingList(),
+      body: Center(
+        child: Text("This is the Widget behind the sliding panel"),
+      ),
+    ),
+  );
+}
+
+Widget _scrollingList(){
+  return Container(
+    //adding a margin to the top leaves an area where the user can swipe
+    //to open/close the sliding panel
+    margin: const EdgeInsets.only(top: 36.0),
+
+    color: Colors.white,
+    child: ListView.builder(
+      itemCount: 50,
+      itemBuilder: (BuildContext context, int i){
+        return Container(
+          padding: const EdgeInsets.all(12.0),
+          child: Text("$i"),
+        );
+      },
+    ),
+  );
+}
+```
+
+<p float="left">
+  <img alt="Panel Closed" width="250px" src="screenshots/scrollclosed.png">
+  <img alt="Panel Midway" width="250px" src="screenshots/scrollmidway.png">
+  <img alt="Panel Open" width="250px" src="screenshots/scrollopen.png">
 </p>
 
 <br>
@@ -312,52 +361,3 @@ Widget _body(){
   );
 }
 ```
-
-<br>
-<br>
-
-### Adding Scrollable Elements to the Sliding Panel
-The panel itself can contain Scrollable elements. However, it's important to note that when other Scrollable Widgets are nested inside of the panel, you need to incorporate some empty space (i.e. non-scrolling space) at the top which the user can swipe down on to close the panel. For example:
-
-```
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      title: Text("SlidingUpPanelExample"),
-    ),
-    body: SlidingUpPanel(
-      color: Colors.blueGrey,
-      panel: _scrollingList(),
-      body: Center(
-        child: Text("This is the Widget behind the sliding panel"),
-      ),
-    ),
-  );
-}
-
-Widget _scrollingList(){
-  return Container(
-    //adding a margin to the top leaves an area where the user can swipe
-    //to open/close the sliding panel
-    margin: const EdgeInsets.only(top: 36.0),
-
-    color: Colors.white,
-    child: ListView.builder(
-      itemCount: 50,
-      itemBuilder: (BuildContext context, int i){
-        return Container(
-          padding: const EdgeInsets.all(12.0),
-          child: Text("$i"),
-        );
-      },
-    ),
-  );
-}
-```
-
-<p float="left">
-  <img alt="Panel Closed" width="250px" src="screenshots/scrollclosed.png">
-  <img alt="Panel Midway" width="250px" src="screenshots/scrollmidway.png">
-  <img alt="Panel Open" width="250px" src="screenshots/scrollopen.png">
-</p>
