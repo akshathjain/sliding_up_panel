@@ -35,7 +35,7 @@ class SlidingUpPanel extends StatefulWidget {
   /// A border to draw around the sliding panel sheet.
   final Border border;
 
-  /// If non-null, the corners of the sliding panel sheet are rounded by this [BorderRadius].
+  /// If non-null, the corners of the sliding panel sheet are rounded by this [BorderRadiusGeometry].
   final BorderRadiusGeometry borderRadius;
 
   /// A list of shadows cast behind the sliding panel sheet.

@@ -73,6 +73,7 @@ Both methods produce the same result:
 
 <br>
 <br>
+<br>
 
 ## Custom Usage
 There are several options that allow for more control:
@@ -98,7 +99,7 @@ There are several options that allow for more control:
 <br>
 
 ### Displaying a Different Child When the Panel is Closed
-By assigning a non-null Widget to the `collapsed` property, you can add a Widget that displays when the panel is collapsed. As the panel is open, this Widget will fade out to display the `panel` underneath. For example:
+By assigning a non-null Widget to the `collapsed` property, you can add a Widget that displays overtop the `panel` when collapsed. As the `panel` is opened, this Widget will fade out to display the `panel` underneath. For example:
 
 ```
 @override
@@ -138,7 +139,7 @@ Widget build(BuildContext context) {
 <br>
 
 ### Rounding the Borders
-Modern design principles (especially in the Material Design Refresh) emphasize rounded borders. A similar effect can be easily achieved by providing a non-null `BorderRadiusGeometry` to the `borderRadius` property. Note that this only curves the border on the underlying panel itself: any children passed to `panel` or `collapsed` must also have their borders curved separately in order to achieve a uniform effect. For example:
+Modern design principles (especially in the Material Design Refresh) emphasize rounded borders. A similar effect can be easily achieved by providing a non-null `BorderRadiusGeometry` to the `borderRadius` property. Note that this only curves the border on the underlying panel sheet: any children passed to `panel` or `collapsed` must also have their borders curved separately in order to achieve a uniform effect. For example:
 
 
 ```
@@ -259,7 +260,7 @@ Note that a similar effect can be created by simply adding a `margin` to the `Sl
 <br>
 
 ### Adding Scrollable Elements to the Sliding Panel
-The panel itself can contain Scrollable elements. However, it's important to note that when other Scrollable Widgets are nested inside of the panel, you need to incorporate some empty space (i.e. non-scrolling space) at the top which the user can swipe down on to close the panel. For example:
+The `panel` itself can contain Scrollable elements. However, it's important to note that when other Scrollable Widgets are nested inside of the `panel`, you need to incorporate some empty space (i.e. non-scrolling space) at the top which the user can swipe down on to close the `panel`. For example:
 
 ```
 @override
