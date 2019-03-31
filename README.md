@@ -62,9 +62,9 @@ Widget build(BuildContext context) {
 Both methods produce the same result:
 
 <p float="left">
-  <img alt="Panel Closed" width="300px" src="screenshots/simpleusageclosed.png">
-  <img alt="Panel Midway" width="300px" src="screenshots/simpleusagemidway.png">
-  <img alt="Panel Open" width="300px" src="screenshots/simpleusageopen.png">
+  <img alt="Panel Closed" width="275px" src="screenshots/simpleusageclosed.png">
+  <img alt="Panel Midway" width="275px" src="screenshots/simpleusagemidway.png">
+  <img alt="Panel Open" width="275px" src="screenshots/simpleusageopen.png">
 </p>
 
 
@@ -119,9 +119,9 @@ Widget build(BuildContext context) {
 ```
 
 <p float="left">
-  <img alt="Panel Closed" width="300px" src="screenshots/collapsedpanelclosed.png">
-  <img alt="Panel Midway" width="300px" src="screenshots/collapsedpanelmidway.png">
-  <img alt="Panel Open" width="300px" src="screenshots/collapsedpanelopen.png">
+  <img alt="Panel Closed" width="275px" src="screenshots/collapsedpanelclosed.png">
+  <img alt="Panel Midway" width="275px" src="screenshots/collapsedpanelmidway.png">
+  <img alt="Panel Open" width="275px" src="screenshots/collapsedpanelopen.png">
 </p>
 
 
@@ -170,9 +170,9 @@ Widget build(BuildContext context) {
 ```
 
 <p float="left">
-  <img alt="Panel Closed" width="300px" src="screenshots/borderclosed.png">
-  <img alt="Panel Midway" width="300px" src="screenshots/bordermidway.png">
-  <img alt="Panel Open" width="300px" src="screenshots/borderopen.png">
+  <img alt="Panel Closed" width="275px" src="screenshots/borderclosed.png">
+  <img alt="Panel Midway" width="275px" src="screenshots/bordermidway.png">
+  <img alt="Panel Open" width="275px" src="screenshots/borderopen.png">
 </p>
 
 
@@ -236,9 +236,9 @@ Widget _floatingFront(){
 Note that a similar effect can be created by simply adding a `margin` to the `SlidingUpPanel`.
 
 <p float="left">
-  <img alt="Panel Closed" width="300px" src="screenshots/floatingclosed.png">
-  <img alt="Panel Midway" width="300px" src="screenshots/floatingmidway.png">
-  <img alt="Panel Open" width="300px" src="screenshots/floatingopen.png">
+  <img alt="Panel Closed" width="275px" src="screenshots/floatingclosed.png">
+  <img alt="Panel Midway" width="275px" src="screenshots/floatingmidway.png">
+  <img alt="Panel Open" width="275px" src="screenshots/floatingopen.png">
 </p>
 
 
@@ -338,7 +338,7 @@ Widget _scrollingList(){
 ```
 
 <p float="left">
-  <img alt="Panel Closed" width="300px" src="screenshots/scrollclosed.png">
-  <img alt="Panel Midway" width="300px" src="screenshots/scrollmidway.png">
-  <img alt="Panel Open" width="300px" src="screenshots/scrollopen.png">
+  <img alt="Panel Closed" width="275px" src="screenshots/scrollclosed.png">
+  <img alt="Panel Midway" width="275px" src="screenshots/scrollmidway.png">
+  <img alt="Panel Open" width="275px" src="screenshots/scrollopen.png">
 </p>
