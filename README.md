@@ -1,7 +1,7 @@
 # sliding_up_panel
 [![pub package](https://img.shields.io/pub/v/sliding_up_panel.svg)](https://pub.dartlang.org/packages/sliding_up_panel)
 
-A Flutter widget that makes implementing a Sliding Up Panel much easier!
+A Flutter widget that makes implementing a SlidingUpPanel much easier!
 
 ## Installing
 Add the following to your `pubspec.yaml` file:
@@ -126,7 +126,7 @@ Widget build(BuildContext context) {
 
 
 #### Rounding the Borders
-Modern design principles (especially in the Material Design Refresh), emphasize rounded borders. A similar effect can be easily achieved by providing a non-null `BorderRadiusGeometry` to the `borderRadius` property. Note that this only curves the border on the underlying panel itself: any children passed to `childFront` or `childCollapsed` must also have their borders curved separately in order to achieve a uniform effect. For example:
+Modern design principles (especially in the Material Design Refresh) emphasize rounded borders. A similar effect can be easily achieved by providing a non-null `BorderRadiusGeometry` to the `borderRadius` property. Note that this only curves the border on the underlying panel itself: any children passed to `childFront` or `childCollapsed` must also have their borders curved separately in order to achieve a uniform effect. For example:
 
 
 ```

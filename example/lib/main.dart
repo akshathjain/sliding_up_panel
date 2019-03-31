@@ -36,30 +36,21 @@ class _HomePageState extends State<HomePage> {
 
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      title: Text("SlidingUpPanelExample"),
-    ),
-    body: SlidingUpPanel(
-      childFront: Center(
-        child: Text("This is the sliding portion"),
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("SlidingUpPanelExample"),
       ),
-      childCollapsed: Container(
-        color: Colors.blueGrey,
-        child: Center(
-          child: Text(
-            "This is the collapsed Widget",
-            style: TextStyle(color: Colors.white),
-          ),
+      body: SlidingUpPanel(
+        renderPanel: false,
+        childFront: _floatingFront(),
+        childCollapsed: _floatingCollapsed(),
+        childBehind: Center(
+          child: Text("This is the Widget behind the sliding panel"),
         ),
       ),
-      childBehind: Center(
-        child: Text("This is the portion behind the sliding panel"),
-      ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _body(){
     return Container(
