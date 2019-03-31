@@ -12,9 +12,9 @@ import 'package:flutter/material.dart';
 class SlidingUpPanel extends StatefulWidget {
 
   /// The Widget displayed when the sliding panel is fully opened. This slides into view as the panel is opened.
-  /// When the panel is collased and if the [childCollapsed] is null, then top portion of this Widget
+  /// When the panel is collapsed and if [childCollapsed] is null, then top portion of this Widget
   /// will be displayed on the panel; otherwise, the [childCollapsed] will be displayed overtop of this Widget.
-  final Widget childFront;
+  final Widget childPanel;
 
   /// The Widget displayed in the sliding panel when collapsed. This fades out as the panel is opened.
   final Widget childCollapsed;
@@ -48,7 +48,7 @@ class SlidingUpPanel extends StatefulWidget {
   final EdgeInsetsGeometry margin;
 
   /// Set to false to not to render the sliding panel.
-  /// This means that only [childBehind], [childCollapsed], and the [childFront] Widgets will be rendered.
+  /// This means that only [childBehind], [childCollapsed], and the [childPanel] Widgets will be rendered.
   /// Set this to false if you want to achieve a floating effect or want more customization over how the sliding panel
   /// looks like.
   final bool renderPanel;
@@ -61,7 +61,7 @@ class SlidingUpPanel extends StatefulWidget {
 
   SlidingUpPanel({
     Key key,
-    @required this.childFront,
+    @required this.childPanel,
     this.childBehind,
     this.childCollapsed,
     this.minHeight = 100.0,
@@ -155,7 +155,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                           (widget.padding != null ? widget.padding.horizontal : 0),
                   child: Container(
                     height: widget.maxHeight,
-                    child: widget.childFront,
+                    child: widget.childPanel,
                   )
                 ),
 

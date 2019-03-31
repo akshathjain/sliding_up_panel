@@ -25,7 +25,7 @@ Widget build(BuildContext context) {
       title: Text("SlidingUpPanelExample"),
     ),
     body: SlidingUpPanel(
-      childFront: Center(
+      childPanel: Center(
         child: Text("This is the sliding Widget"),
       ),
       childBehind: Center(
@@ -50,7 +50,7 @@ Widget build(BuildContext context) {
         Center(child: Text("This is the Widget behind the sliding panel"),),
 
         SlidingUpPanel(
-          childFront: Center(child: Text("This is the sliding Widget"),),
+          childPanel: Center(child: Text("This is the sliding Widget"),),
         )
       ],
     )
@@ -73,7 +73,7 @@ There are several options that allow for more control:
 
 | Properties| Description |
 |-----------|-------------|
-| `childFront` | (required) The Widget that lies underneath the sliding panel. When the panel is collased and if the childCollapsed is null, then top portion of this Widget will be displayed on the panel; otherwise, the childCollapsed will be displayed overtop of this Widget. |
+| `childPanel` | (required) The Widget displayed when the sliding panel is fully opened. This slides into view as the panel is opened. When the panel is collapsed and if `childCollapsed` is null, then top portion of this Widget will be displayed on the panel; otherwise, `childCollapsed` will be displayed overtop of this Widget. |
 | `childCollapsed` | The Widget displayed in the sliding panel when collapsed. This fades out as the panel is opened. |
 | `childBehind` | The Widget that lies underneath the sliding panel. This widget automatically sizes itself to fill the screen. |
 | `minHeight` | The height of the sliding panel when fully collapsed. |
@@ -84,11 +84,11 @@ There are several options that allow for more control:
 | `color` | The color to fill the background of the sliding panel. |
 | `padding` | The amount to inset the children of the sliding panel. |
 | `margin` | Empty space surrounding the sliding panel. |
-| `renderPanel` | Set to false to not to render the sliding panel. This means that only [childBehind], [childCollapsed], and the [childFront] Widgets will be rendered. Set this to false if you want to achieve a floating effect or want more customization over how the sliding panel looks like. |
+| `renderPanel` | Set to false to not to render the sliding panel. This means that only childBehind, childCollapsed, and the childPanel Widgets will be rendered. Set this to false if you want to achieve a floating effect or want more customization over how the sliding panel looks like. |
 | `controller` | If non-null, this can be used to control the state of the panel. |
 
 #### Displaying a Different Child When the Panel is Closed
-By assigning a non-null Widget to the `childCollapsed` property, you can add a Widget that displays when the panel is collapsed. As the panel is open, this Widget will fade out to display the `childFront` underneath. For example:
+By assigning a non-null Widget to the `childCollapsed` property, you can add a Widget that displays when the panel is collapsed. As the panel is open, this Widget will fade out to display the `childPanel` underneath. For example:
 
 ```
 @override
@@ -98,7 +98,7 @@ Widget build(BuildContext context) {
       title: Text("SlidingUpPanelExample"),
     ),
     body: SlidingUpPanel(
-      childFront: Center(
+      childPanel: Center(
         child: Text("This is the sliding Widget"),
       ),
       childCollapsed: Container(
@@ -126,7 +126,7 @@ Widget build(BuildContext context) {
 
 
 #### Rounding the Borders
-Modern design principles (especially in the Material Design Refresh) emphasize rounded borders. A similar effect can be easily achieved by providing a non-null `BorderRadiusGeometry` to the `borderRadius` property. Note that this only curves the border on the underlying panel itself: any children passed to `childFront` or `childCollapsed` must also have their borders curved separately in order to achieve a uniform effect. For example:
+Modern design principles (especially in the Material Design Refresh) emphasize rounded borders. A similar effect can be easily achieved by providing a non-null `BorderRadiusGeometry` to the `borderRadius` property. Note that this only curves the border on the underlying panel itself: any children passed to `childPanel` or `childCollapsed` must also have their borders curved separately in order to achieve a uniform effect. For example:
 
 
 ```
@@ -142,7 +142,7 @@ Widget build(BuildContext context) {
       title: Text("SlidingUpPanelExample"),
     ),
     body: SlidingUpPanel(
-      childFront: Center(
+      childPanel: Center(
         child: Text("This is the sliding Widget"),
       ),
 
@@ -188,7 +188,7 @@ Widget build(BuildContext context) {
     ),
     body: SlidingUpPanel(
       renderPanel: false,
-      childFront: _floatingFront(),
+      childPanel: _floatingFront(),
       childCollapsed: _floatingCollapsed(),
       childBehind: Center(
         child: Text("This is the Widget behind the sliding panel"),
@@ -263,7 +263,7 @@ Widget build(BuildContext context) {
     ),
     body: SlidingUpPanel(
       controller: _pc,
-      childFront: Center(
+      childPanel: Center(
         child: Text("This is the sliding Widget"),
       ),
       childBehind: _body(),
@@ -309,7 +309,7 @@ Widget build(BuildContext context) {
     ),
     body: SlidingUpPanel(
       color: Colors.blueGrey,
-      childFront: _scrollingList(),
+      childPanel: _scrollingList(),
       childBehind: Center(
         child: Text("This is the Widget behind the sliding panel"),
       ),

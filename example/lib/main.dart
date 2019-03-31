@@ -43,7 +43,7 @@ class _HomePageState extends State<HomePage> {
       ),
       body: SlidingUpPanel(
         renderPanel: false,
-        childFront: _floatingFront(),
+        childPanel: _floatingFront(),
         childCollapsed: _floatingCollapsed(),
         childBehind: Center(
           child: Text("This is the Widget behind the sliding panel"),
