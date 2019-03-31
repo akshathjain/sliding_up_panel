@@ -52,8 +52,10 @@ class SlidingUpPanel extends StatefulWidget {
   final EdgeInsetsGeometry margin;
 
   /// Set to false to not to render the sheet the [panel] sits upon.
-  /// This means that only the [body], [collapsed], and the [panel] Widgets will be rendered.
-  /// Set this to false if you want to achieve a floating effect or want more customization over how the sliding panel
+  /// This means that only the [body], [collapsed], and the [panel]
+  /// Widgets will be rendered.
+  /// Set this to false if you want to achieve a floating effect or
+  /// want more customization over how the sliding panel
   /// looks like.
   final bool renderPanelSheet;
 
