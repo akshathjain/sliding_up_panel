@@ -138,6 +138,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
       _setPanelPosition,
       _animatePanelToPosition,
       _getPanelPosition,
+      _isPanelAnimating
     );
   }
 
@@ -312,6 +313,12 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     return _ac.value;
   }
 
+  //returns whether or not
+  //the panel is still animating
+  bool _isPanelAnimating(){
+    return _ac.isAnimating;
+  }
+
 }
 
 
@@ -329,6 +336,7 @@ class PanelController{
   Function(double value) _setPanelPositionListener;
   Function(double value) _setAnimatePanelToPositionListener;
   double Function() _getPanelPositionListener;
+  bool Function() _isPanelAnimatingListener;
 
   void _addListeners(
     VoidCallback closeListener,
@@ -338,6 +346,7 @@ class PanelController{
     Function(double value) setPanelPositionListener,
     Function(double value) setAnimatePanelToListener,
     double Function() getPanelPositionListener,
+    bool Function() isPanelAnimatingListener,
   ){
     this._closeListener = closeListener;
     this._openListener = openListener;
@@ -345,6 +354,8 @@ class PanelController{
     this._setPanelPositionListener = setPanelPositionListener;
     this._setAnimatePanelToPositionListener = setAnimatePanelToListener;
     this._getPanelPositionListener = getPanelPositionListener;
+    this._isPanelAnimatingListener = isPanelAnimatingListener;
+
   }
 
   /// Closes the sliding panel to its collapsed state (i.e. to the  minHeight)
@@ -393,6 +404,12 @@ class PanelController{
   /// 1.0 is full open.
   double getPanelPosition(){
     return _getPanelPositionListener();
+  }
+
+  /// Returns whether or not the panel is
+  /// currently animating
+  bool isPanelAnimating(){
+    return _isPanelAnimatingListener();
   }
 
 }
