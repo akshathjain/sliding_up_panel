@@ -31,8 +31,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   PanelController _pc = new PanelController();
+  AxisDirection _currentDirection = AxisDirection.up;
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +41,9 @@ class _HomePageState extends State<HomePage> {
         title: Text("SlidingUpPanelExample"),
       ),
       body: SlidingUpPanel(
+        direction: _currentDirection,
+        minHeight: 100.0,
+        maxHeight: 450.0,
         renderPanelSheet: false,
         panel: _floatingPanel(),
         collapsed: _floatingCollapsed(),
@@ -50,10 +53,15 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _body(){
+  Widget _body() {
     return Container(
-      padding: const EdgeInsets.only(top: 20.0),
+      padding: _currentDirection == AxisDirection.down
+          ? const EdgeInsets.only(bottom: 20.0)
+          : const EdgeInsets.only(top: 20.0),
       child: Column(
+        mainAxisAlignment: _currentDirection == AxisDirection.down
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         children: <Widget>[
           RaisedButton(
             child: Text("Open"),
@@ -71,18 +79,37 @@ class _HomePageState extends State<HomePage> {
             child: Text("Hide"),
             onPressed: () => _pc.hide(),
           ),
+          RaisedButton(
+            child: Text("Flip"),
+            onPressed: () {
+              _pc.flip();
+              setState(() {
+                _currentDirection = _currentDirection == AxisDirection.down
+                    ? AxisDirection.up
+                    : AxisDirection.down;
+              });
+            },
+          ),
         ],
       ),
     );
   }
 
-  Widget _floatingCollapsed(){
+  Widget _floatingCollapsed() {
     return Container(
       decoration: BoxDecoration(
         color: Colors.blueGrey,
-        borderRadius: BorderRadius.only(topLeft: Radius.circular(24.0), topRight: Radius.circular(24.0)),
+        borderRadius: _currentDirection == AxisDirection.down
+            ? BorderRadius.only(
+                bottomLeft: Radius.circular(24.0),
+                bottomRight: Radius.circular(24.0))
+            : BorderRadius.only(
+                topLeft: Radius.circular(24.0),
+                topRight: Radius.circular(24.0)),
       ),
-      margin: const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 0.0),
+      margin: _currentDirection == AxisDirection.down
+          ? const EdgeInsets.fromLTRB(24.0, 0.0, 24.0, 24.0)
+          : const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 0.0),
       child: Center(
         child: Text(
           "This is the collapsed Widget",
@@ -92,31 +119,33 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _floatingPanel(){
+  Widget _floatingPanel() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.blueGrey,
-        borderRadius: BorderRadius.all(Radius.circular(24.0)),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 20.0,
-            color: Colors.grey,
-          ),
-        ]
-      ),
+          color: Colors.blueGrey,
+          borderRadius: BorderRadius.all(Radius.circular(24.0)),
+          boxShadow: [
+            BoxShadow(
+              blurRadius: 20.0,
+              color: Colors.grey,
+            ),
+          ]),
       margin: const EdgeInsets.all(24.0),
       child: _scrollingList(),
     );
   }
 
-  Widget _scrollingList(){
+  Widget _scrollingList() {
     return Container(
       //adding a margin to the top leaves an area where the user can swipe
       //to open/close the sliding panel
-      margin: const EdgeInsets.only(top: 36.0),
+      margin: _currentDirection == AxisDirection.down
+          ? const EdgeInsets.only(bottom: 36.0)
+          : const EdgeInsets.only(top: 36.0),
+
       child: ListView.builder(
         itemCount: 50,
-        itemBuilder: (BuildContext context, int i){
+        itemBuilder: (BuildContext context, int i) {
           return Container(
             color: Colors.white,
             padding: const EdgeInsets.all(12.0),
@@ -126,5 +155,4 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
 }

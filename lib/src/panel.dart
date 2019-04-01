@@ -75,6 +75,9 @@ class SlidingUpPanel extends StatefulWidget {
   /// and 1.0 is completely opaque.
   final double backdropOpacity;
 
+  /// Growth direction, up is default
+  AxisDirection direction;
+
   SlidingUpPanel({
     Key key,
     @required this.panel,
@@ -99,32 +102,37 @@ class SlidingUpPanel extends StatefulWidget {
     this.backdropEnabled = false,
     this.backdropColor = Colors.black,
     this.backdropOpacity = 0.5,
-  }) : assert(0 <= backdropOpacity && backdropOpacity <= 1.0),
-       super(key: key);
+    this.direction = AxisDirection.up,
+  })  : assert(0 <= backdropOpacity && backdropOpacity <= 1.0),
+        assert(
+            direction == AxisDirection.down || direction == AxisDirection.up),
+        super(key: key);
 
   @override
   _SlidingUpPanelState createState() => _SlidingUpPanelState();
 }
 
-class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProviderStateMixin{
-
+class _SlidingUpPanelState extends State<SlidingUpPanel>
+    with SingleTickerProviderStateMixin {
   AnimationController _ac;
 
-  double _closedHeight; //this can change depending on whether or not the user hides the sliding panel
-  double _openHeight; //this can change depending on whether or not the user hides the sliding panel
+  double
+      _closedHeight; //this can change depending on whether or not the user hides the sliding panel
+  double
+      _openHeight; //this can change depending on whether or not the user hides the sliding panel
 
   bool _isVisible = true;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
 
     _ac = new AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
-    )..addListener((){
-      setState((){});
-    });
+    )..addListener(() {
+        setState(() {});
+      });
     _ac.value = 0.0;
 
     _closedHeight = widget.minHeight;
@@ -134,110 +142,154 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     widget.controller?._addOpenListener(_open);
     widget.controller?._addHideListener(_hide);
     widget.controller?._addShowListener(_show);
-
+    widget.controller?._addFlipDirectionListener(_flip);
   }
 
   @override
   Widget build(BuildContext context) {
     return Stack(
-      alignment: Alignment.bottomCenter,
+      alignment: widget.direction == AxisDirection.down
+          ? Alignment.topCenter
+          : Alignment.bottomCenter,
       children: <Widget>[
-
-
         //make the back widget take up the entire back side
-        widget.body != null ? Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          child: widget.body,
-        ) : Container(),
-
+        widget.body != null
+            ? Container(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                child: widget.body,
+              )
+            : Container(),
 
         //the backdrop to overlay on the body
-        !widget.backdropEnabled ? Container() : Opacity(
-          opacity: _ac.value * widget.backdropOpacity,
-          child: Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
+        !widget.backdropEnabled
+            ? Container()
+            : Opacity(
+                opacity: _ac.value * widget.backdropOpacity,
+                child: Container(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
 
-            //set color to null so that touch events pass through
-            //to the body when the panel is closed, otherwise,
-            //if a color exists, then touch events won't go through
-            color: _ac.value == 0.0 ? null : widget.backdropColor,
-          ),
-        ),
-
+                  //set color to null so that touch events pass through
+                  //to the body when the panel is closed, otherwise,
+                  //if a color exists, then touch events won't go through
+                  color: _ac.value == 0.0 ? null : widget.backdropColor,
+                ),
+              ),
 
         //the actual sliding part
-        !_isVisible ? Container() : GestureDetector(
-          onVerticalDragUpdate: _onDrag,
-          onVerticalDragEnd: _onDragEnd,
-          child: Container(
-            height: _ac.value * (_openHeight - _closedHeight) + _closedHeight,
-            margin: widget.margin,
-            padding: widget.padding,
-            decoration: widget.renderPanelSheet ? BoxDecoration(
-              border: widget.border,
-              borderRadius: widget.borderRadius,
-              boxShadow: widget.boxShadow,
-              color: widget.color,
-            ) : null,
-            child: Stack(
-              children: <Widget>[
+        !_isVisible
+            ? Container()
+            : GestureDetector(
+                onVerticalDragUpdate: _onDrag,
+                onVerticalDragEnd: _onDragEnd,
+                child: Container(
+                  height: widget.direction == AxisDirection.down
+                      ? _openHeight
+                      : _ac.value * (_openHeight - _closedHeight) +
+                          _closedHeight,
+                  margin: widget.margin,
+                  padding: widget.padding,
+                  decoration: widget.renderPanelSheet
+                      ? BoxDecoration(
+                          border: widget.border,
+                          borderRadius: widget.borderRadius,
+                          boxShadow: widget.boxShadow,
+                          color: widget.color,
+                        )
+                      : null,
+                  child: Stack(
+                    children: <Widget>[
+                      //open panel
+                      Positioned(
+                          top: widget.direction == AxisDirection.down
+                              ? -_openHeight +
+                                  (_ac.value * (_openHeight - _closedHeight) +
+                                      _closedHeight)
+                              : 0.0,
+                          width: MediaQuery.of(context).size.width -
+                              (widget.margin != null
+                                  ? widget.margin.horizontal
+                                  : 0) -
+                              (widget.padding != null
+                                  ? widget.padding.horizontal
+                                  : 0),
+                          child: Container(
+                            height: widget.maxHeight,
+                            child: widget.panel,
+                          )),
 
-                //open panel
-                Positioned(
-                  top: 0.0,
-                  width:  MediaQuery.of(context).size.width -
-                          (widget.margin != null ? widget.margin.horizontal : 0) -
-                          (widget.padding != null ? widget.padding.horizontal : 0),
-                  child: Container(
-                    height: widget.maxHeight,
-                    child: widget.panel,
-                  )
-                ),
-
-                // collapsed panel
-                Container(
-                  height: widget.minHeight,
-                  child: Opacity(
-                    opacity: 1.0 - _ac.value,
-                    child: widget.collapsed ?? Container()
+                      // collapsed panel
+                      Positioned(
+                        top: widget.direction == AxisDirection.down
+                            ? -widget.minHeight +
+                                (_ac.value * (_openHeight - _closedHeight) +
+                                    _closedHeight)
+                            : 0.0,
+                        width: MediaQuery.of(context).size.width -
+                            (widget.margin != null
+                                ? widget.margin.horizontal
+                                : 0) -
+                            (widget.padding != null
+                                ? widget.padding.horizontal
+                                : 0),
+                        child: Container(
+                          alignment: Alignment(0.0, 0.0),
+                          height: widget.minHeight,
+                          child: Opacity(
+                              opacity: 1.0 - _ac.value,
+                              child: widget.collapsed ?? Container()),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-
-
-              ],
-            ),
-          ),
-        ),
-
+              ),
       ],
     );
   }
 
   @override
-  void dispose(){
+  void dispose() {
     _ac.dispose();
     super.dispose();
   }
 
-  void _onDrag(DragUpdateDetails details){
-    _ac.value -= details.primaryDelta / (_openHeight - _closedHeight);
+  void _flip() {
+    _ac.reset();
+    setState(() {
+      widget.direction = widget.direction == AxisDirection.down
+          ? AxisDirection.up
+          : AxisDirection.down;
+    });
   }
 
-  void _onDragEnd(DragEndDetails details){
+  void _onDrag(DragUpdateDetails details) {
+    if (widget.direction == AxisDirection.down) {
+      _ac.value += details.primaryDelta / (_openHeight - _closedHeight);
+    } else {
+      _ac.value -= details.primaryDelta / (_openHeight - _closedHeight);
+    }
+  }
+
+  void _onDragEnd(DragEndDetails details) {
     double minFlingVelocity = 365.0;
 
     //let the current animation finish before starting a new one
-    if(_ac.isAnimating) return;
+    if (_ac.isAnimating) return;
 
     //check if the velocity is sufficient to constitute fling
-    if(details.velocity.pixelsPerSecond.dy.abs() >= minFlingVelocity){
-      double visualVelocity = - details.velocity.pixelsPerSecond.dy / (_openHeight - _closedHeight);
+    if (details.velocity.pixelsPerSecond.dy.abs() >= minFlingVelocity) {
+      double visualVelocity =
+          -details.velocity.pixelsPerSecond.dy / (_openHeight - _closedHeight);
 
-      if(widget.panelSnapping)
+      if (widget.direction == AxisDirection.down) {
+        visualVelocity = -visualVelocity;
+      }
+
+      if (widget.panelSnapping)
         _ac.fling(velocity: visualVelocity);
-      else{
+      else {
         // actual scroll physics, will be implemented in a future release
         _ac.animateTo(
           _ac.value + visualVelocity * 0.16,
@@ -251,27 +303,26 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
     // check if the controller is already halfway there
     if (widget.panelSnapping) {
-      if(_ac.value > 0.5)
+      if (_ac.value > 0.5)
         _open();
       else
         _close();
     }
-
   }
 
   //close the panel
-  void _close(){
+  void _close() {
     _ac.fling(velocity: -1.0);
   }
 
   //open the panel
-  void _open(){
+  void _open() {
     _ac.fling(velocity: 1.0);
   }
 
   //hide the panel (completely offscreen)
-  void _hide(){
-    _ac.fling(velocity: -1.0).then((x){
+  void _hide() {
+    _ac.fling(velocity: -1.0).then((x) {
       setState(() {
         _isVisible = false;
       });
@@ -279,99 +330,64 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   }
 
   //show the panel (in collapsed mode)
-  void _show(){
-    _ac.fling(velocity: -1.0).then((x){
+  void _show() {
+    _ac.fling(velocity: -1.0).then((x) {
       setState(() {
         _isVisible = true;
       });
     });
   }
-
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class PanelController{
+class PanelController {
   VoidCallback _closeListener;
   VoidCallback _openListener;
   VoidCallback _hideListener;
   VoidCallback _showListener;
+  VoidCallback _flipDirectionListener;
 
-  void _addCloseListener(VoidCallback listener){
+  void _addCloseListener(VoidCallback listener) {
     this._closeListener = listener;
   }
 
   /// Closes the sliding panel to its collapsed state (i.e. to the  minHeight)
-  void close(){
+  void close() {
     _closeListener();
   }
 
-  void _addOpenListener(VoidCallback listener){
+  void _addOpenListener(VoidCallback listener) {
     this._openListener = listener;
   }
 
   /// Opens the sliding panel fully (i.e. to the maxHeight)
-  void open(){
+  void open() {
     _openListener();
   }
 
-  void _addHideListener(VoidCallback listener){
+  void _addHideListener(VoidCallback listener) {
     this._hideListener = listener;
   }
 
   /// Hides the sliding panel (i.e. is invisible)
-  void hide(){
+  void hide() {
     _hideListener();
   }
 
-  void _addShowListener(VoidCallback listener){
+  void _addShowListener(VoidCallback listener) {
     this._showListener = listener;
   }
 
   /// Shows the sliding panel in its collapsed state (i.e. "un-hide" the sliding panel)
-  void show(){
+  void show() {
     _showListener();
   }
 
+  void _addFlipDirectionListener(VoidCallback listener) {
+    this._flipDirectionListener = listener;
+  }
+
+  /// Flip the (vertical) direction of the sliding panel
+  void flip() {
+    _flipDirectionListener();
+  }
 }
