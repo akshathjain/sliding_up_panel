@@ -294,7 +294,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   //be between 0.0 and 1.0
   void _setPanelPosition(double value){
     assert(0.0 <= value && value <= 1.0);
-    _ac.value = value;
+    //_ac.value = value;
+    _ac.animateTo(value);
   }
 
   //get the current panel position
@@ -358,7 +359,8 @@ class PanelController{
     _showListener();
   }
 
-  /// Sets the panel position. Value must between 0.0 and 1.0
+  /// Sets the panel position (with animation).
+  /// The value must between 0.0 and 1.0
   /// where 0.0 is fully collapsed and 1.0 is completely open
   void setPanelPosition(double value){
     assert(0.0 <= value && value <= 1.0);
