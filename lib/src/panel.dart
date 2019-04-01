@@ -96,7 +96,7 @@ class SlidingUpPanel extends StatefulWidget {
     this.renderPanelSheet = true,
     this.panelSnapping = true,
     this.controller,
-    this.backdropEnabled = true,
+    this.backdropEnabled = false,
     this.backdropColor = Colors.black,
     this.backdropOpacity = 0.4,
   }) : super(key: key);
