@@ -136,6 +136,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
       _hide,
       _show,
       _setPanelPosition,
+      _animatePanelToPosition,
       _getPanelPosition,
     );
   }
@@ -294,7 +295,13 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   //be between 0.0 and 1.0
   void _setPanelPosition(double value){
     assert(0.0 <= value && value <= 1.0);
-    //_ac.value = value;
+    _ac.value = value;
+  }
+
+  //set the panel position to value - must
+  //be between 0.0 and 1.0
+  void _animatePanelToPosition(double value){
+    assert(0.0 <= value && value <= 1.0);
     _ac.animateTo(value);
   }
 
@@ -320,6 +327,7 @@ class PanelController{
   VoidCallback _hideListener;
   VoidCallback _showListener;
   Function(double value) _setPanelPositionListener;
+  Function(double value) _setAnimatePanelToPositionListener;
   double Function() _getPanelPositionListener;
 
   void _addListeners(
@@ -328,12 +336,14 @@ class PanelController{
     VoidCallback hideListener,
     VoidCallback showListener,
     Function(double value) setPanelPositionListener,
+    Function(double value) setAnimatePanelToListener,
     double Function() getPanelPositionListener,
   ){
     this._closeListener = closeListener;
     this._openListener = openListener;
     this._hideListener = hideListener;
     this._setPanelPositionListener = setPanelPositionListener;
+    this._setAnimatePanelToPositionListener = setAnimatePanelToListener;
     this._getPanelPositionListener = getPanelPositionListener;
   }
 
@@ -359,12 +369,20 @@ class PanelController{
     _showListener();
   }
 
-  /// Sets the panel position (with animation).
+  /// Sets the panel position (without animation).
   /// The value must between 0.0 and 1.0
   /// where 0.0 is fully collapsed and 1.0 is completely open
   void setPanelPosition(double value){
     assert(0.0 <= value && value <= 1.0);
     _setPanelPositionListener(value);
+  }
+
+  /// Animates the panel position to the value.
+  /// The value must between 0.0 and 1.0
+  /// where 0.0 is fully collapsed and 1.0 is completely open
+  void animatePanelTo(double value){
+    assert(0.0 <= value && value <= 1.0);
+    _setAnimatePanelToPositionListener(value);
   }
 
   /// Gets the current panel position.
