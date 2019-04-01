@@ -70,8 +70,10 @@ class SlidingUpPanel extends StatefulWidget {
   /// Shows a darkening shadow of this [Color] over the [body] as the panel slides open.
   final Color backdropColor;
 
-  /// The maximum
-  //final double backdropMaxOpacity;
+  /// The opacity of the backdrop when the panel is fully open.
+  /// This value can range from 0.0 to 1.0 where 0.0 is completely transparent
+  /// and 1.0 is completely opaque.
+  final double backdropOpacity;
 
   SlidingUpPanel({
     Key key,
@@ -95,7 +97,8 @@ class SlidingUpPanel extends StatefulWidget {
     this.panelSnapping = true,
     this.controller,
     this.backdropEnabled = true,
-    this.backdropColor,
+    this.backdropColor = Colors.black,
+    this.backdropOpacity = 0.4,
   }) : super(key: key);
 
   @override
@@ -150,11 +153,11 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
         //the backdrop to overlay on the body
         !widget.backdropEnabled ? Container() : Opacity(
-          opacity: _ac.value * 0.4,
+          opacity: _ac.value * widget.backdropOpacity,
           child: Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
-            color: Colors.black,
+            color: widget.backdropColor,
           ),
         ),
 
