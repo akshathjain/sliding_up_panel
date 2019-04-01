@@ -34,22 +34,35 @@ class _HomePageState extends State<HomePage> {
 
   PanelController _pc = new PanelController();
 
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context){
     return Scaffold(
-      appBar: AppBar(
-        title: Text("SlidingUpPanelExample"),
-      ),
+      drawer: Drawer(),
       body: SlidingUpPanel(
-        renderPanelSheet: false,
-        panel: _floatingPanel(),
-        collapsed: _floatingCollapsed(),
-        body: _body(),
-        controller: _pc,
+        panel: Container(),
+        body: Scaffold(
+          appBar: AppBar(title: Text("SlidingUpPanelExample"),),
+        ),
+        backdropEnabled: true,
       ),
     );
   }
+
+  // @override
+  // Widget build(BuildContext context) {
+  //   return Scaffold(
+  //     appBar: AppBar(
+  //       title: Text("SlidingUpPanelExample"),
+  //     ),
+  //     body: SlidingUpPanel(
+  //       renderPanelSheet: false,
+  //       panel: _floatingPanel(),
+  //       collapsed: _floatingCollapsed(),
+  //       body: _body(),
+  //       controller: _pc,
+  //     ),
+  //   );
+  // }
 
   Widget _body(){
     return Container(

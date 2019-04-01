@@ -86,8 +86,8 @@ class SlidingUpPanel extends StatefulWidget {
     this.borderRadius,
     this.boxShadow = const <BoxShadow>[
       BoxShadow(
-        blurRadius: 12.0,
-        color: Colors.grey,
+        blurRadius: 8.0,
+        color: Color.fromRGBO(0, 0, 0, 0.25),
       )
     ],
     this.color = Colors.white,
@@ -98,8 +98,9 @@ class SlidingUpPanel extends StatefulWidget {
     this.controller,
     this.backdropEnabled = false,
     this.backdropColor = Colors.black,
-    this.backdropOpacity = 0.4,
-  }) : super(key: key);
+    this.backdropOpacity = 0.5,
+  }) : assert(0 <= backdropOpacity && backdropOpacity <= 1.0),
+       super(key: key);
 
   @override
   _SlidingUpPanelState createState() => _SlidingUpPanelState();
