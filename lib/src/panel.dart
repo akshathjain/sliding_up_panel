@@ -130,11 +130,14 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     _closedHeight = widget.minHeight;
     _openHeight = widget.maxHeight;
 
-    widget.controller?._addCloseListener(_close);
-    widget.controller?._addOpenListener(_open);
-    widget.controller?._addHideListener(_hide);
-    widget.controller?._addShowListener(_show);
-
+    widget.controller?._addListeners(
+      _close,
+      _open,
+      _hide,
+      _show,
+      _setPanelPosition,
+      _getPanelPosition,
+    );
   }
 
   @override
@@ -287,43 +290,21 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     });
   }
 
+  //set the panel position to value - must
+  //be between 0.0 and 1.0
+  void _setPanelPosition(double value){
+    assert(0.0 <= value && value <= 1.0);
+    _ac.value = value;
+  }
+
+  //get the current panel position
+  //returns the % offset from collapsed state
+  //as a decimal between 0.0 and 1.0
+  double _getPanelPosition(){
+    return _ac.value;
+  }
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -337,9 +318,22 @@ class PanelController{
   VoidCallback _openListener;
   VoidCallback _hideListener;
   VoidCallback _showListener;
+  Function(double value) _setPanelPositionListener;
+  double Function() _getPanelPositionListener;
 
-  void _addCloseListener(VoidCallback listener){
-    this._closeListener = listener;
+  void _addListeners(
+    VoidCallback closeListener,
+    VoidCallback openListener,
+    VoidCallback hideListener,
+    VoidCallback showListener,
+    Function(double value) setPanelPositionListener,
+    double Function() getPanelPositionListener,
+  ){
+    this._closeListener = closeListener;
+    this._openListener = openListener;
+    this._hideListener = hideListener;
+    this._setPanelPositionListener = setPanelPositionListener;
+    this._getPanelPositionListener = getPanelPositionListener;
   }
 
   /// Closes the sliding panel to its collapsed state (i.e. to the  minHeight)
@@ -347,17 +341,10 @@ class PanelController{
     _closeListener();
   }
 
-  void _addOpenListener(VoidCallback listener){
-    this._openListener = listener;
-  }
-
-  /// Opens the sliding panel fully (i.e. to the maxHeight)
+  /// Opens the sliding panel fully
+  /// (i.e. to the maxHeight)
   void open(){
     _openListener();
-  }
-
-  void _addHideListener(VoidCallback listener){
-    this._hideListener = listener;
   }
 
   /// Hides the sliding panel (i.e. is invisible)
@@ -365,13 +352,27 @@ class PanelController{
     _hideListener();
   }
 
-  void _addShowListener(VoidCallback listener){
-    this._showListener = listener;
-  }
-
-  /// Shows the sliding panel in its collapsed state (i.e. "un-hide" the sliding panel)
+  /// Shows the sliding panel in its collapsed state
+  /// (i.e. "un-hide" the sliding panel)
   void show(){
     _showListener();
+  }
+
+  /// Sets the panel position. Value must between 0.0 and 1.0
+  /// where 0.0 is fully collapsed and 1.0 is completely open
+  void setPanelPosition(double value){
+    assert(0.0 <= value && value <= 1.0);
+    _setPanelPositionListener(value);
+  }
+
+  /// Gets the current panel position.
+  /// Returns the % offset from collapsed state
+  /// to the open state
+  /// as a decimal between 0.0 and 1.0
+  /// where 0.0 is fully collapsed and
+  /// 1.0 is full open.
+  double getPanelPosition(){
+    return _getPanelPositionListener();
   }
 
 }
