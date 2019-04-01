@@ -113,7 +113,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   double _closedHeight; //this can change depending on whether or not the user hides the sliding panel
   double _openHeight; //this can change depending on whether or not the user hides the sliding panel
 
-  bool _isVisible = true;
+  bool _isPanelVisible = true;
 
   @override
   void initState(){
@@ -173,7 +173,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
 
         //the actual sliding part
-        !_isVisible ? Container() : GestureDetector(
+        !_isPanelVisible ? Container() : GestureDetector(
           onVerticalDragUpdate: _onDrag,
           onVerticalDragEnd: _onDragEnd,
           child: Container(
@@ -278,16 +278,17 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   void _hide(){
     _ac.fling(velocity: -1.0).then((x){
       setState(() {
-        _isVisible = false;
+        _isPanelVisible = false;
       });
     });
   }
 
   //show the panel (in collapsed mode)
   void _show(){
+    print(_ac.fling(velocity: -1.0));
     _ac.fling(velocity: -1.0).then((x){
       setState(() {
-        _isVisible = true;
+        _isPanelVisible = true;
       });
     });
   }
@@ -344,18 +345,18 @@ class PanelController{
     VoidCallback hideListener,
     VoidCallback showListener,
     Function(double value) setPanelPositionListener,
-    Function(double value) setAnimatePanelToListener,
+    Function(double value) setAnimatePanelToPositionListener,
     double Function() getPanelPositionListener,
     bool Function() isPanelAnimatingListener,
   ){
     this._closeListener = closeListener;
     this._openListener = openListener;
     this._hideListener = hideListener;
+    this._showListener = showListener;
     this._setPanelPositionListener = setPanelPositionListener;
-    this._setAnimatePanelToPositionListener = setAnimatePanelToListener;
+    this._setAnimatePanelToPositionListener = setAnimatePanelToPositionListener;
     this._getPanelPositionListener = getPanelPositionListener;
     this._isPanelAnimatingListener = isPanelAnimatingListener;
-
   }
 
   /// Closes the sliding panel to its collapsed state (i.e. to the  minHeight)
