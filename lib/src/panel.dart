@@ -64,6 +64,17 @@ class SlidingUpPanel extends StatefulWidget {
   /// If non-null, this can be used to control the state of the panel.
   final PanelController controller;
 
+  /// If non-null, shows a darkening shadow over the [body] as the panel slides open.
+  final bool backdropEnabled;
+
+  /// Shows a darkening shadow of this [Color] over the [body] as the panel slides open.
+  final Color backdropColor;
+
+  /// The opacity of the backdrop when the panel is fully open.
+  /// This value can range from 0.0 to 1.0 where 0.0 is completely transparent
+  /// and 1.0 is completely opaque.
+  final double backdropOpacity;
+
   SlidingUpPanel({
     Key key,
     @required this.panel,
@@ -75,8 +86,8 @@ class SlidingUpPanel extends StatefulWidget {
     this.borderRadius,
     this.boxShadow = const <BoxShadow>[
       BoxShadow(
-        blurRadius: 12.0,
-        color: Colors.grey,
+        blurRadius: 8.0,
+        color: Color.fromRGBO(0, 0, 0, 0.25),
       )
     ],
     this.color = Colors.white,
@@ -85,7 +96,11 @@ class SlidingUpPanel extends StatefulWidget {
     this.renderPanelSheet = true,
     this.panelSnapping = true,
     this.controller,
-  }) : super(key: key);
+    this.backdropEnabled = false,
+    this.backdropColor = Colors.black,
+    this.backdropOpacity = 0.5,
+  }) : assert(0 <= backdropOpacity && backdropOpacity <= 1.0),
+       super(key: key);
 
   @override
   _SlidingUpPanelState createState() => _SlidingUpPanelState();
@@ -128,12 +143,29 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
       alignment: Alignment.bottomCenter,
       children: <Widget>[
 
+
         //make the back widget take up the entire back side
         widget.body != null ? Container(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           child: widget.body,
         ) : Container(),
+
+
+        //the backdrop to overlay on the body
+        !widget.backdropEnabled ? Container() : Opacity(
+          opacity: _ac.value * widget.backdropOpacity,
+          child: Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+
+            //set color to null so that touch events pass through
+            //to the body when the panel is closed, otherwise,
+            //if a color exists, then touch events won't go through
+            color: _ac.value == 0.0 ? null : widget.backdropColor,
+          ),
+        ),
+
 
         //the actual sliding part
         !_isVisible ? Container() : GestureDetector(

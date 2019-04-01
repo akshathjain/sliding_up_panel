@@ -9,7 +9,7 @@ A Flutter widget that makes implementing a SlidingUpPanel much easier!
 Add the following to your `pubspec.yaml` file:
 ```
 dependencies:
-  sliding_up_panel: ^0.1.2
+  sliding_up_panel: ^0.2.0
 ```
 
 <br>
@@ -93,7 +93,44 @@ There are several options that allow for more control:
 | `margin` | Empty space surrounding the sliding panel sheet. |
 | `renderPanelSheet` | Set to false to not to render the sheet the `panel` sits upon. This means that only `body`, `collapsed`, and the `panel` Widgets will be rendered. Set this to false if you want to achieve a floating effect or want more customization over how the sliding panel looks like. |
 | `panelSnapping` | Set to false to disable the panel from snapping open or closed. |
+| `backdropEnabled` | If non-null, shows a darkening shadow over the `body` as the panel slides open. |
+| `backdropColor` | Shows a darkening shadow of this Color over the `body` as the panel slides open. |
+| `backdropOpacity` | The opacity of the backdrop when the panel is fully open. This value can range from 0.0 to 1.0 where 0.0 is completely transparent and 1.0 is completely opaque. |
 | `controller` | If non-null, this can be used to control the state of the panel. |
+
+<br>
+<br>
+
+### Darkening the Body as the Panel Opens
+If desired, the `body` can be darkened as the panel is opened by setting `backdropEnabled` to `true`. You can also customize the `backdropColor` and the `backdropOpacity`. For example:
+
+```dart
+@override
+Widget build(BuildContext context){
+  return Material(
+    child: SlidingUpPanel(
+      backdropEnabled: true,
+      panel: Center(
+        child: Text("This is the sliding Widget"),
+      ),
+      body: Scaffold(
+        appBar: AppBar(
+          title: Text("SlidingUpPanelExample"),
+        ),
+        body:  Center(
+          child: Text("This is the Widget behind the sliding panel"),
+        ),
+      ),
+    ),
+  );
+}
+```
+
+<p float="left">
+  <img alt="Panel Closed" width="250px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/backdropclosed.png">
+  <img alt="Panel Midway" width="250px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/backdropmidway.png">
+  <img alt="Panel Open" width="250px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/backdropopen.png">
+</p>
 
 <br>
 <br>

@@ -34,7 +34,6 @@ class _HomePageState extends State<HomePage> {
 
   PanelController _pc = new PanelController();
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

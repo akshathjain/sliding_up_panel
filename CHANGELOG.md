@@ -12,3 +12,15 @@ This is the initial release of the sliding_up_panel package. This includes featu
 ## [0.1.2] - March 31, 2019
 
 - Updated documentation to be more comprehensive
+
+## [0.2.0] - April 1, 2019
+
+Added the backdrop feature:
+- Body darkens as the panel opens
+- The backdrop color is customizable
+- The backdrop opacity is also customizable
+- Off by default
+
+Other changes:
+- Removed the README from the example app (pub will display the code on the website now)
+- Specified Dart as the language in the README code snippets
