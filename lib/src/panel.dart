@@ -155,7 +155,10 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
       _setPanelPosition,
       _animatePanelToPosition,
       _getPanelPosition,
-      _isPanelAnimating
+      _isPanelAnimating,
+      _isPanelOpen,
+      _isPanelCollapsed,
+      _isPanelShown,
     );
   }
 
@@ -281,6 +284,13 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   }
 
+
+
+
+  //---------------------------------
+  //PanelController related functions
+  //---------------------------------
+
   //close the panel
   void _close(){
     _ac.fling(velocity: -1.0);
@@ -336,6 +346,23 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     return _ac.isAnimating;
   }
 
+  //returns whether or not the
+  //panel is open
+  bool _isPanelOpen(){
+    return _ac.value == 1.0;
+  }
+
+  //returns whether or not the
+  //panel is collapsed
+  bool _isPanelCollapsed(){
+    return _ac.value == 0.0;
+  }
+
+  //returns whether or not the
+  //panel is shown/hidden
+  bool _isPanelShown(){
+    return _isPanelVisible;
+  }
 
 }
 
@@ -355,6 +382,9 @@ class PanelController{
   Function(double value) _setAnimatePanelToPositionListener;
   double Function() _getPanelPositionListener;
   bool Function() _isPanelAnimatingListener;
+  bool Function() _isPanelOpenListener;
+  bool Function() _isPanelCollapsedListener;
+  bool Function() _isPanelShownListener;
 
   void _addListeners(
     VoidCallback closeListener,
@@ -365,6 +395,9 @@ class PanelController{
     Function(double value) setAnimatePanelToPositionListener,
     double Function() getPanelPositionListener,
     bool Function() isPanelAnimatingListener,
+    bool Function() isPanelOpenListener,
+    bool Function() isPanelCollapsedListener,
+    bool Function() isPanelShownListener,
   ){
     this._closeListener = closeListener;
     this._openListener = openListener;
@@ -374,6 +407,9 @@ class PanelController{
     this._setAnimatePanelToPositionListener = setAnimatePanelToPositionListener;
     this._getPanelPositionListener = getPanelPositionListener;
     this._isPanelAnimatingListener = isPanelAnimatingListener;
+    this._isPanelOpenListener = isPanelOpenListener;
+    this._isPanelCollapsedListener = isPanelCollapsedListener;
+    this._isPanelShownListener = isPanelShownListener;
   }
 
   /// Closes the sliding panel to its collapsed state (i.e. to the  minHeight)
@@ -428,6 +464,24 @@ class PanelController{
   /// currently animating
   bool isPanelAnimating(){
     return _isPanelAnimatingListener();
+  }
+
+  /// Returns whether or not the
+  /// panel is open
+  bool isPanelOpen(){
+    return _isPanelOpenListener();
+  }
+
+  /// Returns whether or not the
+  /// panel is collapsed
+  bool isPanelCollapsed(){
+    return _isPanelCollapsedListener();
+  }
+
+  /// Returns whether or not the
+  /// panel is shown/hidden
+  bool isPanelShown(){
+    return _isPanelShownListener();
   }
 
 }

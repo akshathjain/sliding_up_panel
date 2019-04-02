@@ -32,6 +32,9 @@ Added methods to the `PanelController`
 - `animatePanelToPosition`
 - `getPanelPosition`
 - `isPanelAnimating`
+- `isPanelOpen`
+- `isPanelCollapsed`
+- `isPanelHidden`
 
 Added callbacks to the `SlidingUpPanel`
 - `onPanelSlide`
