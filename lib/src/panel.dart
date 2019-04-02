@@ -79,7 +79,15 @@ class SlidingUpPanel extends StatefulWidget {
   /// is called as the panel slides around with the
   /// current position of the panel. The position is a double
   /// between 0.0 and 1.0 where 0.0 is fully collapsed and 1.0 is fully open.
-  void Function(double position) onPanelSlide;
+  final void Function(double position) onPanelSlide;
+
+  /// This callback is called when the
+  /// panel is fully opened
+  final VoidCallback onPanelOpened;
+
+  /// This callback is called when the panel
+  /// is full closed
+  final VoidCallback onPanelClosed;
 
   SlidingUpPanel({
     Key key,
@@ -106,6 +114,8 @@ class SlidingUpPanel extends StatefulWidget {
     this.backdropColor = Colors.black,
     this.backdropOpacity = 0.5,
     this.onPanelSlide,
+    this.onPanelOpened,
+    this.onPanelClosed
   }) : assert(0 <= backdropOpacity && backdropOpacity <= 1.0),
        super(key: key);
 
@@ -130,6 +140,10 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
       setState((){});
 
       if(widget.onPanelSlide != null) widget.onPanelSlide(_ac.value);
+
+      if(widget.onPanelOpened != null && _ac.value == 1.0) widget.onPanelOpened();
+
+      if(widget.onPanelClosed != null && _ac.value == 0.0) widget.onPanelClosed();
     });
     _ac.value = 0.0;
 
