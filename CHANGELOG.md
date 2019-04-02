@@ -25,20 +25,27 @@ Other changes:
 - Removed the README from the example app (pub will display the code on the website now)
 - Specified Dart as the language in the README code snippets
 
-## [0.2.1] - [TODO: Add Release Date]
+## [0.3.0] - [TODO: Add Release Date]
 
-Added callbacks to the `SlidingUpPanel`
-- `onPanelSlide`
-- `onPanelOpened`
-- `onPanelCollapsed`
+#### Features
+- Added ability to close the `panel` when the backdrop is tapped
 
-Added methods to the `PanelController`
-- `setPanelPosition`
-- `animatePanelToPosition`
-- `getPanelPosition`
-- `isPanelAnimating`
-- `isPanelOpen`
-- `isPanelCollapsed`
-- `isPanelShown`
+- Added callbacks to the `SlidingUpPanel`
+    - `onPanelSlide`
+    - `onPanelOpened`
+    - `onPanelCollapsed`
 
-Updated documentation to reflect changes
+- Added methods to the `PanelController`
+    - `setPanelPosition`
+    - `animatePanelToPosition`
+    - `getPanelPosition`
+    - `isPanelAnimating`
+    - `isPanelOpen`
+    - `isPanelCollapsed`
+    - `isPanelShown`
+
+#### Bug Fixes
+
+#### Documentation
+- Updated documentation to reflect new features
+- Added clarification on `PanelController` lifecycle
