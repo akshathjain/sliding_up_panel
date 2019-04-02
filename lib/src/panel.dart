@@ -1,6 +1,6 @@
 /*
 Name: Akshath Jain
-Date: 3/18/19
+Date: 3/18/19 - 4/2/19
 Purpose: Defines the sliding_up_panel widget
 Copyright: © 2019, Akshath Jain. All rights reserved.
 Licensing: More information can be found here: https://github.com/akshathjain/sliding_up_panel/blob/master/LICENSE
@@ -184,7 +184,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
         //the backdrop to overlay on the body
         !widget.backdropEnabled ? Container() : GestureDetector(
-          onTap: widget.backdropTapClosesPanel ? () => _close() : null,
+          onTap: widget.backdropTapClosesPanel ? _close : null,
           child: Opacity(
             opacity: _ac.value * widget.backdropOpacity,
             child: Container(
@@ -234,7 +234,13 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                   height: widget.minHeight,
                   child: Opacity(
                     opacity: 1.0 - _ac.value,
-                    child: widget.collapsed ?? Container()
+
+                    // if the panel is open ignore pointers (touch events) on the collapsed
+                    // child so that way touch events go through to whatever is underneath
+                    child: IgnorePointer(
+                      ignoring: _isPanelOpen(),
+                      child: widget.collapsed ?? Container(),
+                    ),
                   ),
                 ),
 

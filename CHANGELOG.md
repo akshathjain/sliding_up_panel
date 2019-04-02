@@ -45,6 +45,7 @@ Other changes:
     - `isPanelShown`
 
 #### Bug Fixes
+- Fixed issue where the `collapsed` widget would accept touch events even when invisible (i.e. even when the panel was fully open)
 
 #### Documentation
 - Updated documentation to reflect new features
