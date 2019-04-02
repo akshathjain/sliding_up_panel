@@ -93,6 +93,17 @@ class SlidingUpPanel extends StatefulWidget {
   /// is fully collapsed.
   final VoidCallback onPanelClosed;
 
+  /// If non-null and true, the SlidingUpPanel exhibits a
+  /// parallax effect as the panel slides up. Essentially,
+  /// the body slides up as the panel slides up.
+  final bool parallaxEnabled;
+
+  /// Allows for specifying the extent of the parallax effect in terms
+  /// of the percentage the panel has slid up/down. Recommended values are
+  /// within 0.0 and 1.0 where 0.0 is no parallax and 1.0 mimics a
+  /// one-to-one scrolling effect. Defaults to a 10% parallax.
+  final double parallaxOffset;
+
   SlidingUpPanel({
     Key key,
     @required this.panel,
@@ -120,7 +131,9 @@ class SlidingUpPanel extends StatefulWidget {
     this.backdropTapClosesPanel = true,
     this.onPanelSlide,
     this.onPanelOpened,
-    this.onPanelClosed
+    this.onPanelClosed,
+    this.parallaxEnabled = false,
+    this.parallaxOffset = 0.1,
   }) : assert(0 <= backdropOpacity && backdropOpacity <= 1.0),
        super(key: key);
 
@@ -174,10 +187,13 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
 
         //make the back widget take up the entire back side
-        widget.body != null ? Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          child: widget.body,
+        widget.body != null ? Positioned(
+          top: widget.parallaxEnabled ? (- _ac.value * (widget.maxHeight - widget.minHeight) * widget.parallaxOffset) : 0.0,
+          child: Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: widget.body,
+          ),
         ) : Container(),
 
 
