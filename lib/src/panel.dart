@@ -150,7 +150,6 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
       if(widget.onPanelClosed != null && _ac.value == 0.0) widget.onPanelClosed();
     });
-    _ac.value = 0.0;
 
     widget.controller?._addListeners(
       _close,

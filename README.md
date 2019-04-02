@@ -1,7 +1,7 @@
 # sliding_up_panel
 [![pub package](https://img.shields.io/pub/v/sliding_up_panel.svg)](https://pub.dartlang.org/packages/sliding_up_panel)
 
-A Flutter widget that makes implementing a SlidingUpPanel much easier!
+A draggable Flutter widget that makes implementing a SlidingUpPanel much easier!
 
 <br>
 
@@ -22,7 +22,7 @@ There are two ways which the `SlidingUpPanel` can easily be added to your projec
 <br>
 
 #### `SlidingUpPanel` as the Root (recommended)
-This method is recommended as it allows for greatest efficiency and least interference with the behavior of other UI elements. For example:
+This method is recommended as it allows for the least interference with the behavior of other UI elements. For example:
 ```dart
 @override
 Widget build(BuildContext context) {
@@ -110,7 +110,7 @@ There are several options that allow for more control:
 <br>
 
 ### Darkening the Body as the Panel Opens
-If desired, the `body` can be darkened as the panel is opened by setting `backdropEnabled` to `true`. You can also customize the `backdropColor` and the `backdropOpacity`. For example:
+If desired, the `body` can be darkened as the panel is opened by setting `backdropEnabled` to `true`. You can also customize the `backdropColor`, `backdropOpacity`, and `backdropTapClosesPanel`. For example:
 
 ```dart
 @override
@@ -133,6 +133,7 @@ Widget build(BuildContext context){
   );
 }
 ```
+Notice how the `Scaffold` is nested inside of the `SlidingUpPanel`. This because the backdrop is rendered only over the `body` of the `SlidingUpPanel`. As a result, if we want the `backdrop` to appear over the `AppBar`, the we *must* nest the `Scaffold` this way.
 
 <p float="left">
   <img alt="Panel Closed" width="250px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/backdropclosed.png">
