@@ -75,6 +75,8 @@ class SlidingUpPanel extends StatefulWidget {
   /// and 1.0 is completely opaque.
   final double backdropOpacity;
 
+  final bool backdropTapClosesPanel;
+
   /// If non-null, this callback
   /// is called as the panel slides around with the
   /// current position of the panel. The position is a double
@@ -113,6 +115,7 @@ class SlidingUpPanel extends StatefulWidget {
     this.backdropEnabled = false,
     this.backdropColor = Colors.black,
     this.backdropOpacity = 0.5,
+    this.backdropTapClosesPanel = true,
     this.onPanelSlide,
     this.onPanelOpened,
     this.onPanelCollapsed
@@ -178,16 +181,19 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
 
         //the backdrop to overlay on the body
-        !widget.backdropEnabled ? Container() : Opacity(
-          opacity: _ac.value * widget.backdropOpacity,
-          child: Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
+        !widget.backdropEnabled ? Container() : GestureDetector(
+          onTap: widget.backdropTapClosesPanel ? () => _close() : null,
+          child: Opacity(
+            opacity: _ac.value * widget.backdropOpacity,
+            child: Container(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
 
-            //set color to null so that touch events pass through
-            //to the body when the panel is closed, otherwise,
-            //if a color exists, then touch events won't go through
-            color: _ac.value == 0.0 ? null : widget.backdropColor,
+              //set color to null so that touch events pass through
+              //to the body when the panel is closed, otherwise,
+              //if a color exists, then touch events won't go through
+              color: _ac.value == 0.0 ? null : widget.backdropColor,
+            ),
           ),
         ),
 
