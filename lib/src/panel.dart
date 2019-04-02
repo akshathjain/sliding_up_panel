@@ -75,6 +75,8 @@ class SlidingUpPanel extends StatefulWidget {
   /// and 1.0 is completely opaque.
   final double backdropOpacity;
 
+  /// Flag that indicates whether or not tapping the
+  /// backdrop closes the panel. Defaults to true.
   final bool backdropTapClosesPanel;
 
   /// If non-null, this callback
@@ -89,7 +91,7 @@ class SlidingUpPanel extends StatefulWidget {
 
   /// If non-null, this callback is called when the panel
   /// is fully collapsed.
-  final VoidCallback onPanelCollapsed;
+  final VoidCallback onPanelClosed;
 
   SlidingUpPanel({
     Key key,
@@ -118,7 +120,7 @@ class SlidingUpPanel extends StatefulWidget {
     this.backdropTapClosesPanel = true,
     this.onPanelSlide,
     this.onPanelOpened,
-    this.onPanelCollapsed
+    this.onPanelClosed
   }) : assert(0 <= backdropOpacity && backdropOpacity <= 1.0),
        super(key: key);
 
@@ -146,7 +148,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
       if(widget.onPanelOpened != null && _ac.value == 1.0) widget.onPanelOpened();
 
-      if(widget.onPanelCollapsed != null && _ac.value == 0.0) widget.onPanelCollapsed();
+      if(widget.onPanelClosed != null && _ac.value == 0.0) widget.onPanelClosed();
     });
     _ac.value = 0.0;
 
@@ -160,7 +162,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
       _getPanelPosition,
       _isPanelAnimating,
       _isPanelOpen,
-      _isPanelCollapsed,
+      _isPanelClosed,
       _isPanelShown,
     );
   }
@@ -360,7 +362,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   //returns whether or not the
   //panel is collapsed
-  bool _isPanelCollapsed(){
+  bool _isPanelClosed(){
     return _ac.value == 0.0;
   }
 
@@ -389,7 +391,7 @@ class PanelController{
   double Function() _getPanelPositionListener;
   bool Function() _isPanelAnimatingListener;
   bool Function() _isPanelOpenListener;
-  bool Function() _isPanelCollapsedListener;
+  bool Function() _isPanelClosedListener;
   bool Function() _isPanelShownListener;
 
   void _addListeners(
@@ -402,7 +404,7 @@ class PanelController{
     double Function() getPanelPositionListener,
     bool Function() isPanelAnimatingListener,
     bool Function() isPanelOpenListener,
-    bool Function() isPanelCollapsedListener,
+    bool Function() isPanelClosedListener,
     bool Function() isPanelShownListener,
   ){
     this._closeListener = closeListener;
@@ -414,7 +416,7 @@ class PanelController{
     this._getPanelPositionListener = getPanelPositionListener;
     this._isPanelAnimatingListener = isPanelAnimatingListener;
     this._isPanelOpenListener = isPanelOpenListener;
-    this._isPanelCollapsedListener = isPanelCollapsedListener;
+    this._isPanelClosedListener = isPanelClosedListener;
     this._isPanelShownListener = isPanelShownListener;
   }
 
@@ -480,8 +482,8 @@ class PanelController{
 
   /// Returns whether or not the
   /// panel is collapsed.
-  bool isPanelCollapsed(){
-    return _isPanelCollapsedListener();
+  bool isPanelClosed(){
+    return _isPanelClosedListener();
   }
 
   /// Returns whether or not the
