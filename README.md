@@ -9,7 +9,7 @@ A draggable Flutter widget that makes implementing a SlidingUpPanel much easier!
 Add the following to your `pubspec.yaml` file:
 ```
 dependencies:
-  sliding_up_panel: ^0.2.0
+  sliding_up_panel: ^0.3.0
 ```
 
 <br>
@@ -104,7 +104,7 @@ There are several options that allow for more control:
 | `controller` | If non-null, this can be used to control the state of the panel. |
 | `onPanelSlide` | If non-null, this callback is called as the panel slides around with the current position of the panel. The position is a double between 0.0 and 1.0 where 0.0 is fully collapsed and 1.0 is fully open. |
 | `onPanelOpened` | If non-null, this callback is called when the panel is fully opened. |
-| `onPanelCollapsed` | If non-null, this callback is called when the panel is fully collapsed. |
+| `onPanelClosed` | If non-null, this callback is called when the panel is fully collapsed. |
 
 <br>
 <br>

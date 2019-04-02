@@ -25,7 +25,7 @@ Other changes:
 - Removed the README from the example app (pub will display the code on the website now)
 - Specified Dart as the language in the README code snippets
 
-## [0.3.0] - [TODO: Add Release Date]
+## [0.3.0] - April 2, 2019
 
 #### Features
 - Added ability to close the `panel` when the backdrop is tapped
@@ -33,7 +33,7 @@ Other changes:
 - Added callbacks to the `SlidingUpPanel`
     - `onPanelSlide`
     - `onPanelOpened`
-    - `onPanelCollapsed`
+    - `onPanelClosed`
 
 - Added methods to the `PanelController`
     - `setPanelPosition`
@@ -41,7 +41,7 @@ Other changes:
     - `getPanelPosition`
     - `isPanelAnimating`
     - `isPanelOpen`
-    - `isPanelCollapsed`
+    - `isPanelClosed`
     - `isPanelShown`
 
 #### Bug Fixes
@@ -50,3 +50,4 @@ Other changes:
 #### Documentation
 - Updated documentation to reflect new features
 - Added clarification on `PanelController` lifecycle
+- Added an explanation about nesting the `Scaffold` when displaying a backdrop
