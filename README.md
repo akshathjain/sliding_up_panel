@@ -105,6 +105,8 @@ There are several options that allow for more control:
 | `onPanelSlide` | If non-null, this callback is called as the panel slides around with the current position of the panel. The position is a double between 0.0 and 1.0 where 0.0 is fully collapsed and 1.0 is fully open. |
 | `onPanelOpened` | If non-null, this callback is called when the panel is fully opened. |
 | `onPanelClosed` | If non-null, this callback is called when the panel is fully collapsed. |
+| `parallaxEnabled` | If non-null and true, the SlidingUpPanel exhibits a parallax effect as the panel slides up. Essentially, the body slides up as the panel slides up. |
+| `parallaxOffset` | Allows for specifying the extent of the parallax effect in terms of the percentage the panel has slid up/down. Recommended values are within 0.0 and 1.0 where 0.0 is no parallax and 1.0 mimics a one-to-one scrolling effect. Defaults to a 10% parallax. |
 
 <br>
 <br>

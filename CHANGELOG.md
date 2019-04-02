@@ -51,3 +51,13 @@ Other changes:
 - Updated documentation to reflect new features
 - Added clarification on `PanelController` lifecycle
 - Added an explanation about nesting the `Scaffold` when displaying a backdrop
+
+## [0.x.x] - [TODO: Add Release date]
+
+#### Features
+- Configuration options to `SlidingUpPanel`
+    - `parallaxEnabled`
+    - `parallaxOffset`
+
+#### Documentation
+- Updated documentation to reflect new features
