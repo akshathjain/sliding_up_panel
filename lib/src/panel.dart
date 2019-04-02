@@ -75,6 +75,12 @@ class SlidingUpPanel extends StatefulWidget {
   /// and 1.0 is completely opaque.
   final double backdropOpacity;
 
+  /// The callback passed to this
+  /// is called as the panel slides around with the
+  /// current position of the panel. The position is a double
+  /// between 0.0 and 1.0 where 0.0 is fully collapsed and 1.0 is fully open.
+  void Function(double position) onPanelSlide;
+
   SlidingUpPanel({
     Key key,
     @required this.panel,
@@ -99,6 +105,7 @@ class SlidingUpPanel extends StatefulWidget {
     this.backdropEnabled = false,
     this.backdropColor = Colors.black,
     this.backdropOpacity = 0.5,
+    this.onPanelSlide,
   }) : assert(0 <= backdropOpacity && backdropOpacity <= 1.0),
        super(key: key);
 
@@ -109,9 +116,6 @@ class SlidingUpPanel extends StatefulWidget {
 class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProviderStateMixin{
 
   AnimationController _ac;
-
-  double _closedHeight; //this can change depending on whether or not the user hides the sliding panel
-  double _openHeight; //this can change depending on whether or not the user hides the sliding panel
 
   bool _isPanelVisible = true;
 
@@ -124,11 +128,10 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
       duration: const Duration(milliseconds: 300),
     )..addListener((){
       setState((){});
+
+      if(widget.onPanelSlide != null) widget.onPanelSlide(_ac.value);
     });
     _ac.value = 0.0;
-
-    _closedHeight = widget.minHeight;
-    _openHeight = widget.maxHeight;
 
     widget.controller?._addListeners(
       _close,
@@ -177,7 +180,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
           onVerticalDragUpdate: _onDrag,
           onVerticalDragEnd: _onDragEnd,
           child: Container(
-            height: _ac.value * (_openHeight - _closedHeight) + _closedHeight,
+            height: _ac.value * (widget.maxHeight - widget.minHeight) + widget.minHeight,
             margin: widget.margin,
             padding: widget.padding,
             decoration: widget.renderPanelSheet ? BoxDecoration(
@@ -227,7 +230,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   }
 
   void _onDrag(DragUpdateDetails details){
-    _ac.value -= details.primaryDelta / (_openHeight - _closedHeight);
+    _ac.value -= details.primaryDelta / (widget.maxHeight - widget.minHeight);
   }
 
   void _onDragEnd(DragEndDetails details){
@@ -238,7 +241,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
     //check if the velocity is sufficient to constitute fling
     if(details.velocity.pixelsPerSecond.dy.abs() >= minFlingVelocity){
-      double visualVelocity = - details.velocity.pixelsPerSecond.dy / (_openHeight - _closedHeight);
+      double visualVelocity = - details.velocity.pixelsPerSecond.dy / (widget.maxHeight - widget.minHeight);
 
       if(widget.panelSnapping)
         _ac.fling(velocity: visualVelocity);
@@ -285,7 +288,6 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   //show the panel (in collapsed mode)
   void _show(){
-    print(_ac.fling(velocity: -1.0));
     _ac.fling(velocity: -1.0).then((x){
       setState(() {
         _isPanelVisible = true;
@@ -319,6 +321,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   bool _isPanelAnimating(){
     return _ac.isAnimating;
   }
+
 
 }
 
