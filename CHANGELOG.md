@@ -25,7 +25,12 @@ Other changes:
 - Removed the README from the example app (pub will display the code on the website now)
 - Specified Dart as the language in the README code snippets
 
-## [0.2.1]
+## [0.2.1] - [TODO: Add Release Date]
+
+Added callbacks to the `SlidingUpPanel`
+- `onPanelSlide`
+- `onPanelOpened`
+- `onPanelCollapsed`
 
 Added methods to the `PanelController`
 - `setPanelPosition`
@@ -34,11 +39,6 @@ Added methods to the `PanelController`
 - `isPanelAnimating`
 - `isPanelOpen`
 - `isPanelCollapsed`
-- `isPanelHidden`
-
-Added callbacks to the `SlidingUpPanel`
-- `onPanelSlide`
-- `onPanelOpened`
-- `onPanelClosed`
+- `isPanelShown`
 
 Updated documentation to reflect changes

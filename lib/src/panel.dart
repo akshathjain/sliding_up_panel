@@ -75,19 +75,19 @@ class SlidingUpPanel extends StatefulWidget {
   /// and 1.0 is completely opaque.
   final double backdropOpacity;
 
-  /// The callback passed to this
+  /// If non-null, this callback
   /// is called as the panel slides around with the
   /// current position of the panel. The position is a double
   /// between 0.0 and 1.0 where 0.0 is fully collapsed and 1.0 is fully open.
   final void Function(double position) onPanelSlide;
 
-  /// This callback is called when the
+  /// If non-null, this callback is called when the
   /// panel is fully opened
   final VoidCallback onPanelOpened;
 
-  /// This callback is called when the panel
-  /// is full closed
-  final VoidCallback onPanelClosed;
+  /// If non-null, this callback is called when the panel
+  /// is fully collapsed.
+  final VoidCallback onPanelCollapsed;
 
   SlidingUpPanel({
     Key key,
@@ -115,7 +115,7 @@ class SlidingUpPanel extends StatefulWidget {
     this.backdropOpacity = 0.5,
     this.onPanelSlide,
     this.onPanelOpened,
-    this.onPanelClosed
+    this.onPanelCollapsed
   }) : assert(0 <= backdropOpacity && backdropOpacity <= 1.0),
        super(key: key);
 
@@ -143,7 +143,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
       if(widget.onPanelOpened != null && _ac.value == 1.0) widget.onPanelOpened();
 
-      if(widget.onPanelClosed != null && _ac.value == 0.0) widget.onPanelClosed();
+      if(widget.onPanelCollapsed != null && _ac.value == 0.0) widget.onPanelCollapsed();
     });
     _ac.value = 0.0;
 
@@ -436,7 +436,7 @@ class PanelController{
 
   /// Sets the panel position (without animation).
   /// The value must between 0.0 and 1.0
-  /// where 0.0 is fully collapsed and 1.0 is completely open
+  /// where 0.0 is fully collapsed and 1.0 is completely open.
   void setPanelPosition(double value){
     assert(0.0 <= value && value <= 1.0);
     _setPanelPositionListener(value);
@@ -445,7 +445,7 @@ class PanelController{
   /// Animates the panel position to the value.
   /// The value must between 0.0 and 1.0
   /// where 0.0 is fully collapsed and 1.0 is completely open
-  void animatePanelTo(double value){
+  void animatePanelToPosition(double value){
     assert(0.0 <= value && value <= 1.0);
     _setAnimatePanelToPositionListener(value);
   }
@@ -461,25 +461,25 @@ class PanelController{
   }
 
   /// Returns whether or not the panel is
-  /// currently animating
+  /// currently animating.
   bool isPanelAnimating(){
     return _isPanelAnimatingListener();
   }
 
   /// Returns whether or not the
-  /// panel is open
+  /// panel is open.
   bool isPanelOpen(){
     return _isPanelOpenListener();
   }
 
   /// Returns whether or not the
-  /// panel is collapsed
+  /// panel is collapsed.
   bool isPanelCollapsed(){
     return _isPanelCollapsedListener();
   }
 
   /// Returns whether or not the
-  /// panel is shown/hidden
+  /// panel is shown/hidden.
   bool isPanelShown(){
     return _isPanelShownListener();
   }

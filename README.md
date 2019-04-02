@@ -19,6 +19,8 @@ There are two ways which the `SlidingUpPanel` can easily be added to your projec
 1. Using the `SlidingUpPanel` as the root widget for the body (recommended).
 2. Nesting the `SlidingUpPanel`
 
+<br>
+
 #### `SlidingUpPanel` as the Root (recommended)
 This method is recommended as it allows for greatest efficiency and least interference with the behavior of other UI elements. For example:
 ```dart
@@ -39,6 +41,7 @@ Widget build(BuildContext context) {
   );
 }
 ```
+<br>
 
 #### Nesting the `SlidingUpPanel`
 This method isn't recommended but can still be used. Only use this to avoid refactoring large chunks of code or to implement custom scrolling behavior. For example, the `SlidingUpPanel` can be nested inside of a `Stack` (note that there are many other possible implementations that vary on a case-by-case basis).
@@ -61,6 +64,7 @@ Widget build(BuildContext context) {
   );
 }
 ```
+<br>
 
 #### Screenshots
 Both methods produce the same result:
@@ -97,6 +101,9 @@ There are several options that allow for more control:
 | `backdropColor` | Shows a darkening shadow of this Color over the `body` as the panel slides open. |
 | `backdropOpacity` | The opacity of the backdrop when the panel is fully open. This value can range from 0.0 to 1.0 where 0.0 is completely transparent and 1.0 is completely opaque. |
 | `controller` | If non-null, this can be used to control the state of the panel. |
+| `onPanelSlide` | If non-null, this callback is called as the panel slides around with the current position of the panel. The position is a double between 0.0 and 1.0 where 0.0 is fully collapsed and 1.0 is fully open. |
+| `onPanelOpened` | If non-null, this callback is called when the panel is fully opened. |
+| `onPanelCollapsed` | If non-null, this callback is called when the panel is fully collapsed. |
 
 <br>
 <br>
@@ -354,6 +361,13 @@ At times, it can be useful to manually change the state of the `SlidingUpPanel`.
 |`close()`| Closes the sliding panel to its collapsed state (i.e. to the  `minHeight`) |
 |`hide()`| Hides the sliding panel (i.e. is invisible) |
 |`show()`| Shows the sliding panel in its collapsed state (i.e. "un-hide" the sliding panel) |
+|`setPanelPosition(double value)`| Sets the panel position (without animation). The value must between 0.0 and 1.0 where 0.0 is fully collapsed and 1.0 is completely open. |
+|`animatePanelToPosition(double value)`| Animates the panel position to the value. The value must between 0.0 and 1.0 where 0.0 is fully collapsed and 1.0 is completely open. |
+|`getPanelPosition()`| Gets the current panel position. Returns the % offset from collapsed state to the open state as a decimal between 0.0 and 1.0 where 0.0 is fully collapsed and 1.0 is full open. |
+|`isPanelAnimating()`| Returns whether or not the panel is currently animating. |
+|`isPanelOpen()`| Returns whether or not the panel is open. |
+|`isPanelCollapsed()`| Returns whether or not the panel is collapsed.|
+|`isPanelShown()`| Returns whether or not the panel is shown/hidden.|
 
 ```dart
 PanelController _pc = new PanelController();
