@@ -100,6 +100,7 @@ There are several options that allow for more control:
 | `backdropEnabled` | If non-null, shows a darkening shadow over the `body` as the panel slides open. |
 | `backdropColor` | Shows a darkening shadow of this Color over the `body` as the panel slides open. |
 | `backdropOpacity` | The opacity of the backdrop when the panel is fully open. This value can range from 0.0 to 1.0 where 0.0 is completely transparent and 1.0 is completely opaque. |
+| `backdropTapClosesPanel` | Flag that indicates whether or not tapping the backdrop closes the panel. Defaults to true. |
 | `controller` | If non-null, this can be used to control the state of the panel. |
 | `onPanelSlide` | If non-null, this callback is called as the panel slides around with the current position of the panel. The position is a double between 0.0 and 1.0 where 0.0 is fully collapsed and 1.0 is fully open. |
 | `onPanelOpened` | If non-null, this callback is called when the panel is fully opened. |
@@ -353,9 +354,9 @@ Widget _scrollingList(){
 <br>
 
 ### Using the `PanelController`
-At times, it can be useful to manually change the state of the `SlidingUpPanel`. This can be easily achieved by using a `PanelController` and attaching it to an instance of the `SlidingUpPanel`.
+At times, it can be useful to manually change the state of the `SlidingUpPanel`. This can be easily achieved by using a `PanelController` and attaching it to an instance of the `SlidingUpPanel`. Note that since the `PanelController` modifies the state of a `SlidingUpPanel`, these methods can *only* be called after the `SlidingUpPanel` has been rendered.
 
- Methods| Description |
+|  Methods  | Description |
 |-----------|-------------|
 |`open()`| Opens the sliding panel fully (i.e. to the  `maxHeight`) |
 |`close()`| Closes the sliding panel to its collapsed state (i.e. to the  `minHeight`) |
@@ -366,7 +367,7 @@ At times, it can be useful to manually change the state of the `SlidingUpPanel`.
 |`getPanelPosition()`| Gets the current panel position. Returns the % offset from collapsed state to the open state as a decimal between 0.0 and 1.0 where 0.0 is fully collapsed and 1.0 is full open. |
 |`isPanelAnimating()`| Returns whether or not the panel is currently animating. |
 |`isPanelOpen()`| Returns whether or not the panel is open. |
-|`isPanelCollapsed()`| Returns whether or not the panel is collapsed.|
+|`isPanelClosed()`| Returns whether or not the panel is collapsed.|
 |`isPanelShown()`| Returns whether or not the panel is shown/hidden.|
 
 ```dart

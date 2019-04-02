@@ -361,7 +361,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   }
 
   //returns whether or not the
-  //panel is collapsed
+  //panel is closed
   bool _isPanelClosed(){
     return _ac.value == 0.0;
   }
@@ -481,7 +481,7 @@ class PanelController{
   }
 
   /// Returns whether or not the
-  /// panel is collapsed.
+  /// panel is closed.
   bool isPanelClosed(){
     return _isPanelClosedListener();
   }
