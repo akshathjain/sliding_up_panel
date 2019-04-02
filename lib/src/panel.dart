@@ -9,7 +9,6 @@ Licensing: More information can be found here: https://github.com/akshathjain/sl
 import 'package:flutter/material.dart';
 
 class SlidingUpPanel extends StatefulWidget {
-
   /// The Widget that slides into view. When the
   /// panel is collapsed and if [collapsed] is null,
   /// then top portion of this Widget will be displayed;
@@ -184,10 +183,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                 onVerticalDragUpdate: _onDrag,
                 onVerticalDragEnd: _onDragEnd,
                 child: Container(
-                  height: widget.direction == AxisDirection.down
-                      ? _openHeight
-                      : _ac.value * (_openHeight - _closedHeight) +
-                          _closedHeight,
+                  height:
+                      _ac.value * (_openHeight - _closedHeight) + _closedHeight,
                   margin: widget.margin,
                   padding: widget.padding,
                   decoration: widget.renderPanelSheet
