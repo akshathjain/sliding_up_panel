@@ -24,3 +24,30 @@ Added the backdrop feature:
 Other changes:
 - Removed the README from the example app (pub will display the code on the website now)
 - Specified Dart as the language in the README code snippets
+
+## [0.3.0] - April 2, 2019
+
+#### Features
+- Added ability to close the `panel` when the backdrop is tapped
+
+- Added callbacks to the `SlidingUpPanel`
+    - `onPanelSlide`
+    - `onPanelOpened`
+    - `onPanelClosed`
+
+- Added methods to the `PanelController`
+    - `setPanelPosition`
+    - `animatePanelToPosition`
+    - `getPanelPosition`
+    - `isPanelAnimating`
+    - `isPanelOpen`
+    - `isPanelClosed`
+    - `isPanelShown`
+
+#### Bug Fixes
+- Fixed issue where the `collapsed` widget would accept touch events even when invisible (i.e. even when the panel was fully open)
+
+#### Documentation
+- Updated documentation to reflect new features
+- Added clarification on `PanelController` lifecycle
+- Added an explanation about nesting the `Scaffold` when displaying a backdrop
