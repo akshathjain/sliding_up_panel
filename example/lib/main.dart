@@ -8,6 +8,8 @@ Licensing: More information can be found here: https://github.com/akshathjain/sl
 
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong/latlong.dart';
 
 void main() => runApp(SlidingUpPanelExample());
 
@@ -32,99 +34,127 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-  PanelController _pc = new PanelController();
+  double _fabHeight = 120.0;
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("SlidingUpPanelExample"),
-      ),
-      body: SlidingUpPanel(
-        renderPanelSheet: false,
-        panel: _floatingPanel(),
-        collapsed: _floatingCollapsed(),
-        body: _body(),
-        controller: _pc,
-      ),
-    );
-  }
-
-  Widget _body(){
-    return Container(
-      padding: const EdgeInsets.only(top: 20.0),
-      child: Column(
+  Widget build(BuildContext context){
+    return Material(
+      child: Stack(
+        alignment: Alignment.topCenter,
         children: <Widget>[
-          RaisedButton(
-            child: Text("Open"),
-            onPressed: () => _pc.open(),
+
+          SlidingUpPanel(
+            maxHeight: 550.0,
+            parallaxEnabled: true,
+            parallaxOffset: .5,
+            body: _body(),
+            panel: _panel(),
+            borderRadius: BorderRadius.only(topLeft: Radius.circular(18.0), topRight: Radius.circular(18.0)),
+            onPanelSlide: (double pos) => setState((){
+              _fabHeight = pos * 450.0 + 120.0;
+            }),
           ),
-          RaisedButton(
-            child: Text("Close"),
-            onPressed: () => _pc.close(),
+
+          // the fab
+          Positioned(
+            right: 20.0,
+            bottom: _fabHeight,
+            child: FloatingActionButton(
+              child: Icon(
+                Icons.gps_fixed,
+                color: Theme.of(context).primaryColor,
+              ),
+              onPressed: (){},
+              backgroundColor: Colors.white,
+            ),
           ),
-          RaisedButton(
-            child: Text("Show"),
-            onPressed: () => _pc.show(),
+
+          //the SlidingUpPanel Titel
+          Positioned(
+            top: 50.0,
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(24.0, 18.0, 24.0, 18.0),
+              child: Text(
+                "SlidingUpPanel Example",
+                style: TextStyle(
+                  fontWeight: FontWeight.w500
+                ),
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24.0),
+                boxShadow: [BoxShadow(
+                  color: Color.fromRGBO(0, 0, 0, .35),
+                  blurRadius: 20.0
+                )],
+              ),
+            ),
           ),
-          RaisedButton(
-            child: Text("Hide"),
-            onPressed: () => _pc.hide(),
-          ),
+
+
         ],
       ),
     );
   }
 
-  Widget _floatingCollapsed(){
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.blueGrey,
-        borderRadius: BorderRadius.only(topLeft: Radius.circular(24.0), topRight: Radius.circular(24.0)),
-      ),
-      margin: const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 0.0),
-      child: Center(
-        child: Text(
-          "This is the collapsed Widget",
-          style: TextStyle(color: Colors.white),
+  Widget _panel(){
+    return Column(
+      children: <Widget>[
+        SizedBox(height: 12.0,),
+
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Container(
+              width: 30,
+              height: 5,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.all(Radius.circular(12.0))
+              ),
+            ),
+          ],
         ),
-      ),
-    );
-  }
 
-  Widget _floatingPanel(){
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.blueGrey,
-        borderRadius: BorderRadius.all(Radius.circular(24.0)),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 20.0,
-            color: Colors.grey,
+        SizedBox(height: 18.0,),
+
+        Text(
+          "Explore Pittsburgh",
+          style: TextStyle(
+            fontWeight: FontWeight.normal,
+            fontSize: 24.0,
           ),
-        ]
-      ),
-      margin: const EdgeInsets.all(24.0),
-      child: _scrollingList(),
+        ),
+      ],
     );
   }
 
-  Widget _scrollingList(){
-    return Container(
-      //adding a margin to the top leaves an area where the user can swipe
-      //to open/close the sliding panel
-      margin: const EdgeInsets.only(top: 36.0),
-      child: ListView.builder(
-        itemCount: 50,
-        itemBuilder: (BuildContext context, int i){
-          return Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(12.0),
-            child: Text("$i"),
-          );
-        },
+  Widget _body(){
+    return FlutterMap(
+      options: MapOptions(
+        center: LatLng(40.441589, -80.010948),
+        zoom: 13,
+        maxZoom: 15,
       ),
+      layers: [
+        TileLayerOptions(
+          urlTemplate: "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png"
+        ),
+
+        MarkerLayerOptions(
+          markers: [
+            Marker(
+              point: LatLng(40.441753, -80.011476),
+              builder: (ctx) => Icon(
+                Icons.location_on,
+                color: Colors.blue,
+                size: 48.0,
+              ),
+              height: 60
+            ),
+          ]
+        ),
+      ],
     );
   }
-
 }
