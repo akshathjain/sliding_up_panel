@@ -15,6 +15,7 @@ dependencies:
 
   flutter_map: ^0.5.0
   latlong: ^0.6.1
+  cached_network_image: any
 
   cupertino_icons: ^0.1.2
 

@@ -135,7 +135,7 @@ Widget build(BuildContext context){
   );
 }
 ```
-Notice how the `Scaffold` is nested inside of the `SlidingUpPanel`. This because the backdrop is rendered only over the `body` of the `SlidingUpPanel`. As a result, if we want the `backdrop` to appear over the `AppBar`, the we *must* nest the `Scaffold` this way.
+Notice how the `Scaffold` is nested inside of the `SlidingUpPanel`. This because the backdrop is rendered only over the `body` of the `SlidingUpPanel`. As a result, if we want the `backdrop` to appear over the `AppBar`, then we *must* nest the `Scaffold` this way.
 
 <p float="left">
   <img alt="Panel Closed" width="250px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/backdropclosed.png">
