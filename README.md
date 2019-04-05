@@ -1,6 +1,7 @@
 # sliding_up_panel
 [![pub package](https://img.shields.io/pub/v/sliding_up_panel.svg)](https://pub.dartlang.org/packages/sliding_up_panel)
 [![GitHub Star](https://img.shields.io/github/stars/akshathjain/sliding_up_panel.svg)](https://github.com/akshathjain/sliding_up_panel)
+[![Platform](https://img.shields.io/badge/platform-android%20|%20ios-green.svg)](https://img.shields.io/badge/platform-Android%20%7C%20iOS-green.svg)
 
 A draggable Flutter widget that makes implementing a SlidingUpPanel much easier!
 
