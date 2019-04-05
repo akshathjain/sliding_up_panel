@@ -52,7 +52,7 @@ Other changes:
 - Added clarification on `PanelController` lifecycle
 - Added an explanation about nesting the `Scaffold` when displaying a backdrop
 
-## [0.x.x] - [TODO: Add Release date]
+## [0.3.1] - [April 5, 2019]
 
 #### Features
 - Configuration options to `SlidingUpPanel`

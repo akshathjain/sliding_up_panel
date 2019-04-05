@@ -1,6 +1,6 @@
 name: sliding_up_panel
 description: A draggable Flutter widget that makes implementing a SlidingUpPanel much easier!
-version: 0.3.0
+version: 0.3.1
 author: Akshath Jain <akshath@akshathjain.com>
 homepage: https://github.com/akshathjain/sliding_up_panel
 
