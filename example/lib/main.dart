@@ -8,10 +8,15 @@ Licensing: More information can be found here: https://github.com/akshathjain/sl
 
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:flutter/services.dart';
+
+// uncomment the following lines before running; there's an ongoing issue with
+// pub that causes warnings to be thrown when analyzing nested flutter
+// packages - issue #17168, https://github.com/flutter/flutter/issues/17168
+
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/services.dart';
 
 void main() => runApp(SlidingUpPanelExample());
 
