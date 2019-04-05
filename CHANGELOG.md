@@ -51,3 +51,14 @@ Other changes:
 - Updated documentation to reflect new features
 - Added clarification on `PanelController` lifecycle
 - Added an explanation about nesting the `Scaffold` when displaying a backdrop
+
+## [0.3.1] - [April 5, 2019]
+
+#### Features
+- Configuration options to `SlidingUpPanel`
+    - `parallaxEnabled`
+    - `parallaxOffset`
+
+#### Documentation
+- Created a new example app (Maps)
+- Updated documentation to reflect new features
