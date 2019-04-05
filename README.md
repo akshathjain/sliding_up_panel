@@ -4,7 +4,7 @@
 A draggable Flutter widget that makes implementing a SlidingUpPanel much easier!
 
 <p>
-  <img width="250px" alt="Example" src="screenshots/example.GIF"/>
+  <img width="250px" alt="Example" src="screenshots/example.gif"/>
   <img width="250px" alt="Example App Closed" src="screenshots/exampleclosed.png"/>
   <img width="250px" alt="Example App Open" src="screenshots/exampleopen.png" />
 </p>
