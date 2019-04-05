@@ -1,29 +1,20 @@
-## [0.1.0] - March 31, 2019
+## [0.3.2] - [April 5, 2019]
 
-This is the initial release of the sliding_up_panel package. This includes features such as
-- A sliding up panel that responds to user gestures
-- Customizing the look and feel of the sliding panel
-- Manually controlling the sliding panel via the PanelController
+#### Documentation
+- Fixed problem where images would wrap on pub (instead of displaying on one line)
 
-## [0.1.1] - March 31, 2019
+## [0.3.1] - [April 5, 2019]
 
-- Added a CHANGELOG file
+#### Features
+- Configuration options to `SlidingUpPanel`
+    - `parallaxEnabled`
+    - `parallaxOffset`
 
-## [0.1.2] - March 31, 2019
+#### Documentation
+- Created a new example app (Maps)
+- Updated documentation to reflect new features
 
-- Updated documentation to be more comprehensive
 
-## [0.2.0] - April 1, 2019
-
-Added the backdrop feature:
-- Body darkens as the panel opens
-- The backdrop color is customizable
-- The backdrop opacity is also customizable
-- Off by default
-
-Other changes:
-- Removed the README from the example app (pub will display the code on the website now)
-- Specified Dart as the language in the README code snippets
 
 ## [0.3.0] - April 2, 2019
 
@@ -52,13 +43,37 @@ Other changes:
 - Added clarification on `PanelController` lifecycle
 - Added an explanation about nesting the `Scaffold` when displaying a backdrop
 
-## [0.3.1] - [April 5, 2019]
 
-#### Features
-- Configuration options to `SlidingUpPanel`
-    - `parallaxEnabled`
-    - `parallaxOffset`
 
-#### Documentation
-- Created a new example app (Maps)
-- Updated documentation to reflect new features
+## [0.2.0] - April 1, 2019
+
+Added the backdrop feature:
+- Body darkens as the panel opens
+- The backdrop color is customizable
+- The backdrop opacity is also customizable
+- Off by default
+
+Other changes:
+- Removed the README from the example app (pub will display the code on the website now)
+- Specified Dart as the language in the README code snippets
+
+
+
+## [0.1.2] - March 31, 2019
+
+- Updated documentation to be more comprehensive
+
+
+
+## [0.1.1] - March 31, 2019
+
+- Added a CHANGELOG file
+
+
+
+## [0.1.0] - March 31, 2019
+
+This is the initial release of the sliding_up_panel package. This includes features such as
+- A sliding up panel that responds to user gestures
+- Customizing the look and feel of the sliding panel
+- Manually controlling the sliding panel via the PanelController
