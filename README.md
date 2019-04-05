@@ -4,9 +4,9 @@
 A draggable Flutter widget that makes implementing a SlidingUpPanel much easier!
 
 <p>
-  <img width="220px" alt="Example" src="screenshots/example.gif"/>
-  <img width="250px" alt="Example App Closed" src="screenshots/exampleclosed.png"/>
-  <img width="250px" alt="Example App Open" src="screenshots/exampleopen.png" />
+  <img width="205px" alt="Example" src="screenshots/example.gif"/>
+  <img width="220px" alt="Example App Closed" src="screenshots/exampleclosed.png"/>
+  <img width="220px" alt="Example App Open" src="screenshots/exampleopen.png" />
 </p>
 
 <br>
@@ -76,9 +76,9 @@ Widget build(BuildContext context) {
 Both methods produce the same result:
 
 <p float="left">
-  <img alt="Panel Closed" width="250px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/simpleusageclosed.png">
-  <img alt="Panel Midway" width="250px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/simpleusagemidway.png">
-  <img alt="Panel Open" width="250px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/simpleusageopen.png">
+  <img alt="Panel Closed" width="220px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/simpleusageclosed.png">
+  <img alt="Panel Midway" width="220px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/simpleusagemidway.png">
+  <img alt="Panel Open" width="220px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/simpleusageopen.png">
 </p>
 
 <br>
@@ -144,9 +144,9 @@ Widget build(BuildContext context){
 Notice how the `Scaffold` is nested inside of the `SlidingUpPanel`. This because the backdrop is rendered only over the `body` of the `SlidingUpPanel`. As a result, if we want the `backdrop` to appear over the `AppBar`, then we *must* nest the `Scaffold` this way.
 
 <p float="left">
-  <img alt="Panel Closed" width="250px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/backdropclosed.png">
-  <img alt="Panel Midway" width="250px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/backdropmidway.png">
-  <img alt="Panel Open" width="250px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/backdropopen.png">
+  <img alt="Panel Closed" width="220px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/backdropclosed.png">
+  <img alt="Panel Midway" width="220px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/backdropmidway.png">
+  <img alt="Panel Open" width="220px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/backdropopen.png">
 </p>
 
 <br>
@@ -184,9 +184,9 @@ Widget build(BuildContext context) {
 ```
 
 <p float="left">
-  <img alt="Panel Closed" width="250px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/collapsedpanelclosed.png">
-  <img alt="Panel Midway" width="250px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/collapsedpanelmidway.png">
-  <img alt="Panel Open" width="250px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/collapsedpanelopen.png">
+  <img alt="Panel Closed" width="220px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/collapsedpanelclosed.png">
+  <img alt="Panel Midway" width="220px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/collapsedpanelmidway.png">
+  <img alt="Panel Open" width="220px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/collapsedpanelopen.png">
 </p>
 
 <br>
@@ -237,9 +237,9 @@ Widget build(BuildContext context) {
 ```
 
 <p float="left">
-  <img alt="Panel Closed" width="250px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/borderclosed.png">
-  <img alt="Panel Midway" width="250px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/bordermidway.png">
-  <img alt="Panel Open" width="250px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/borderopen.png">
+  <img alt="Panel Closed" width="220px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/borderclosed.png">
+  <img alt="Panel Midway" width="220px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/bordermidway.png">
+  <img alt="Panel Open" width="220px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/borderopen.png">
 </p>
 
 <br>
@@ -305,9 +305,9 @@ Widget _floatingPanel(){
 Note that a similar effect can be created by simply adding a `margin` to the `SlidingUpPanel`.
 
 <p float="left">
-  <img alt="Panel Closed" width="250px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/floatingclosed.png">
-  <img alt="Panel Midway" width="250px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/floatingmidway.png">
-  <img alt="Panel Open" width="250px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/floatingopen.png">
+  <img alt="Panel Closed" width="220px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/floatingclosed.png">
+  <img alt="Panel Midway" width="220px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/floatingmidway.png">
+  <img alt="Panel Open" width="220px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/floatingopen.png">
 </p>
 
 <br>
@@ -354,9 +354,9 @@ Widget _scrollingList(){
 ```
 
 <p float="left">
-  <img alt="Panel Closed" width="250px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/scrollclosed.png">
-  <img alt="Panel Midway" width="250px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/scrollmidway.png">
-  <img alt="Panel Open" width="250px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/scrollopen.png">
+  <img alt="Panel Closed" width="220px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/scrollclosed.png">
+  <img alt="Panel Midway" width="220px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/scrollmidway.png">
+  <img alt="Panel Open" width="220px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/scrollopen.png">
 </p>
 
 <br>
