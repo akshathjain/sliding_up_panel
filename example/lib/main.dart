@@ -11,12 +11,20 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/services.dart';
 
 void main() => runApp(SlidingUpPanelExample());
 
 class SlidingUpPanelExample extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.grey[200],
+      systemNavigationBarIconBrightness: Brightness.dark,
+      systemNavigationBarDividerColor: Colors.black,
+    ));
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'SlidingUpPanel Example',
@@ -38,7 +46,7 @@ class _HomePageState extends State<HomePage> {
   final double _initFabHeight = 120.0;
   double _fabHeight;
   double _panelHeightOpen = 575.0;
-  double _panelHeightClosed = 100.0;
+  double _panelHeightClosed = 95.0;
 
   @override
   void initState(){
@@ -174,12 +182,16 @@ class _HomePageState extends State<HomePage> {
 
                     CachedNetworkImage(
                       imageUrl: "https://images.fineartamerica.com/images-medium-large-5/new-pittsburgh-emmanuel-panagiotakis.jpg",
-                      height: 105.0,
+                      height: 120.0,
+                      width: (MediaQuery.of(context).size.width - 48) / 2 - 2,
+                      fit: BoxFit.cover,
                     ),
 
                     CachedNetworkImage(
                       imageUrl: "https://cdn.pixabay.com/photo/2016/08/11/23/48/pnc-park-1587285_1280.jpg",
-                      height: 105.0,
+                      width: (MediaQuery.of(context).size.width - 48) / 2 - 2,
+                      height: 120.0,
+                      fit: BoxFit.cover,
                     ),
 
                 ],
@@ -197,23 +209,25 @@ class _HomePageState extends State<HomePage> {
             children: <Widget>[
               Text("About", style: TextStyle(fontWeight: FontWeight.w600,)),
 
+              SizedBox(height: 12.0,),
+
               Text(
-                "Pittsburgh is a city in the Commonwealth of Pennsylvania"
-                "in the United States, and is the county seat of Allegheny County."
-                "As of 2017, a population of 305,704 lives within the city limits,"
-                "making it the 63rd-largest city in the U.S. The metropolitan population"
-                "of 2,353,045 is the largest in both the Ohio Valley and Appalachia,"
-                "the second-largest in Pennsylvania (behind Philadelphia),"
-                "and the 26th-largest in the U.S.  Pittsburgh is located in the"
-                "south west of the state, at the confluence of the Allegheny,"
-                "Monongahela, and Ohio rivers, Pittsburgh is known both as 'the Steel City'"
-                "for its more than 300 steel-related businesses and as the 'City of Bridges'"
-                "for its 446 bridges. The city features 30 skyscrapers, two inclined railways,"
-                "a pre-revolutionary fortification and the Point State Park at the"
-                "confluence of the rivers. The city developed as a vital link of"
-                "the Atlantic coast and Midwest, as the mineral-rich Allegheny"
-                "Mountains made the area coveted by the French and British"
-                "empires, Virginians, Whiskey Rebels, and Civil War raiders.",
+                "Pittsburgh is a city in the Commonwealth of Pennsylvania "
+                "in the United States, and is the county seat of Allegheny County. "
+                "As of 2017, a population of 305,704 lives within the city limits, "
+                "making it the 63rd-largest city in the U.S. The metropolitan population "
+                "of 2,353,045 is the largest in both the Ohio Valley and Appalachia, "
+                "the second-largest in Pennsylvania (behind Philadelphia), "
+                "and the 26th-largest in the U.S.  Pittsburgh is located in the "
+                "south west of the state, at the confluence of the Allegheny, "
+                "Monongahela, and Ohio rivers, Pittsburgh is known both as 'the Steel City' "
+                "for its more than 300 steel-related businesses and as the 'City of Bridges' "
+                "for its 446 bridges. The city features 30 skyscrapers, two inclined railways, "
+                "a pre-revolutionary fortification and the Point State Park at the "
+                "confluence of the rivers. The city developed as a vital link of "
+                "the Atlantic coast and Midwest, as the mineral-rich Allegheny "
+                "Mountains made the area coveted by the French and British "
+                "empires, Virginians, Whiskey Rebels, and Civil War raiders. ",
                 maxLines: 7,
                 overflow: TextOverflow.ellipsis,
               ),

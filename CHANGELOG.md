@@ -60,4 +60,5 @@ Other changes:
     - `parallaxOffset`
 
 #### Documentation
+- Created a new example app (Maps)
 - Updated documentation to reflect new features
