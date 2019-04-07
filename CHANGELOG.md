@@ -1,5 +1,14 @@
 ## [0.3.2] - [April 5, 2019]
 
+#### Features
+- Added `isDraggable` property that allows/prevents dragging of the panel
+
+#### Documentation
+- Updated the documentation to reflect new features
+
+
+## [0.3.2] - [April 5, 2019]
+
 #### Documentation
 - Fixed problem where images would wrap on pub (instead of displaying on one line)
 
