@@ -1,4 +1,4 @@
-## [0.3.3] - [April 5, 2019]
+## [0.3.3] - [April 6, 2019]
 
 #### Features
 - Added `isDraggable` property that allows/prevents dragging of the panel
