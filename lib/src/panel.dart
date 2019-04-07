@@ -104,6 +104,11 @@ class SlidingUpPanel extends StatefulWidget {
   /// one-to-one scrolling effect. Defaults to a 10% parallax.
   final double parallaxOffset;
 
+  /// Allows toggling of draggability of the SlidingUpPanel.
+  /// Set this to false to prevent the user from being able to drag
+  /// the panel up and down. Defaults to true.
+  final bool isDraggable;
+
   SlidingUpPanel({
     Key key,
     @required this.panel,
@@ -134,6 +139,7 @@ class SlidingUpPanel extends StatefulWidget {
     this.onPanelClosed,
     this.parallaxEnabled = false,
     this.parallaxOffset = 0.1,
+    this.isDraggable = true,
   }) : assert(0 <= backdropOpacity && backdropOpacity <= 1.0),
        super(key: key);
 
@@ -217,8 +223,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
         //the actual sliding part
         !_isPanelVisible ? Container() : GestureDetector(
-          onVerticalDragUpdate: _onDrag,
-          onVerticalDragEnd: _onDragEnd,
+          onVerticalDragUpdate: widget.isDraggable ? _onDrag : null,
+          onVerticalDragEnd: widget.isDraggable ? _onDragEnd : null,
           child: Container(
             height: _ac.value * (widget.maxHeight - widget.minHeight) + widget.minHeight,
             margin: widget.margin,
