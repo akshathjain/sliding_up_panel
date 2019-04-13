@@ -295,10 +295,10 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     if(details.velocity.pixelsPerSecond.dy.abs() >= minFlingVelocity){
       double visualVelocity = - details.velocity.pixelsPerSecond.dy / (widget.maxHeight - widget.minHeight);
 
-      if(widget.panelSnapping)
+      if(widget.panelSnapping){
         _ac.fling(velocity: visualVelocity);
-      else{
-        // actual scroll physics, will be implemented in a future release
+      }else{
+        // actual scroll physics will be implemented in a future release
         _ac.animateTo(
           _ac.value + visualVelocity * 0.16,
           duration: Duration(milliseconds: 410),
@@ -319,6 +319,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   }
 
+  double abs(x) => x < 0 ? -x : x;
 
 
 

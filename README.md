@@ -15,7 +15,7 @@ A draggable Flutter widget that makes implementing a SlidingUpPanel much easier!
 
 ## Installing
 Add the following to your `pubspec.yaml` file:
-```
+```yaml
 dependencies:
   sliding_up_panel: ^0.3.3
 ```
@@ -115,7 +115,7 @@ There are several options that allow for more control:
 | `onPanelClosed` | If non-null, this callback is called when the panel is fully collapsed. |
 | `parallaxEnabled` | If non-null and true, the SlidingUpPanel exhibits a parallax effect as the panel slides up. Essentially, the body slides up as the panel slides up. |
 | `parallaxOffset` | Allows for specifying the extent of the parallax effect in terms of the percentage the panel has slid up/down. Recommended values are within 0.0 and 1.0 where 0.0 is no parallax and 1.0 mimics a one-to-one scrolling effect. Defaults to a 10% parallax. |
-| `isDraggable` | Allows toggling of draggability of the SlidingUpPanel. Set this to false to prevent the user from being able to drag the panel up and down. Defaults to true. |
+| `draggingEnabled` | Allows toggling of draggability of the SlidingUpPanel. Set this to false to prevent the user from being able to drag the panel up and down. Defaults to true. |
 
 <br>
 <br>
