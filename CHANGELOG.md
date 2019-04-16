@@ -1,3 +1,12 @@
+## [0.3.4] - [April 15, 2019]
+
+#### Features
+- Added `slideDirection` property that changes how the panel slides open (either up or down)
+
+#### Documentation
+- Updated the documentation to reflect new features
+
+
 ## [0.3.3] - [April 6, 2019]
 
 #### Features

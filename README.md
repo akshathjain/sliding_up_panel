@@ -3,7 +3,7 @@
 [![GitHub Stars](https://img.shields.io/github/stars/akshathjain/sliding_up_panel.svg?logo=github)](https://github.com/akshathjain/sliding_up_panel)
 [![Platform](https://img.shields.io/badge/platform-android%20|%20ios-green.svg)](https://img.shields.io/badge/platform-Android%20%7C%20iOS-green.svg)
 
-A draggable Flutter widget that makes implementing a SlidingUpPanel much easier!
+A draggable Flutter widget that makes implementing a SlidingUpPanel much easier! Based on the Material Design bottom sheet component, this widget works on both Android & iOS.
 
 <p>
   <img width="205px" alt="Example" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/example.gif"/>
@@ -17,7 +17,7 @@ A draggable Flutter widget that makes implementing a SlidingUpPanel much easier!
 Add the following to your `pubspec.yaml` file:
 ```yaml
 dependencies:
-  sliding_up_panel: ^0.3.3
+  sliding_up_panel: ^0.3.4
 ```
 
 <br>
