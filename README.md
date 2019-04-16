@@ -1,9 +1,9 @@
 # sliding_up_panel
 [![pub package](https://img.shields.io/pub/v/sliding_up_panel.svg)](https://pub.dartlang.org/packages/sliding_up_panel)
-[![GitHub Star](https://img.shields.io/github/stars/akshathjain/sliding_up_panel.svg)](https://github.com/akshathjain/sliding_up_panel)
+[![GitHub Stars](https://img.shields.io/github/stars/akshathjain/sliding_up_panel.svg?logo=github)](https://github.com/akshathjain/sliding_up_panel)
 [![Platform](https://img.shields.io/badge/platform-android%20|%20ios-green.svg)](https://img.shields.io/badge/platform-Android%20%7C%20iOS-green.svg)
 
-A draggable Flutter widget that makes implementing a SlidingUpPanel much easier!
+A draggable Flutter widget that makes implementing a SlidingUpPanel much easier! Based on the Material Design bottom sheet component, this widget works on both Android & iOS.
 
 <p>
   <img width="205px" alt="Example" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/example.gif"/>
@@ -15,9 +15,9 @@ A draggable Flutter widget that makes implementing a SlidingUpPanel much easier!
 
 ## Installing
 Add the following to your `pubspec.yaml` file:
-```
+```yaml
 dependencies:
-  sliding_up_panel: ^0.3.3
+  sliding_up_panel: ^0.3.4
 ```
 
 <br>
@@ -116,6 +116,7 @@ There are several options that allow for more control:
 | `parallaxEnabled` | If non-null and true, the SlidingUpPanel exhibits a parallax effect as the panel slides up. Essentially, the body slides up as the panel slides up. |
 | `parallaxOffset` | Allows for specifying the extent of the parallax effect in terms of the percentage the panel has slid up/down. Recommended values are within 0.0 and 1.0 where 0.0 is no parallax and 1.0 mimics a one-to-one scrolling effect. Defaults to a 10% parallax. |
 | `isDraggable` | Allows toggling of draggability of the SlidingUpPanel. Set this to false to prevent the user from being able to drag the panel up and down. Defaults to true. |
+| `slideDirection` | Either `SlideDirection.UP` or `SlideDirection.DOWN`. Indicates which way the panel should slide. Defaults to `UP`. If set to `DOWN`, the panel attaches itself to the top of the screen and is fully opened when the user swipes down on the panel. |
 
 <br>
 <br>
