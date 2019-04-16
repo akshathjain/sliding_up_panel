@@ -1,4 +1,4 @@
-## [0.3.4] - [April 15, 2019]
+## [0.3.4] - [April 16, 2019]
 
 #### Features
 - Added `slideDirection` property that changes how the panel slides open (either up or down)
@@ -20,6 +20,7 @@
 
 #### Documentation
 - Fixed problem where images would wrap on pub (instead of displaying on one line)
+
 
 ## [0.3.1] - [April 5, 2019]
 
