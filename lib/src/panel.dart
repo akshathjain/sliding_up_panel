@@ -8,6 +8,11 @@ Licensing: More information can be found here: https://github.com/akshathjain/sl
 
 import 'package:flutter/material.dart';
 
+enum SlideDirection{
+  UP,
+  DOWN,
+}
+
 class SlidingUpPanel extends StatefulWidget {
 
   /// The Widget that slides into view. When the
@@ -109,6 +114,11 @@ class SlidingUpPanel extends StatefulWidget {
   /// the panel up and down. Defaults to true.
   final bool draggingEnabled;
 
+  /// Either SlideDirection.UP or SlideDirection.DOWN. Indicates which way
+  /// the panel should slide. Defaults to UP. If set to DOWN, the panel attaches
+  /// itself to the top of the screen.
+  final SlideDirection slideDirection;
+
   SlidingUpPanel({
     Key key,
     @required this.panel,
@@ -140,6 +150,7 @@ class SlidingUpPanel extends StatefulWidget {
     this.parallaxEnabled = false,
     this.parallaxOffset = 0.1,
     this.draggingEnabled = true,
+    this.slideDirection = SlideDirection.UP
   }) : assert(0 <= backdropOpacity && backdropOpacity <= 1.0),
        super(key: key);
 
@@ -188,13 +199,13 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   @override
   Widget build(BuildContext context) {
     return Stack(
-      alignment: Alignment.bottomCenter,
+      alignment: widget.slideDirection == SlideDirection.UP ? Alignment.bottomCenter : Alignment.topCenter,
       children: <Widget>[
 
 
         //make the back widget take up the entire back side
         widget.body != null ? Positioned(
-          top: widget.parallaxEnabled ? (- _ac.value * (widget.maxHeight - widget.minHeight) * widget.parallaxOffset) : 0.0,
+          top: widget.parallaxEnabled ? _getParallax() : 0.0,
           child: Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
@@ -240,7 +251,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
                 //open panel
                 Positioned(
-                  top: 0.0,
+                  top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
+                  bottom: widget.slideDirection == SlideDirection.DOWN ? 0.0 : null,
                   width:  MediaQuery.of(context).size.width -
                           (widget.margin != null ? widget.margin.horizontal : 0) -
                           (widget.padding != null ? widget.padding.horizontal : 0),
@@ -251,16 +263,23 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                 ),
 
                 // collapsed panel
-                Container(
-                  height: widget.minHeight,
-                  child: Opacity(
-                    opacity: 1.0 - _ac.value,
+                Positioned(
+                  top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
+                  bottom: widget.slideDirection == SlideDirection.DOWN ? 0.0 : null,
+                  width:  MediaQuery.of(context).size.width -
+                          (widget.margin != null ? widget.margin.horizontal : 0) -
+                          (widget.padding != null ? widget.padding.horizontal : 0),
+                  child: Container(
+                    height: widget.minHeight,
+                    child: Opacity(
+                      opacity: 1.0 - _ac.value,
 
-                    // if the panel is open ignore pointers (touch events) on the collapsed
-                    // child so that way touch events go through to whatever is underneath
-                    child: IgnorePointer(
-                      ignoring: _isPanelOpen(),
-                      child: widget.collapsed ?? Container(),
+                      // if the panel is open ignore pointers (touch events) on the collapsed
+                      // child so that way touch events go through to whatever is underneath
+                      child: IgnorePointer(
+                        ignoring: _isPanelOpen(),
+                        child: widget.collapsed ?? Container(),
+                      ),
                     ),
                   ),
                 ),
@@ -281,8 +300,18 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     super.dispose();
   }
 
+  double _getParallax(){
+    if(widget.slideDirection == SlideDirection.UP)
+      return -_ac.value * (widget.maxHeight - widget.minHeight) * widget.parallaxOffset;
+    else
+      return _ac.value * (widget.maxHeight - widget.minHeight) * widget.parallaxOffset;
+  }
+
   void _onDrag(DragUpdateDetails details){
-    _ac.value -= details.primaryDelta / (widget.maxHeight - widget.minHeight);
+    if(widget.slideDirection == SlideDirection.UP)
+      _ac.value -= details.primaryDelta / (widget.maxHeight - widget.minHeight);
+    else
+      _ac.value += details.primaryDelta / (widget.maxHeight - widget.minHeight);
   }
 
   void _onDragEnd(DragEndDetails details){
@@ -294,6 +323,9 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     //check if the velocity is sufficient to constitute fling
     if(details.velocity.pixelsPerSecond.dy.abs() >= minFlingVelocity){
       double visualVelocity = - details.velocity.pixelsPerSecond.dy / (widget.maxHeight - widget.minHeight);
+
+      if(widget.slideDirection == SlideDirection.DOWN)
+        visualVelocity = -visualVelocity;
 
       if(widget.panelSnapping){
         _ac.fling(velocity: visualVelocity);
@@ -318,8 +350,6 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     }
 
   }
-
-  double abs(x) => x < 0 ? -x : x;
 
 
 
