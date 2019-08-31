@@ -13,6 +13,11 @@ enum SlideDirection{
   DOWN,
 }
 
+enum PanelState{
+  OPEN,
+  CLOSED
+}
+
 class SlidingUpPanel extends StatefulWidget {
 
   /// The Widget that slides into view. When the
@@ -120,6 +125,12 @@ class SlidingUpPanel extends StatefulWidget {
   /// down on the panel.
   final SlideDirection slideDirection;
 
+  /// The default state of the panel; either PanelState.OPEN or PanelState.CLOSED.
+  /// This value defaults to PanelState.CLOSED which indicates that the panel is
+  /// in the closed position and must be opened. PanelState.OPEN indicates that
+  /// by default the Panel is open and must be swiped closed by the user.
+  final PanelState defaultPanelState;
+
   SlidingUpPanel({
     Key key,
     @required this.panel,
@@ -151,7 +162,8 @@ class SlidingUpPanel extends StatefulWidget {
     this.parallaxEnabled = false,
     this.parallaxOffset = 0.1,
     this.isDraggable = true,
-    this.slideDirection = SlideDirection.UP
+    this.slideDirection = SlideDirection.UP,
+    this.defaultPanelState = PanelState.CLOSED
   }) : assert(0 <= backdropOpacity && backdropOpacity <= 1.0),
        super(key: key);
 
@@ -195,6 +207,10 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
       _isPanelClosed,
       _isPanelShown,
     );
+
+    //set the default panel state
+    if(widget.defaultPanelState == PanelState.CLOSED) _ac.value = 0.0;
+    else if (widget.defaultPanelState == PanelState.OPEN) _ac.value = 1.0;
   }
 
   @override

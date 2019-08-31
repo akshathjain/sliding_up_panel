@@ -1,19 +1,31 @@
-## [0.3.4] - [April 16, 2019]
+## [0.3.5] - [August 31, 2019]
 
 #### Features
-- Added `slideDirection` property that changes how the panel slides open (either up or down)
+- Added the `defaultPanelState` property that changes whether the panel is either open or closed by default (`PanelState.OPEN` or `PanelState.CLOSED`)
 
 #### Documentation
 - Updated the documentation to reflect new features
+
+
+
+## [0.3.4] - [April 16, 2019]
+
+#### Features
+- Added the `slideDirection` property that changes how the panel slides open (either up or down)
+
+#### Documentation
+- Updated the documentation to reflect new features
+
 
 
 ## [0.3.3] - [April 6, 2019]
 
 #### Features
-- Added `isDraggable` property that allows/prevents dragging of the panel
+- Added the `isDraggable` property that allows/prevents dragging of the panel
 
 #### Documentation
 - Updated the documentation to reflect new features
+
 
 
 ## [0.3.2] - [April 5, 2019]
