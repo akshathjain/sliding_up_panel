@@ -184,6 +184,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     _ac = new AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
+      value: widget.defaultPanelState == PanelState.CLOSED ? 0.0 : 1.0 //set the default panel state (i.e. set initial value of _ac)
     )..addListener((){
       setState((){});
 
@@ -207,10 +208,6 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
       _isPanelClosed,
       _isPanelShown,
     );
-
-    //set the default panel state
-    if(widget.defaultPanelState == PanelState.CLOSED) _ac.value = 0.0;
-    else if (widget.defaultPanelState == PanelState.OPEN) _ac.value = 1.0;
   }
 
   @override
