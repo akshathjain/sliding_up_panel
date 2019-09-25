@@ -1,3 +1,13 @@
+## [0.3.6] - [September 25, 2019]
+
+#### Fixes
+- Fixed issues #54, #59 where panel listeners would be called before UI was rendered (related to `defaultPanelState`)
+
+#### Documentation
+- Updated the documentation to reflect fixes
+
+
+
 ## [0.3.5] - [August 31, 2019]
 
 #### Features
