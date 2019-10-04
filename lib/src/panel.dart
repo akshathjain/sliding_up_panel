@@ -127,40 +127,40 @@ class SlidingUpPanel extends StatefulWidget {
   /// by default the Panel is open and must be swiped closed by the user.
   final PanelState defaultPanelState;
 
-  SlidingUpPanel(
-      {Key key,
-      @required this.panel,
-      this.body,
-      this.collapsed,
-      this.minHeight = 100.0,
-      this.maxHeight = 500.0,
-      this.border,
-      this.borderRadius,
-      this.boxShadow = const <BoxShadow>[
-        BoxShadow(
-          blurRadius: 8.0,
-          color: Color.fromRGBO(0, 0, 0, 0.25),
-        )
-      ],
-      this.color = Colors.white,
-      this.padding,
-      this.margin,
-      this.renderPanelSheet = true,
-      this.panelSnapping = true,
-      this.controller,
-      this.backdropEnabled = false,
-      this.backdropColor = Colors.black,
-      this.backdropOpacity = 0.5,
-      this.backdropTapClosesPanel = true,
-      this.onPanelSlide,
-      this.onPanelOpened,
-      this.onPanelClosed,
-      this.parallaxEnabled = false,
-      this.parallaxOffset = 0.1,
-      this.isDraggable = true,
-      this.slideDirection = SlideDirection.UP,
-      this.defaultPanelState = PanelState.CLOSED})
-      : assert(0 <= backdropOpacity && backdropOpacity <= 1.0),
+  SlidingUpPanel({
+    Key key,
+    @required this.panel,
+    this.body,
+    this.collapsed,
+    this.minHeight = 100.0,
+    this.maxHeight = 500.0,
+    this.border,
+    this.borderRadius,
+    this.boxShadow = const <BoxShadow>[
+      BoxShadow(
+        blurRadius: 8.0,
+        color: Color.fromRGBO(0, 0, 0, 0.25),
+      )
+    ],
+    this.color = Colors.white,
+    this.padding,
+    this.margin,
+    this.renderPanelSheet = true,
+    this.panelSnapping = true,
+    this.controller,
+    this.backdropEnabled = false,
+    this.backdropColor = Colors.black,
+    this.backdropOpacity = 0.5,
+    this.backdropTapClosesPanel = true,
+    this.onPanelSlide,
+    this.onPanelOpened,
+    this.onPanelClosed,
+    this.parallaxEnabled = false,
+    this.parallaxOffset = 0.1,
+    this.isDraggable = true,
+    this.slideDirection = SlideDirection.UP,
+    this.defaultPanelState = PanelState.CLOSED,
+  })  : assert(0 <= backdropOpacity && backdropOpacity <= 1.0),
         super(key: key);
 
   @override
@@ -176,12 +176,12 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   void initState() {
     super.initState();
 
-    _ac = new AnimationController(
+    _ac = AnimationController(
         vsync: this,
         duration: const Duration(milliseconds: 300),
         value: widget.defaultPanelState == PanelState.CLOSED
             ? 0.0
-            : 1.0 //set the default panel state (i.e. set initial value of _ac)
+            : 1.0, //set the default panel state (i.e. set initial value of _ac)
         )
       ..addListener(() {
         setState(() {});
@@ -268,15 +268,16 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                         children: <Widget>[
                           //open panel
                           Positioned(
-                              top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
-                              bottom: widget.slideDirection == SlideDirection.DOWN ? 0.0 : null,
-                              width: constraints.maxWidth -
-                                  (widget.margin != null ? widget.margin.horizontal : 0) -
-                                  (widget.padding != null ? widget.padding.horizontal : 0),
-                              child: Container(
-                                height: widget.maxHeight,
-                                child: widget.panel,
-                              )),
+                            top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
+                            bottom: widget.slideDirection == SlideDirection.DOWN ? 0.0 : null,
+                            width: constraints.maxWidth -
+                                (widget.margin != null ? widget.margin.horizontal : 0) -
+                                (widget.padding != null ? widget.padding.horizontal : 0),
+                            child: Container(
+                              height: widget.maxHeight,
+                              child: widget.panel,
+                            ),
+                          ),
 
                           // collapsed panel
                           Positioned(
