@@ -72,6 +72,9 @@ class SlidingUpPanel extends StatefulWidget {
   final bool panelSnapping;
 
   /// If non-null, this can be used to control the state of the panel.
+  /// The controller should be used after the panel initializing.
+  /// Calling controller methods before panel initializing does nothing; or
+  /// returns `null` instead of actual values.
   final PanelController controller;
 
   /// If non-null, shows a darkening shadow over the [body] as the panel slides open.
@@ -494,24 +497,24 @@ class PanelController{
 
   /// Closes the sliding panel to its collapsed state (i.e. to the  minHeight)
   void close(){
-    _closeListener();
+    _closeListener?.call();
   }
 
   /// Opens the sliding panel fully
   /// (i.e. to the maxHeight)
   void open(){
-    _openListener();
+    _openListener?.call();
   }
 
   /// Hides the sliding panel (i.e. is invisible)
   void hide(){
-    _hideListener();
+    _hideListener?.call();
   }
 
   /// Shows the sliding panel in its collapsed state
   /// (i.e. "un-hide" the sliding panel)
   void show(){
-    _showListener();
+    _showListener?.call();
   }
 
   /// Sets the panel position (without animation).
@@ -519,7 +522,7 @@ class PanelController{
   /// where 0.0 is fully collapsed and 1.0 is completely open.
   void setPanelPosition(double value){
     assert(0.0 <= value && value <= 1.0);
-    _setPanelPositionListener(value);
+    _setPanelPositionListener?.call(value);
   }
 
   /// Animates the panel position to the value.
@@ -527,7 +530,7 @@ class PanelController{
   /// where 0.0 is fully collapsed and 1.0 is completely open
   void animatePanelToPosition(double value){
     assert(0.0 <= value && value <= 1.0);
-    _setAnimatePanelToPositionListener(value);
+    _setAnimatePanelToPositionListener?.call(value);
   }
 
   /// Gets the current panel position.
@@ -537,31 +540,31 @@ class PanelController{
   /// where 0.0 is fully collapsed and
   /// 1.0 is full open.
   double getPanelPosition(){
-    return _getPanelPositionListener();
+    return _getPanelPositionListener?.call();
   }
 
   /// Returns whether or not the panel is
   /// currently animating.
   bool isPanelAnimating(){
-    return _isPanelAnimatingListener();
+    return _isPanelAnimatingListener?.call();
   }
 
   /// Returns whether or not the
   /// panel is open.
   bool isPanelOpen(){
-    return _isPanelOpenListener();
+    return _isPanelOpenListener?.call();
   }
 
   /// Returns whether or not the
   /// panel is closed.
   bool isPanelClosed(){
-    return _isPanelClosedListener();
+    return _isPanelClosedListener?.call();
   }
 
   /// Returns whether or not the
   /// panel is shown/hidden.
   bool isPanelShown(){
-    return _isPanelShownListener();
+    return _isPanelShownListener?.call();
   }
 
 }
