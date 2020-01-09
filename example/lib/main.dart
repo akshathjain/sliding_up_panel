@@ -94,7 +94,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
 
-          //the SlidingUpPanel Titel
+          //the SlidingUpPanel Title
           Positioned(
             top: 42.0,
             child: Container(
