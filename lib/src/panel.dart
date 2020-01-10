@@ -5,6 +5,8 @@ Purpose: Defines the sliding_up_panel widget
 Copyright: © 2019, Akshath Jain. All rights reserved.
 Licensing: More information can be found here: https://github.com/akshathjain/sliding_up_panel/blob/master/LICENSE
 */
+import 'dart:core';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 
@@ -41,6 +43,9 @@ class SlidingUpPanel extends StatefulWidget {
 
   /// The height of the sliding panel when fully open.
   final double maxHeight;
+
+  /// Midway points between 0.0 and 1.0 where panel stops
+  final List<double> snappingPoints;
 
   /// A border to draw around the sliding panel sheet.
   final Border border;
@@ -138,6 +143,7 @@ class SlidingUpPanel extends StatefulWidget {
     this.collapsed,
     this.minHeight = 100.0,
     this.maxHeight = 500.0,
+    this.snappingPoints,
     this.border,
     this.borderRadius,
     this.boxShadow = const <BoxShadow>[
@@ -329,8 +335,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   }
 
   void _onDragEnd(DragEndDetails details){
-    double minFlingVelocity = 365.0;
-
+    final double minFlingVelocity = 365.0;
+    final bool closing = details.primaryVelocity > 0;
     //let the current animation finish before starting a new one
     if(_ac.isAnimating) return;
 
@@ -342,7 +348,13 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
         visualVelocity = -visualVelocity;
 
       if(widget.panelSnapping){
-        _ac.fling(velocity: visualVelocity);
+        if (widget.snappingPoints != null && widget.snappingPoints.isNotEmpty) {
+          double snapPoint = _nearest(closing);
+          _animatePanelToPosition(snapPoint);
+        }
+        else {
+          _ac.fling(velocity: visualVelocity);
+        }
       }else{
         // actual scroll physics will be implemented in a future release
         _ac.animateTo(
@@ -357,13 +369,40 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
     // check if the controller is already halfway there
     if (widget.panelSnapping) {
-      if(_ac.value > 0.5)
-        _open();
-      else
-        _close();
+      if (widget.snappingPoints != null && widget.snappingPoints.isNotEmpty) {
+        double snapPoint = _nearest(closing);
+        _animatePanelToPosition(snapPoint);
+      }
+      else {
+        if(_ac.value > 0.5)
+          _open();
+        else
+          _close();
+      }
+      
     }
 
   }
+
+
+
+  double _nearest(bool closing){
+    final List<double> snappingPoints = [0.0, ...widget.snappingPoints, 1.0];
+    if (closing) 
+      snappingPoints.removeWhere((p) => p > _ac.value);
+    else
+      snappingPoints.removeWhere((p) => p < _ac.value);
+    double minimum = 1.0;
+    double finalValue;
+    for (double p in snappingPoints) {
+      if (( p - _ac.value ).abs() < minimum) {
+        finalValue = p;
+        minimum = (p - _ac.value).abs();
+      }
+    }
+    return finalValue;
+  }
+
 
 
 
