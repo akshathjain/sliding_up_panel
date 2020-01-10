@@ -6,13 +6,17 @@ Copyright: © 2019, Akshath Jain. All rights reserved.
 Licensing: More information can be found here: https://github.com/akshathjain/sliding_up_panel/blob/master/LICENSE
 */
 import 'dart:core';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 enum SlideDirection{
   UP,
   DOWN,
+}
+
+enum DragDirection{
+  OPENING,
+  CLOSING
 }
 
 enum PanelState{
@@ -29,9 +33,10 @@ class SlidingUpPanel extends StatefulWidget {
   /// of this Widget.
   final Widget panel;
 
-  /// The Widget displayed overtop the [panel] when collapsed.
-  /// This fades out as the panel is opened.
-  final Widget collapsed;
+  /// The Widget displayed overtop the [panel] when on snapping point.
+  /// Snapping points are double between 0.0 and 1.0
+  /// This fades out as the panel is moved away from snapping point.
+  final Map<double, Widget> snappingWidgets;
 
   /// The Widget that lies underneath the sliding panel.
   /// This Widget automatically sizes itself
@@ -43,9 +48,6 @@ class SlidingUpPanel extends StatefulWidget {
 
   /// The height of the sliding panel when fully open.
   final double maxHeight;
-
-  /// Midway points between 0.0 and 1.0 where panel stops
-  final List<double> snappingPoints;
 
   /// A border to draw around the sliding panel sheet.
   final Border border;
@@ -140,10 +142,9 @@ class SlidingUpPanel extends StatefulWidget {
     Key key,
     @required this.panel,
     this.body,
-    this.collapsed,
+    this.snappingWidgets = const {},
     this.minHeight = 100.0,
     this.maxHeight = 500.0,
-    this.snappingPoints,
     this.border,
     this.borderRadius,
     this.boxShadow = const <BoxShadow>[
@@ -183,6 +184,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   bool _isPanelVisible = true;
 
+  DragDirection _direction;
+
   @override
   void initState(){
     super.initState();
@@ -208,6 +211,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
       _show,
       _setPanelPosition,
       _animatePanelToPosition,
+      _animatePanelToSnappingPoint,
       _getPanelPosition,
       _isPanelAnimating,
       _isPanelOpen,
@@ -282,27 +286,33 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                   )
                 ),
 
-                // collapsed panel
-                Positioned(
-                  top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
-                  bottom: widget.slideDirection == SlideDirection.DOWN ? 0.0 : null,
-                  width:  MediaQuery.of(context).size.width -
-                          (widget.margin != null ? widget.margin.horizontal : 0) -
-                          (widget.padding != null ? widget.padding.horizontal : 0),
-                  child: Container(
-                    height: widget.minHeight,
-                    child: Opacity(
-                      opacity: 1.0 - _ac.value,
+                //snapping points
+                ...widget.snappingWidgets.keys.toList().map(
+                  (snappingPoint) => Positioned(
+                    top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
+                    bottom: widget.slideDirection == SlideDirection.DOWN ? 0.0 : null,
+                    width:  MediaQuery.of(context).size.width -
+                            (widget.margin != null ? widget.margin.horizontal : 0) -
+                            (widget.padding != null ? widget.padding.horizontal : 0),
+                    child: Container(
+                      height: widget.maxHeight * snappingPoint + widget.minHeight,
+                      child: Opacity(
+                        opacity: _getSnappingOpacity(snappingPoint),
 
-                      // if the panel is open ignore pointers (touch events) on the collapsed
-                      // child so that way touch events go through to whatever is underneath
-                      child: IgnorePointer(
-                        ignoring: _isPanelOpen(),
-                        child: widget.collapsed ?? Container(),
+                        // if the panel is open ignore pointers (touch events) on the collapsed
+                        // child so that way touch events go through to whatever is underneath
+                        child: IgnorePointer(
+                          ignoring: _isPanelOpen(),
+                          child: widget.snappingWidgets[snappingPoint] ?? Container(),
+                        ),
                       ),
                     ),
-                  ),
-                ),
+                  )
+                  
+                ).toList(),
+
+
+                
 
 
               ],
@@ -332,11 +342,12 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
       _ac.value -= details.primaryDelta / (widget.maxHeight - widget.minHeight);
     else
       _ac.value += details.primaryDelta / (widget.maxHeight - widget.minHeight);
+    
+    _direction = details.delta.dy > 0 ? DragDirection.CLOSING : DragDirection.OPENING;
   }
 
   void _onDragEnd(DragEndDetails details){
     final double minFlingVelocity = 365.0;
-    final bool closing = details.primaryVelocity > 0;
     //let the current animation finish before starting a new one
     if(_ac.isAnimating) return;
 
@@ -348,8 +359,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
         visualVelocity = -visualVelocity;
 
       if(widget.panelSnapping){
-        if (widget.snappingPoints != null && widget.snappingPoints.isNotEmpty) {
-          double snapPoint = _nearest(closing);
+        if (widget.snappingWidgets.isNotEmpty) {
+          double snapPoint = _nearest();
           _animatePanelToPosition(snapPoint);
         }
         else {
@@ -369,8 +380,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
     // check if the controller is already halfway there
     if (widget.panelSnapping) {
-      if (widget.snappingPoints != null && widget.snappingPoints.isNotEmpty) {
-        double snapPoint = _nearest(closing);
+      if (widget.snappingWidgets.isNotEmpty) {
+        double snapPoint = _nearest();
         _animatePanelToPosition(snapPoint);
       }
       else {
@@ -385,13 +396,15 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   }
 
 
-
-  double _nearest(bool closing){
-    final List<double> snappingPoints = [0.0, ...widget.snappingPoints, 1.0];
-    if (closing) 
+  /// return nearest snapping point including 0.0 and 1.0
+  /// if no direction is provided return nearest point on current drag direction
+  double _nearest({DragDirection direction}){
+    final List<double> snappingPoints = [...widget.snappingWidgets.keys, 1.0];
+    if (!snappingPoints.contains(0.0)) snappingPoints.insert(0, 0.0);
+    if ((direction ?? _direction) == DragDirection.CLOSING) 
       snappingPoints.removeWhere((p) => p > _ac.value);
     else
-      snappingPoints.removeWhere((p) => p < _ac.value);
+      snappingPoints.removeWhere((p) => p <= _ac.value);
     double minimum = 1.0;
     double finalValue;
     for (double p in snappingPoints) {
@@ -400,10 +413,23 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
         minimum = (p - _ac.value).abs();
       }
     }
-    return finalValue;
+    return finalValue ?? minimum;
   }
 
+  /// it's a triangle function around snapping point
+  double _getSnappingOpacity(double snappingPoint) {
+    if (_ac.value == snappingPoint) { print('snapping point : $snappingPoint   opacity : 1.0'); return 1.0; }
 
+    double nextSnappingPoint = _nearest();
+    if (nextSnappingPoint == snappingPoint) {
+      nextSnappingPoint = _nearest(direction: _direction == DragDirection.OPENING ? DragDirection.CLOSING : DragDirection.OPENING);
+    }
+    final double distance = (nextSnappingPoint - snappingPoint).abs();
+    final double position = (_ac.value - snappingPoint).abs();
+
+    if (position > 0 && position < distance) { print('snapping point : $snappingPoint   opacity : ${1 - (position / distance)}'); return 1 - (position / distance); }
+    else { print('snapping point : $snappingPoint   opacity : 0.0'); return 0.0; }
+  }
 
 
   //---------------------------------
@@ -450,6 +476,13 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   void _animatePanelToPosition(double value){
     assert(0.0 <= value && value <= 1.0);
     _ac.animateTo(value);
+  }
+
+  //set the panel position to value - must
+  //be between 0.0 and 1.0
+  void _animatePanelToSnappingPoint(DragDirection direction){
+
+    _ac.animateTo(_nearest(direction: direction));
   }
 
   //get the current panel position
@@ -499,6 +532,7 @@ class PanelController{
   VoidCallback _showListener;
   Function(double value) _setPanelPositionListener;
   Function(double value) _setAnimatePanelToPositionListener;
+  Function(DragDirection direction) _setAnimatePanelToSnappingPoint;
   double Function() _getPanelPositionListener;
   bool Function() _isPanelAnimatingListener;
   bool Function() _isPanelOpenListener;
@@ -512,6 +546,7 @@ class PanelController{
     VoidCallback showListener,
     Function(double value) setPanelPositionListener,
     Function(double value) setAnimatePanelToPositionListener,
+    Function(DragDirection direction) setAnimatePanelToSnappingPoint,
     double Function() getPanelPositionListener,
     bool Function() isPanelAnimatingListener,
     bool Function() isPanelOpenListener,
@@ -524,6 +559,7 @@ class PanelController{
     this._showListener = showListener;
     this._setPanelPositionListener = setPanelPositionListener;
     this._setAnimatePanelToPositionListener = setAnimatePanelToPositionListener;
+    this._setAnimatePanelToSnappingPoint = setAnimatePanelToSnappingPoint;
     this._getPanelPositionListener = getPanelPositionListener;
     this._isPanelAnimatingListener = isPanelAnimatingListener;
     this._isPanelOpenListener = isPanelOpenListener;
@@ -567,6 +603,12 @@ class PanelController{
   void animatePanelToPosition(double value){
     assert(0.0 <= value && value <= 1.0);
     _setAnimatePanelToPositionListener(value);
+  }
+
+  /// Animates the panel position to the next snapping point.
+  /// if no direction is provided uses the current direction
+  void animatePanelToSnappingPoint({DragDirection direction}){
+    _setAnimatePanelToSnappingPoint(direction);
   }
 
   /// Gets the current panel position.
