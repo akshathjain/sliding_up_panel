@@ -418,7 +418,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   /// it's a triangle function around snapping point
   double _getSnappingOpacity(double snappingPoint) {
-    if (_ac.value == snappingPoint) { print('snapping point : $snappingPoint   opacity : 1.0'); return 1.0; }
+    if (_ac.value == snappingPoint) { return 1.0; }
 
     double nextSnappingPoint = _nearest();
     if (nextSnappingPoint == snappingPoint) {
@@ -427,8 +427,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     final double distance = (nextSnappingPoint - snappingPoint).abs();
     final double position = (_ac.value - snappingPoint).abs();
 
-    if (position > 0 && position < distance) { print('snapping point : $snappingPoint   opacity : ${1 - (position / distance)}'); return 1 - (position / distance); }
-    else { print('snapping point : $snappingPoint   opacity : 0.0'); return 0.0; }
+    if (position > 0 && position < distance) { return 1 - (position / distance); }
+    else { return 0.0; }
   }
 
 
