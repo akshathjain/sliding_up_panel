@@ -7,7 +7,6 @@ Licensing: More information can be found here: https://github.com/akshathjain/sl
 */
 import 'dart:core';
 import 'package:flutter/material.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 enum SlideDirection{
   UP,
