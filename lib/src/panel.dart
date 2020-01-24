@@ -6,6 +6,7 @@ Copyright: © 2019, Akshath Jain. All rights reserved.
 Licensing: More information can be found here: https://github.com/akshathjain/sliding_up_panel/blob/master/LICENSE
 */
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 enum SlideDirection{
@@ -24,8 +25,17 @@ class SlidingUpPanel extends StatefulWidget {
   /// panel is collapsed and if [collapsed] is null,
   /// then top portion of this Widget will be displayed;
   /// otherwise, [collapsed] will be displayed overtop
-  /// of this Widget.
+  /// of this Widget. If [panel] and [panelBuilder] are both non-null,
+  /// [panelBuilder] will be used.
   final Widget panel;
+
+  /// WARNING: this feature is still in beta and is subject to change without
+  /// notice. Stability is not gauraunteed. Provides a [ScrollController] and
+  /// [ScrollPhysics] to attach to a scrollable object in the panel that links
+  /// the panel position with the scroll position. Useful for implementing an
+  /// infinite scroll behavior. If [panel] and [panelBuilder] are both non-null,
+  /// [panelBuilder] will be used.
+  final Widget Function(ScrollController sc) panelBuilder;
 
   /// The Widget displayed overtop the [panel] when collapsed.
   /// This fades out as the panel is opened.
@@ -133,7 +143,8 @@ class SlidingUpPanel extends StatefulWidget {
 
   SlidingUpPanel({
     Key key,
-    @required this.panel,
+    this.panel,
+    this.panelBuilder,
     this.body,
     this.collapsed,
     this.minHeight = 100.0,
@@ -163,8 +174,9 @@ class SlidingUpPanel extends StatefulWidget {
     this.parallaxOffset = 0.1,
     this.isDraggable = true,
     this.slideDirection = SlideDirection.UP,
-    this.defaultPanelState = PanelState.CLOSED
-  }) : assert(0 <= backdropOpacity && backdropOpacity <= 1.0),
+    this.defaultPanelState = PanelState.CLOSED,
+  }) : assert(panel != null || panelBuilder != null),
+       assert(0 <= backdropOpacity && backdropOpacity <= 1.0),
        super(key: key);
 
   @override
@@ -174,6 +186,9 @@ class SlidingUpPanel extends StatefulWidget {
 class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProviderStateMixin{
 
   AnimationController _ac;
+
+  ScrollController _sc;
+  bool _scrollingEnabled = false;
 
   bool _isPanelVisible = true;
 
@@ -193,6 +208,12 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
       if(widget.onPanelOpened != null && _ac.value == 1.0) widget.onPanelOpened();
 
       if(widget.onPanelClosed != null && _ac.value == 0.0) widget.onPanelClosed();
+    });
+
+    _sc = new ScrollController();
+    _sc.addListener((){
+      if(!_scrollingEnabled)
+        _sc.jumpTo(0);
     });
 
     widget.controller?._addListeners(
@@ -247,9 +268,9 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
 
         //the actual sliding part
-        !_isPanelVisible ? Container() : GestureDetector(
-          onVerticalDragUpdate: widget.isDraggable ? _onDrag : null,
-          onVerticalDragEnd: widget.isDraggable ? _onDragEnd : null,
+        !_isPanelVisible ? Container() : Listener(
+          onPointerMove: _onPointerMove,
+          onPointerUp: _onPointerUp,
           child: Container(
             height: _ac.value * (widget.maxHeight - widget.minHeight) + widget.minHeight,
             margin: widget.margin,
@@ -272,7 +293,9 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                           (widget.padding != null ? widget.padding.horizontal : 0),
                   child: Container(
                     height: widget.maxHeight,
-                    child: widget.panel,
+                    child: widget.panelBuilder != null
+                            ? widget.panelBuilder(_sc)
+                            : widget.panel,
                   )
                 ),
 
@@ -321,22 +344,47 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
       return _ac.value * (widget.maxHeight - widget.minHeight) * widget.parallaxOffset;
   }
 
-  void _onDrag(DragUpdateDetails details){
-    if(widget.slideDirection == SlideDirection.UP)
-      _ac.value -= details.primaryDelta / (widget.maxHeight - widget.minHeight);
-    else
-      _ac.value += details.primaryDelta / (widget.maxHeight - widget.minHeight);
+
+  VelocityTracker _vt = new VelocityTracker();
+  void _onPointerMove(PointerMoveEvent p){
+    _vt.addPosition(p.timeStamp, p.position); // add current position for velocity tracking
+
+    // only slide the panel if scrolling is not enabled
+    if(!_scrollingEnabled){
+      if(widget.slideDirection == SlideDirection.UP)
+        _ac.value -= p.delta.dy / (widget.maxHeight - widget.minHeight);
+      else
+        _ac.value += p.delta.dy / (widget.maxHeight - widget.minHeight);
+    }
+
+    // if the panel is open and the user hasn't scrolled, we need to determine
+    // whether to enable scrolling if the user swipes up, or disable closing and
+    // begin to close the panel if the user swipes down
+    if(_isPanelOpen() && _sc.hasClients && _sc.offset <= 0){
+      setState(() {
+        if(p.delta.dy < 0){
+          _scrollingEnabled = true;
+        }else{
+          _scrollingEnabled = false;
+        }
+      });
+    }
   }
 
-  void _onDragEnd(DragEndDetails details){
+  void _onPointerUp(PointerUpEvent p){
+    Velocity velocity = _vt.getVelocity();
     double minFlingVelocity = 365.0;
 
     //let the current animation finish before starting a new one
     if(_ac.isAnimating) return;
 
+    // if scrolling is allowed and the panel is open, we don't want to close
+    // the panel if they swipe up on the scrollable
+    if(_isPanelOpen() && _scrollingEnabled) return;
+
     //check if the velocity is sufficient to constitute fling
-    if(details.velocity.pixelsPerSecond.dy.abs() >= minFlingVelocity){
-      double visualVelocity = - details.velocity.pixelsPerSecond.dy / (widget.maxHeight - widget.minHeight);
+    if(velocity.pixelsPerSecond.dy.abs() >= minFlingVelocity){
+      double visualVelocity = - velocity.pixelsPerSecond.dy / (widget.maxHeight - widget.minHeight);
 
       if(widget.slideDirection == SlideDirection.DOWN)
         visualVelocity = -visualVelocity;
@@ -364,8 +412,6 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     }
 
   }
-
-
 
   //---------------------------------
   //PanelController related functions
