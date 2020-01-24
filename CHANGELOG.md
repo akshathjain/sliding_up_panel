@@ -4,7 +4,8 @@
 - Addressed issue #69: Used a FadeTransition to handle opacity changes (as per Flutter documentation)
 
 #### Features
-- Addressed issue #17: Added the ability to link the scroll position of the panel content with the position of the panel (i.e. infinite scrolling).
+- Addressed issue #17: Added the ability to link / nested the scroll position of the panel content with the position of the panel (i.e. infinite scrolling).
+- Added the `panelBuilder` property that's required to implement the nested scrolling as described above.
 
 #### Documentation
 - Updated the documentation to reflect changes

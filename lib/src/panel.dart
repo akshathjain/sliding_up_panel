@@ -211,8 +211,11 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     });
 
     _sc = new ScrollController();
+
+    // prevent the panel content from being scrolled only if the widget is
+    // draggable and panel scrolling is enabled
     _sc.addListener((){
-      if(!_scrollingEnabled)
+      if(widget.isDraggable && !_scrollingEnabled)
         _sc.jumpTo(0);
     });
 
@@ -269,8 +272,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
         //the actual sliding part
         !_isPanelVisible ? Container() : Listener(
-          onPointerMove: _onPointerMove,
-          onPointerUp: _onPointerUp,
+          onPointerMove: widget.isDraggable ? _onPointerMove : null,
+          onPointerUp: widget.isDraggable ? _onPointerUp : null,
           child: Container(
             height: _ac.value * (widget.maxHeight - widget.minHeight) + widget.minHeight,
             margin: widget.margin,
