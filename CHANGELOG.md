@@ -1,3 +1,15 @@
+## [1.0.0] - [January 25, 2020]
+
+#### Fixes
+- Addressed issue #69: Used a FadeTransition to handle opacity changes (as per Flutter documentation)
+
+#### Features
+- Addressed issue #17: Added the ability to link the scroll position of the panel content with the position of the panel (i.e. infinite scrolling).
+
+#### Documentation
+- Updated the documentation to reflect changes
+- Updated example to use nested scrolling
+
 ## [0.3.6] - [September 25, 2019]
 
 #### Fixes

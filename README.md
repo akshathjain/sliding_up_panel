@@ -17,7 +17,7 @@ A draggable Flutter widget that makes implementing a SlidingUpPanel much easier!
 Add the following to your `pubspec.yaml` file:
 ```yaml
 dependencies:
-  sliding_up_panel: ^0.3.6
+  sliding_up_panel: ^1.0.0
 ```
 
 <br>
@@ -92,7 +92,8 @@ There are several options that allow for more control:
 
 |  Properties  |   Description   |
 |--------------|-----------------|
-| `panel` | (required) The Widget that slides into view. When the `panel` is collapsed and if `collapsed` is null, then top portion of this Widget will be displayed; otherwise, `collapsed` will be displayed overtop of this Widget. |
+| `panel` | The Widget that slides into view. When the `panel` is collapsed and if `collapsed` is null, then top portion of this Widget will be displayed; otherwise, `collapsed` will be displayed overtop of this Widget. |
+|`panelBuilder` [beta]| WARNING: This feature is still in beta and is subject to change without notice. Stability is not gauranteed. Provides a `ScrollController` to attach to a scrollable object in the panel that links the panel position with the scroll position. Useful for implementing an infinite scroll behavior. If `panel` and `panelBuilder` are both non-null, `panel` will be used. |
 | `collapsed` | The Widget displayed overtop the `panel` when collapsed. This fades out as the `panel` is opened. |
 | `body` | The Widget that lies underneath the sliding panel. This Widget automatically sizes itself to fill the screen. |
 | `minHeight` | The height of the sliding panel when fully collapsed. |
