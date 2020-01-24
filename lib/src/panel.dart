@@ -252,8 +252,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
         //the backdrop to overlay on the body
         !widget.backdropEnabled ? Container() : GestureDetector(
           onTap: widget.backdropTapClosesPanel ? _close : null,
-          child: Opacity(
-            opacity: _ac.value * widget.backdropOpacity,
+          child: FadeTransition(
+            opacity: Tween(begin: 0.0, end: widget.backdropOpacity).animate(_ac),
             child: Container(
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
@@ -295,7 +295,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                     height: widget.maxHeight,
                     child: widget.panel != null
                             ? widget.panel
-                            : widget.panelBuilder,
+                            : widget.panelBuilder(_sc),
                   )
                 ),
 
@@ -308,8 +308,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                           (widget.padding != null ? widget.padding.horizontal : 0),
                   child: Container(
                     height: widget.minHeight,
-                    child: Opacity(
-                      opacity: 1.0 - _ac.value,
+                    child: FadeTransition(
+                      opacity: Tween(begin: 1.0, end: 0.0).animate(_ac),
 
                       // if the panel is open ignore pointers (touch events) on the collapsed
                       // child so that way touch events go through to whatever is underneath
