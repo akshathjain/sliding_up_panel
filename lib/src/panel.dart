@@ -543,7 +543,7 @@ class PanelController{
   /// Sets the panel position (without animation).
   /// The value must between 0.0 and 1.0
   /// where 0.0 is fully collapsed and 1.0 is completely open.
-  void setPanelPosition(double value){
+  set panelPosition(double value){
     assert(isAttached, "PanelController must be attached to a SlidingUpPanel");
     assert(0.0 <= value && value <= 1.0);
     _panelState._panelPosition = value;
@@ -555,35 +555,35 @@ class PanelController{
   /// as a decimal between 0.0 and 1.0
   /// where 0.0 is fully collapsed and
   /// 1.0 is full open.
-  double getPanelPosition(){
+  double get panelPosition{
     assert(isAttached, "PanelController must be attached to a SlidingUpPanel");
     return _panelState._panelPosition;
   }
 
   /// Returns whether or not the panel is
   /// currently animating.
-  bool isPanelAnimating(){
+  bool get isPanelAnimating{
     assert(isAttached, "PanelController must be attached to a SlidingUpPanel");
     return _panelState._isPanelAnimating;
   }
 
   /// Returns whether or not the
   /// panel is open.
-  bool isPanelOpen(){
+  bool get isPanelOpen{
     assert(isAttached, "PanelController must be attached to a SlidingUpPanel");
     return _panelState._isPanelOpen;
   }
 
   /// Returns whether or not the
   /// panel is closed.
-  bool isPanelClosed(){
+  bool get isPanelClosed{
     assert(isAttached, "PanelController must be attached to a SlidingUpPanel");
     return _panelState._isPanelClosed;
   }
 
   /// Returns whether or not the
   /// panel is shown/hidden.
-  bool isPanelShown(){
+  bool get isPanelShown{
     assert(isAttached, "PanelController must be attached to a SlidingUpPanel");
     return _panelState._isPanelShown;
   }
