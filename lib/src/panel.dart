@@ -511,13 +511,13 @@ class PanelController{
   }
 
   /// Closes the sliding panel to its collapsed state (i.e. to the  minHeight)
-  TickerFuture close(){
+  Future<void> close(){
     return _panelState._close();
   }
 
   /// Opens the sliding panel fully
   /// (i.e. to the maxHeight)
-  TickerFuture open(){
+  Future<void> open(){
     return _panelState._open();
   }
 
@@ -543,7 +543,7 @@ class PanelController{
   /// Animates the panel position to the value.
   /// The value must between 0.0 and 1.0
   /// where 0.0 is fully collapsed and 1.0 is completely open
-  TickerFuture animatePanelToPosition(double value){
+  Future<void> animatePanelToPosition(double value){
     assert(0.0 <= value && value <= 1.0);
     return _panelState._animatePanelToPosition(value);
   }
