@@ -1,8 +1,8 @@
 /*
 Name: Akshath Jain
-Date: 3/18/19 - 4/2/19
+Date: 3/18/2019 - 1/25/2020
 Purpose: Defines the sliding_up_panel widget
-Copyright: © 2019, Akshath Jain. All rights reserved.
+Copyright: © 2020, Akshath Jain. All rights reserved.
 Licensing: More information can be found here: https://github.com/akshathjain/sliding_up_panel/blob/master/LICENSE
 */
 
@@ -189,6 +189,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   ScrollController _sc;
   bool _scrollingEnabled = false;
+  VelocityTracker _vt = new VelocityTracker();
 
   bool _isPanelVisible = true;
 
@@ -272,63 +273,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
 
         //the actual sliding part
-        !_isPanelVisible ? Container() : Listener(
-          onPointerMove: widget.isDraggable ? _onPointerMove : null,
-          onPointerUp: widget.isDraggable ? _onPointerUp : null,
-          child: Container(
-            height: _ac.value * (widget.maxHeight - widget.minHeight) + widget.minHeight,
-            margin: widget.margin,
-            padding: widget.padding,
-            decoration: widget.renderPanelSheet ? BoxDecoration(
-              border: widget.border,
-              borderRadius: widget.borderRadius,
-              boxShadow: widget.boxShadow,
-              color: widget.color,
-            ) : null,
-            child: Stack(
-              children: <Widget>[
-
-                //open panel
-                Positioned(
-                  top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
-                  bottom: widget.slideDirection == SlideDirection.DOWN ? 0.0 : null,
-                  width:  MediaQuery.of(context).size.width -
-                          (widget.margin != null ? widget.margin.horizontal : 0) -
-                          (widget.padding != null ? widget.padding.horizontal : 0),
-                  child: Container(
-                    height: widget.maxHeight,
-                    child: widget.panel != null
-                            ? widget.panel
-                            : widget.panelBuilder(_sc),
-                  )
-                ),
-
-                // collapsed panel
-                Positioned(
-                  top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
-                  bottom: widget.slideDirection == SlideDirection.DOWN ? 0.0 : null,
-                  width:  MediaQuery.of(context).size.width -
-                          (widget.margin != null ? widget.margin.horizontal : 0) -
-                          (widget.padding != null ? widget.padding.horizontal : 0),
-                  child: Container(
-                    height: widget.minHeight,
-                    child: FadeTransition(
-                      opacity: Tween(begin: 1.0, end: 0.0).animate(_ac),
-
-                      // if the panel is open ignore pointers (touch events) on the collapsed
-                      // child so that way touch events go through to whatever is underneath
-                      child: IgnorePointer(
-                        ignoring: _isPanelOpen,
-                        child: widget.collapsed ?? Container(),
-                      ),
-                    ),
-                  ),
-                ),
-
-
-              ],
-            ),
-          ),
+        !_isPanelVisible ? Container() : _gestureHandler(
+          child: _sliding(),
         ),
 
       ],
@@ -341,6 +287,88 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     super.dispose();
   }
 
+  // returns a gesture detector if panel is used
+  // and a listener if panelBuilder is used.
+  // this is because the listener is designed only for use with linking the scrolling of
+  // panels and using it for panels that don't want to linked scrolling yields odd results
+  Widget _gestureHandler({Widget child}){
+    if (!widget.isDraggable) return child;
+
+    if (widget.panel != null){
+      return GestureDetector(
+        onVerticalDragUpdate: (DragUpdateDetails dets) => _onGestureSlide(dets.delta.dy),
+        onVerticalDragEnd: (DragEndDetails dets) => _onGestureEnd(dets.velocity),
+        child: child,
+      );
+    }
+
+    return Listener(
+      onPointerMove: (PointerMoveEvent p){
+        _vt.addPosition(p.timeStamp, p.position); // add current position for velocity tracking
+        _onGestureSlide(p.delta.dy);
+      },
+      onPointerUp: (PointerUpEvent p) => _onGestureEnd(_vt.getVelocity()),
+      child: child,
+    );
+  }
+
+  Widget _sliding(){
+    return Container(
+      height: _ac.value * (widget.maxHeight - widget.minHeight) + widget.minHeight,
+      margin: widget.margin,
+      padding: widget.padding,
+      decoration: widget.renderPanelSheet ? BoxDecoration(
+        border: widget.border,
+        borderRadius: widget.borderRadius,
+        boxShadow: widget.boxShadow,
+        color: widget.color,
+      ) : null,
+      child: Stack(
+        children: <Widget>[
+
+          //open panel
+          Positioned(
+            top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
+            bottom: widget.slideDirection == SlideDirection.DOWN ? 0.0 : null,
+            width:  MediaQuery.of(context).size.width -
+                    (widget.margin != null ? widget.margin.horizontal : 0) -
+                    (widget.padding != null ? widget.padding.horizontal : 0),
+            child: Container(
+              height: widget.maxHeight,
+              child: widget.panel != null
+                      ? widget.panel
+                      : widget.panelBuilder(_sc),
+            )
+          ),
+
+          // collapsed panel
+          Positioned(
+            top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
+            bottom: widget.slideDirection == SlideDirection.DOWN ? 0.0 : null,
+            width:  MediaQuery.of(context).size.width -
+                    (widget.margin != null ? widget.margin.horizontal : 0) -
+                    (widget.padding != null ? widget.padding.horizontal : 0),
+            child: Container(
+              height: widget.minHeight,
+              child: FadeTransition(
+                opacity: Tween(begin: 1.0, end: 0.0).animate(_ac),
+
+                // if the panel is open ignore pointers (touch events) on the collapsed
+                // child so that way touch events go through to whatever is underneath
+                child: IgnorePointer(
+                  ignoring: _isPanelOpen,
+                  child: widget.collapsed ?? Container(),
+                ),
+              ),
+            ),
+          ),
+
+
+        ],
+      ),
+    );
+  }
+
   double _getParallax(){
     if(widget.slideDirection == SlideDirection.UP)
       return -_ac.value * (widget.maxHeight - widget.minHeight) * widget.parallaxOffset;
@@ -348,17 +376,15 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
       return _ac.value * (widget.maxHeight - widget.minHeight) * widget.parallaxOffset;
   }
 
-
-  VelocityTracker _vt = new VelocityTracker();
-  void _onPointerMove(PointerMoveEvent p){
-    _vt.addPosition(p.timeStamp, p.position); // add current position for velocity tracking
+  // handles the sliding gesture
+  void _onGestureSlide(double dy){
 
     // only slide the panel if scrolling is not enabled
     if(!_scrollingEnabled){
       if(widget.slideDirection == SlideDirection.UP)
-        _ac.value -= p.delta.dy / (widget.maxHeight - widget.minHeight);
+        _ac.value -= dy / (widget.maxHeight - widget.minHeight);
       else
-        _ac.value += p.delta.dy / (widget.maxHeight - widget.minHeight);
+        _ac.value += dy / (widget.maxHeight - widget.minHeight);
     }
 
     // if the panel is open and the user hasn't scrolled, we need to determine
@@ -366,7 +392,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     // begin to close the panel if the user swipes down
     if(_isPanelOpen && _sc.hasClients && _sc.offset <= 0){
       setState(() {
-        if(p.delta.dy < 0){
+        if(dy < 0){
           _scrollingEnabled = true;
         }else{
           _scrollingEnabled = false;
@@ -375,8 +401,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     }
   }
 
-  void _onPointerUp(PointerUpEvent p){
-    Velocity velocity = _vt.getVelocity();
+  // handles when user stops sliding
+  void _onGestureEnd(Velocity velocity){
     double minFlingVelocity = 365.0;
 
     //let the current animation finish before starting a new one

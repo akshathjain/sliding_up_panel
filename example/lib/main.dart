@@ -2,7 +2,7 @@
 Name: Akshath Jain
 Date: 3/18/19
 Purpose: Example app that implements the package: sliding_up_panel
-Copyright: © 2019, Akshath Jain. All rights reserved.
+Copyright: © 2020, Akshath Jain. All rights reserved.
 Licensing: More information can be found here: https://github.com/akshathjain/sliding_up_panel/blob/master/LICENSE
 */
 
