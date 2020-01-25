@@ -2,10 +2,16 @@
 
 #### Fixes
 - Addressed issue #69: Used a FadeTransition to handle opacity changes (as per Flutter documentation)
+- Cleaned up `PanelController` code to make maintenance easier
 
 #### Features
-- Addressed issue #17: Added the ability to link / nested the scroll position of the panel content with the position of the panel (i.e. infinite scrolling).
+- Addressed issues #17, #55, #60: Added the ability to link / nested the scroll position of the panel content with the position of the panel (i.e. infinite scrolling).
 - Added the `panelBuilder` property that's required to implement the nested scrolling as described above.
+- [Breaking Change] `PanelController` method `close` now returns a `Future<void>` instead of void
+- [Breaking Change] `PanelController` method `open` now returns a `Future<void>` instead of void
+- [Breaking Change] `PanelController` method `hide` now returns a `Future<void>` instead of void
+- [Breaking Change] `PanelController` method `show` now returns a `Future<void>` instead of void
+- [Breaking Change] `PanelController` method `animatePanelToPosition` now returns a `Future<void>` instead of void
 
 #### Documentation
 - Updated the documentation to reflect changes

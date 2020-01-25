@@ -219,18 +219,19 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
         _sc.jumpTo(0);
     });
 
-    widget.controller?._addListeners(
-      _close,
-      _open,
-      _hide,
-      _show,
-      _setPanelPosition,
-      _animatePanelToPosition,
-      _getPanelPosition,
-      _isPanelAnimating,
-      _isPanelOpen,
-      _isPanelClosed,
-      _isPanelShown,
+    widget.controller?._addState(
+      // _close,
+      // _open,
+      // _hide,
+      // _show,
+      // _setPanelPosition,
+      // _animatePanelToPosition,
+      // _getPanelPosition,
+      // _isPanelAnimating,
+      // _isPanelOpen,
+      // _isPanelClosed,
+      // _isPanelShown,
+      this
     );
   }
 
@@ -421,18 +422,18 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   //---------------------------------
 
   //close the panel
-  void _close(){
-    _ac.fling(velocity: -1.0);
+  Future<void> _close(){
+    return _ac.fling(velocity: -1.0);
   }
 
   //open the panel
-  void _open(){
-    _ac.fling(velocity: 1.0);
+  Future<void> _open(){
+    return _ac.fling(velocity: 1.0);
   }
 
   //hide the panel (completely offscreen)
-  void _hide(){
-    _ac.fling(velocity: -1.0).then((x){
+  Future<void> _hide(){
+    return _ac.fling(velocity: -1.0).then((x){
       setState(() {
         _isPanelVisible = false;
       });
@@ -440,8 +441,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   }
 
   //show the panel (in collapsed mode)
-  void _show(){
-    _ac.fling(velocity: -1.0).then((x){
+  Future<void> _show(){
+    return _ac.fling(velocity: -1.0).then((x){
       setState(() {
         _isPanelVisible = true;
       });
@@ -457,9 +458,9 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   //set the panel position to value - must
   //be between 0.0 and 1.0
-  void _animatePanelToPosition(double value){
+  Future<void> _animatePanelToPosition(double value){
     assert(0.0 <= value && value <= 1.0);
-    _ac.animateTo(value);
+    return _ac.animateTo(value);
   }
 
   //get the current panel position
@@ -503,64 +504,32 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
 
 class PanelController{
-  VoidCallback _closeListener;
-  VoidCallback _openListener;
-  VoidCallback _hideListener;
-  VoidCallback _showListener;
-  Function(double value) _setPanelPositionListener;
-  Function(double value) _setAnimatePanelToPositionListener;
-  double Function() _getPanelPositionListener;
-  bool Function() _isPanelAnimatingListener;
-  bool Function() _isPanelOpenListener;
-  bool Function() _isPanelClosedListener;
-  bool Function() _isPanelShownListener;
+  _SlidingUpPanelState _panelState;
 
-  void _addListeners(
-    VoidCallback closeListener,
-    VoidCallback openListener,
-    VoidCallback hideListener,
-    VoidCallback showListener,
-    Function(double value) setPanelPositionListener,
-    Function(double value) setAnimatePanelToPositionListener,
-    double Function() getPanelPositionListener,
-    bool Function() isPanelAnimatingListener,
-    bool Function() isPanelOpenListener,
-    bool Function() isPanelClosedListener,
-    bool Function() isPanelShownListener,
-  ){
-    this._closeListener = closeListener;
-    this._openListener = openListener;
-    this._hideListener = hideListener;
-    this._showListener = showListener;
-    this._setPanelPositionListener = setPanelPositionListener;
-    this._setAnimatePanelToPositionListener = setAnimatePanelToPositionListener;
-    this._getPanelPositionListener = getPanelPositionListener;
-    this._isPanelAnimatingListener = isPanelAnimatingListener;
-    this._isPanelOpenListener = isPanelOpenListener;
-    this._isPanelClosedListener = isPanelClosedListener;
-    this._isPanelShownListener = isPanelShownListener;
+  void _addState(_SlidingUpPanelState panelState){
+    this._panelState = panelState;
   }
 
   /// Closes the sliding panel to its collapsed state (i.e. to the  minHeight)
-  void close(){
-    _closeListener();
+  TickerFuture close(){
+    return _panelState._close();
   }
 
   /// Opens the sliding panel fully
   /// (i.e. to the maxHeight)
-  void open(){
-    _openListener();
+  TickerFuture open(){
+    return _panelState._open();
   }
 
   /// Hides the sliding panel (i.e. is invisible)
-  void hide(){
-    _hideListener();
+  Future<void> hide(){
+    return _panelState._hide();
   }
 
   /// Shows the sliding panel in its collapsed state
   /// (i.e. "un-hide" the sliding panel)
-  void show(){
-    _showListener();
+  Future<void> show(){
+    return _panelState._show();
   }
 
   /// Sets the panel position (without animation).
@@ -568,15 +537,15 @@ class PanelController{
   /// where 0.0 is fully collapsed and 1.0 is completely open.
   void setPanelPosition(double value){
     assert(0.0 <= value && value <= 1.0);
-    _setPanelPositionListener(value);
+    _panelState._setPanelPosition(value);
   }
 
   /// Animates the panel position to the value.
   /// The value must between 0.0 and 1.0
   /// where 0.0 is fully collapsed and 1.0 is completely open
-  void animatePanelToPosition(double value){
+  TickerFuture animatePanelToPosition(double value){
     assert(0.0 <= value && value <= 1.0);
-    _setAnimatePanelToPositionListener(value);
+    return _panelState._animatePanelToPosition(value);
   }
 
   /// Gets the current panel position.
@@ -586,31 +555,31 @@ class PanelController{
   /// where 0.0 is fully collapsed and
   /// 1.0 is full open.
   double getPanelPosition(){
-    return _getPanelPositionListener();
+    return _panelState._getPanelPosition();
   }
 
   /// Returns whether or not the panel is
   /// currently animating.
   bool isPanelAnimating(){
-    return _isPanelAnimatingListener();
+    return _panelState._isPanelAnimating();
   }
 
   /// Returns whether or not the
   /// panel is open.
   bool isPanelOpen(){
-    return _isPanelOpenListener();
+    return _panelState._isPanelOpen();
   }
 
   /// Returns whether or not the
   /// panel is closed.
   bool isPanelClosed(){
-    return _isPanelClosedListener();
+    return _panelState._isPanelClosed();
   }
 
   /// Returns whether or not the
   /// panel is shown/hidden.
   bool isPanelShown(){
-    return _isPanelShownListener();
+    return _panelState._isPanelShown();
   }
 
 }
