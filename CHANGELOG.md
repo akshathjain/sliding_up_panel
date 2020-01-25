@@ -8,7 +8,9 @@
 - Addressed issues #17, #55, #60: Added the ability to link / nested the scroll position of the panel content with the position of the panel (i.e. infinite scrolling).
 - Added the `panelBuilder` property that's required to implement the nested scrolling as described above.
 - Added an `isAttached` property to the `PanelController` to indicate whether or not the `PanelController` is attached to an instance of the `SlidingUpPanel`
-- [Breaking Changes] The following `PanelController` methods now return `Future<void>` instead of void:
+
+#### Breaking Changes
+- The following `PanelController` methods now return `Future<void>` instead of void:
     - `close`
     - `open`
     - `hide`
