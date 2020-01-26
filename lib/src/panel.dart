@@ -221,17 +221,6 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     });
 
     widget.controller?._addState(
-      // _close,
-      // _open,
-      // _hide,
-      // _show,
-      // _setPanelPosition,
-      // _animatePanelToPosition,
-      // _getPanelPosition,
-      // _isPanelAnimating,
-      // _isPanelOpen,
-      // _isPanelClosed,
-      // _isPanelShown,
       this
     );
   }
