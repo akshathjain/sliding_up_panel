@@ -1,6 +1,6 @@
 /*
 Name: Akshath Jain
-Date: 3/18/19
+Date: 3/18/2019 - 1/25/2020
 Purpose: Example app that implements the package: sliding_up_panel
 Copyright: © 2020, Akshath Jain. All rights reserved.
 Licensing: More information can be found here: https://github.com/akshathjain/sliding_up_panel/blob/master/LICENSE
@@ -11,10 +11,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:flutter/services.dart';
-
-// uncomment the following lines before running; there's an ongoing issue with
-// pub that causes warnings to be thrown when analyzing nested flutter
-// packages - issue #17168, https://github.com/flutter/flutter/issues/17168
 
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
