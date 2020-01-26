@@ -12,11 +12,11 @@
 
 #### Breaking Changes
 The following `PanelController` methods now return `Future<void>` instead of `void`:
-- `close`
-- `open`
-- `hide`
-- `show`
-- `animatePanelToPosition`
+- `close()`
+- `open()`
+- `hide()`
+- `show()`
+- `animatePanelToPosition(double value)`
 
 The following `PanelController` methods have changed to Dart properties to better reflect Dart language conventions:
 - `setPanelPosition()` -> `panelPosition` [as a setter]
