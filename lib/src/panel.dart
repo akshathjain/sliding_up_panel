@@ -137,7 +137,7 @@ class SlidingUpPanel extends StatefulWidget {
   /// by default the Panel is open and must be swiped closed by the user.
   final PanelState defaultPanelState;
 
-  SlidingUpPanel({
+  const SlidingUpPanel({
     Key key,
     this.panel,
     this.panelBuilder,
