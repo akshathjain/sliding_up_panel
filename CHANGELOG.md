@@ -1,3 +1,61 @@
+## [1.0.0] - [January 25, 2020]
+
+#### Fixes
+- Addressed issue #69: Used a FadeTransition to handle opacity changes (as per Flutter documentation)
+- Cleaned up `PanelController` code to make maintenance easier
+- Added clearer assert statements and messages to indicate why calling `PanelController` methods would fail before attaching the `PanelController`.
+
+#### Features
+- Addressed issues #17, #55, #60: Added the ability to link / nested the scroll position of the panel content with the position of the panel (i.e. infinite scrolling).
+- Added the `panelBuilder` property that's required to implement the nested scrolling as described above.
+- Added an `isAttached` property to the `PanelController` to indicate whether or not the `PanelController` is attached to an instance of the `SlidingUpPanel`
+
+#### Breaking Changes
+The following `PanelController` methods now return `Future<void>` instead of `void`:
+- `close`
+- `open`
+- `hide`
+- `show`
+- `animatePanelToPosition`
+
+The following `PanelController` methods have changed to Dart properties to better reflect Dart language conventions:
+- `setPanelPosition()` -> `panelPosition` [as a setter]
+- `getPanelPosition()` -> `panelPosition` [as a getter]
+- `isPanelAnimating()` -> `isPanelAnimating`
+- `isPanelOpen()` -> `isPanelOpen`
+- `isPanelClosed()` -> `isPanelClosed`
+- `isPanelShown()` -> `isPanelShown`
+
+
+For example, here's how you would have previously used `setPanelPosition()` and `getPanelPosition()` vs. how you would now use the `panelPosition` property:
+```dart
+// OLD, no longer supported
+print(pc.getPanelPosition()); // print a value between 0.0 and 1.0
+pc.setPanelPosition(0.5);     // sets the panelPosition to 0.5
+```
+
+```dart
+// NEW
+print(pc.panelPosition); // print a value between 0.0 and 1.0
+pc.panelPosition = 0.5;  // sets the panelPosition to 0.5
+```
+
+And here's how you would have previously called `isPanelAnimating()` vs. how you would now call `isPanelAnimating`.
+```dart
+panelController.isPanelAnimating(); // OLD, no longer supported
+```
+```dart
+panelController.isPanelAnimating; // NEW
+```
+
+
+#### Documentation
+- Updated the documentation to reflect changes
+- Updated example to use nested scrolling
+
+
+
+<br><br>
 ## [0.3.6] - [September 25, 2019]
 
 #### Fixes
@@ -7,7 +65,7 @@
 - Updated the documentation to reflect fixes
 
 
-
+<br><br>
 ## [0.3.5] - [August 31, 2019]
 
 #### Features
@@ -17,7 +75,7 @@
 - Updated the documentation to reflect new features
 
 
-
+<br><br>
 ## [0.3.4] - [April 16, 2019]
 
 #### Features
@@ -27,7 +85,7 @@
 - Updated the documentation to reflect new features
 
 
-
+<br><br>
 ## [0.3.3] - [April 6, 2019]
 
 #### Features
@@ -37,13 +95,15 @@
 - Updated the documentation to reflect new features
 
 
-
+<br><br>
 ## [0.3.2] - [April 5, 2019]
 
 #### Documentation
 - Fixed problem where images would wrap on pub (instead of displaying on one line)
 
 
+
+<br><br>
 ## [0.3.1] - [April 5, 2019]
 
 #### Features
@@ -57,6 +117,7 @@
 
 
 
+<br><br>
 ## [0.3.0] - April 2, 2019
 
 #### Features
@@ -85,7 +146,7 @@
 - Added an explanation about nesting the `Scaffold` when displaying a backdrop
 
 
-
+<br><br>
 ## [0.2.0] - April 1, 2019
 
 Added the backdrop feature:
@@ -100,18 +161,21 @@ Other changes:
 
 
 
+<br><br>
 ## [0.1.2] - March 31, 2019
 
 - Updated documentation to be more comprehensive
 
 
 
+<br><br>
 ## [0.1.1] - March 31, 2019
 
 - Added a CHANGELOG file
 
 
 
+<br><br>
 ## [0.1.0] - March 31, 2019
 
 This is the initial release of the sliding_up_panel package. This includes features such as

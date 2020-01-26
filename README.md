@@ -17,8 +17,9 @@ A draggable Flutter widget that makes implementing a SlidingUpPanel much easier!
 Add the following to your `pubspec.yaml` file:
 ```yaml
 dependencies:
-  sliding_up_panel: ^0.3.6
+  sliding_up_panel: ^1.0.0
 ```
+Note that `v1.0.0` introduced some breaking changes outlined [below](Breaking-Changes).
 
 <br>
 
@@ -92,7 +93,8 @@ There are several options that allow for more control:
 
 |  Properties  |   Description   |
 |--------------|-----------------|
-| `panel` | (required) The Widget that slides into view. When the `panel` is collapsed and if `collapsed` is null, then top portion of this Widget will be displayed; otherwise, `collapsed` will be displayed overtop of this Widget. |
+| `panel` | The Widget that slides into view. When the `panel` is collapsed and if `collapsed` is null, then top portion of this Widget will be displayed; otherwise, `collapsed` will be displayed overtop of this Widget. |
+|`panelBuilder` [beta]| NOTE: This feature is still in beta and may have some problems. Please open an issue on [GitHub](https://github.com/akshathjain/sliding_up_panel) if you encounter something unexpected. <br><br> Provides a `ScrollController` to attach to a scrollable object in the panel that links the panel position with the scroll position. Useful for implementing an infinite scroll behavior. If `panel` and `panelBuilder` are both non-null, `panel` will be used. |
 | `collapsed` | The Widget displayed overtop the `panel` when collapsed. This fades out as the `panel` is opened. |
 | `body` | The Widget that lies underneath the sliding panel. This Widget automatically sizes itself to fill the screen. |
 | `minHeight` | The height of the sliding panel when fully collapsed. |
@@ -194,6 +196,22 @@ Widget build(BuildContext context) {
   <img alt="Panel Open" width="217px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/collapsedpanelopen.png">
 </p>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <br>
 <br>
 
@@ -246,6 +264,20 @@ Widget build(BuildContext context) {
   <img alt="Panel Midway" width="217px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/bordermidway.png">
   <img alt="Panel Open" width="217px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/borderopen.png">
 </p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <br>
 <br>
@@ -315,11 +347,27 @@ Note that a similar effect can be created by simply adding a `margin` to the `Sl
   <img alt="Panel Open" width="217px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/floatingopen.png">
 </p>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <br>
 <br>
 
 ### Adding Scrollable Elements to the Sliding Panel
-The `panel` itself can contain Scrollable elements. However, it's important to note that when other Scrollable Widgets are nested inside of the `panel`, you need to incorporate some empty space (i.e. non-scrolling space) at the top which the user can swipe down on to close the `panel`. For example:
+The `panel` itself can contain Scrollable elements. As of `v1.0.0`, you can link the scroll position of the Scrollable elements with the position of the sliding up panel by using the `panelBuilder`. For example:
 
 ```dart
 @override
@@ -329,8 +377,7 @@ Widget build(BuildContext context) {
       title: Text("SlidingUpPanelExample"),
     ),
     body: SlidingUpPanel(
-      color: Colors.blueGrey,
-      panel: _scrollingList(),
+      panelBuilder: (ScrollController sc) => _scrollingList(sc),
       body: Center(
         child: Text("This is the Widget behind the sliding panel"),
       ),
@@ -338,22 +385,16 @@ Widget build(BuildContext context) {
   );
 }
 
-Widget _scrollingList(){
-  return Container(
-    //adding a margin to the top leaves an area where the user can swipe
-    //to open/close the sliding panel
-    margin: const EdgeInsets.only(top: 36.0),
-
-    color: Colors.white,
-    child: ListView.builder(
-      itemCount: 50,
-      itemBuilder: (BuildContext context, int i){
-        return Container(
-          padding: const EdgeInsets.all(12.0),
-          child: Text("$i"),
-        );
-      },
-    ),
+Widget _scrollingList(ScrollController sc){
+  return ListView.builder(
+    controller: sc,
+    itemCount: 50,
+    itemBuilder: (BuildContext context, int i){
+      return Container(
+        padding: const EdgeInsets.all(12.0),
+        child: Text("$i"),
+      );
+    },
   );
 }
 ```
@@ -364,25 +405,44 @@ Widget _scrollingList(){
   <img alt="Panel Open" width="217px" src="https://raw.githubusercontent.com/akshathjain/sliding_up_panel/master/screenshots/scrollopen.png">
 </p>
 
+
+
+
+
+
+
+
+
+
+
+
+
 <br>
 <br>
 
 ### Using the `PanelController`
 At times, it can be useful to manually change the state of the `SlidingUpPanel`. This can be easily achieved by using a `PanelController` and attaching it to an instance of the `SlidingUpPanel`. Note that since the `PanelController` modifies the state of a `SlidingUpPanel`, these methods can *only* be called after the `SlidingUpPanel` has been rendered.
 
-|  Methods  | Description |
-|-----------|-------------|
-|`open()`| Opens the sliding panel fully (i.e. to the  `maxHeight`) |
-|`close()`| Closes the sliding panel to its collapsed state (i.e. to the  `minHeight`) |
-|`hide()`| Hides the sliding panel (i.e. is invisible) |
-|`show()`| Shows the sliding panel in its collapsed state (i.e. "un-hide" the sliding panel) |
-|`setPanelPosition(double value)`| Sets the panel position (without animation). The value must between 0.0 and 1.0 where 0.0 is fully collapsed and 1.0 is completely open. |
-|`animatePanelToPosition(double value)`| Animates the panel position to the value. The value must between 0.0 and 1.0 where 0.0 is fully collapsed and 1.0 is completely open. |
-|`getPanelPosition()`| Gets the current panel position. Returns the % offset from collapsed state to the open state as a decimal between 0.0 and 1.0 where 0.0 is fully collapsed and 1.0 is full open. |
-|`isPanelAnimating()`| Returns whether or not the panel is currently animating. |
-|`isPanelOpen()`| Returns whether or not the panel is open. |
-|`isPanelClosed()`| Returns whether or not the panel is collapsed.|
-|`isPanelShown()`| Returns whether or not the panel is shown/hidden.|
+<!-- Get the panel position (returns a value between 0.0 and 1.0) and set the panel position (without animation). The value assigned must between 0.0 and 1.0 where 0.0 is fully collapsed and 1.0 is completely open. -->
+|  Properties  | Data Type | Permissions | Description |
+|--------------|-----------|-------------|-------------|
+|`panelPosition`| `double` | Read / Write | Evaluates to the current panel position (a value between 0.0 and 1.0) where 0.0 is closed and 1.0 is open. Any value assigned to this property must be between 0.0 and 1.0, inclusive. |
+| `isAttached` | `bool` | Read | Determine if the panelController is attached to an instance of the SlidingUpPanel (this property must be true before any other `PanelController` functions can be used) |
+|`isPanelAnimating`| `bool` | Read | Returns whether or not the panel is currently animating. |
+|`isPanelOpen`| `bool` | Read | Returns whether or not the panel is open. |
+|`isPanelClosed`| `bool` | Read | Returns whether or not the panel is collapsed.|
+|`isPanelShown`| `bool` | Read | Returns whether or not the panel is shown/hidden.|
+
+<br>
+
+|  Methods  | Return Type | Description |
+|-----------|-------------|-------------|
+|`open()`| `Future<void>` | Opens the sliding panel fully (i.e. to the  `maxHeight`) |
+|`close()`| `Future<void>` | Closes the sliding panel to its collapsed state (i.e. to the  `minHeight`) |
+|`hide()`| `Future<void>` | Hides the sliding panel (i.e. is invisible) |
+|`show()`| `Future<void>` | Shows the sliding panel in its collapsed state (i.e. "un-hide" the sliding panel) |
+|`animatePanelToPosition(double value)`| `Future<void>` | Animates the panel position to the value. The value must between 0.0 and 1.0 where 0.0 is fully collapsed and 1.0 is completely open. |
+
 
 ```dart
 PanelController _pc = new PanelController();
@@ -427,4 +487,59 @@ Widget _body(){
     ),
   );
 }
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+<br>
+<br>
+
+## Breaking Changes
+`v1.0.0` introduced some breaking changes to the `PanelController` to better adhere to Dart language conventions. The changes are outlined below.
+
+The following `PanelController` methods now return `Future<void>` instead of `void`:
+- `close`
+- `open`
+- `hide`
+- `show`
+- `animatePanelToPosition`
+
+The following `PanelController` methods have changed to Dart properties to better reflect Dart language conventions:
+- `setPanelPosition()` -> `panelPosition` [as a setter]
+- `getPanelPosition()` -> `panelPosition` [as a getter]
+- `isPanelAnimating()` -> `isPanelAnimating`
+- `isPanelOpen()` -> `isPanelOpen`
+- `isPanelClosed()` -> `isPanelClosed`
+- `isPanelShown()` -> `isPanelShown`
+
+
+For example, here's how you would have previously used `setPanelPosition()` and `getPanelPosition()` vs. how you would now use the `panelPosition` property:
+```dart
+// OLD, no longer supported
+print(pc.getPanelPosition()); // print a value between 0.0 and 1.0
+pc.setPanelPosition(0.5);     // sets the panelPosition to 0.5
+```
+
+```dart
+// NEW
+print(pc.panelPosition); // print a value between 0.0 and 1.0
+pc.panelPosition = 0.5;  // sets the panelPosition to 0.5
+```
+
+And here's how you would have previously called `isPanelAnimating()` vs. how you would now call `isPanelAnimating`.
+```dart
+panelController.isPanelAnimating(); // OLD, no longer supported
+```
+```dart
+panelController.isPanelAnimating; // NEW
 ```
