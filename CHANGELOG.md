@@ -11,14 +11,14 @@
 - Added an `isAttached` property to the `PanelController` to indicate whether or not the `PanelController` is attached to an instance of the `SlidingUpPanel`
 
 #### Breaking Changes
-The following `PanelController` methods now return `Future<void>` instead of void:
+The following `PanelController` methods now return `Future<void>` instead of `void`:
 - `close`
 - `open`
 - `hide`
 - `show`
 - `animatePanelToPosition`
 
-The following `PanelController` methods have changed to Dart setters/getters to better reflect Dart language conventions:
+The following `PanelController` methods have changed to Dart properties to better reflect Dart language conventions:
 - `setPanelPosition()` -> `panelPosition` [as a setter]
 - `getPanelPosition()` -> `panelPosition` [as a getter]
 - `isPanelAnimating()` -> `isPanelAnimating`

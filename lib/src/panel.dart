@@ -524,7 +524,7 @@ class PanelController{
   }
 
   /// Determine if the panelController is attached to an instance
-  /// of the SlidingUpPanel (this function must return true before any other
+  /// of the SlidingUpPanel (this property must return true before any other
   /// functions can be used)
   bool get isAttached => _panelState != null;
 
