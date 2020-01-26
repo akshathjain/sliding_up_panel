@@ -185,7 +185,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
 
   ScrollController _sc;
   bool _scrollingEnabled = false;
-  VelocityTracker _vt = new VelocityTracker();
+  VelocityTracker _vt = VelocityTracker();
 
   bool _isPanelVisible = true;
 
@@ -193,7 +193,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
   void initState() {
     super.initState();
 
-    _ac = new AnimationController(
+    _ac = AnimationController(
         vsync: this,
         duration: const Duration(milliseconds: 300),
         value: widget.defaultPanelState == PanelState.CLOSED
@@ -212,7 +212,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
           widget.onPanelClosed();
       });
 
-    _sc = new ScrollController();
+    _sc = ScrollController();
 
     // prevent the panel content from being scrolled only if the widget is
     // draggable and panel scrolling is enabled
@@ -298,26 +298,22 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                         children: <Widget>[
                           //open panel
                           Positioned(
-                              top: widget.slideDirection == SlideDirection.UP
-                                  ? 0.0
-                                  : null,
-                              bottom:
-                                  widget.slideDirection == SlideDirection.DOWN
-                                      ? 0.0
-                                      : null,
-                              width: constraints.maxWidth -
-                                  (widget.margin != null
-                                      ? widget.margin.horizontal
-                                      : 0) -
-                                  (widget.padding != null
-                                      ? widget.padding.horizontal
-                                      : 0),
-                              child: Container(
-                                height: widget.maxHeight,
-                                child: widget.panel != null
-                                    ? widget.panel
-                                    : widget.panelBuilder(_sc),
-                              )),
+                            top: widget.slideDirection == SlideDirection.UP
+                                ? 0.0
+                                : null,
+                            bottom: widget.slideDirection == SlideDirection.DOWN
+                                ? 0.0
+                                : null,
+                            width: constraints.maxWidth -
+                                (widget.margin?.horizontal ?? 0) -
+                                (widget.padding?.horizontal ?? 0),
+                            child: Container(
+                              height: widget.maxHeight,
+                              child: widget.panel != null
+                                  ? widget.panel
+                                  : widget.panelBuilder(_sc),
+                            ),
+                          ),
 
                           // collapsed panel
                           Positioned(
@@ -328,12 +324,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                                 ? 0.0
                                 : null,
                             width: constraints.maxWidth -
-                                (widget.margin != null
-                                    ? widget.margin.horizontal
-                                    : 0) -
-                                (widget.padding != null
-                                    ? widget.padding.horizontal
-                                    : 0),
+                                (widget.margin?.horizontal ?? 0) -
+                                (widget.padding?.horizontal ?? 0),
                             child: Container(
                               height: widget.minHeight,
                               child: FadeTransition(
