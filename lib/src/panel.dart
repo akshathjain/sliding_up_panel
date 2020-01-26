@@ -238,99 +238,113 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: widget.slideDirection == SlideDirection.UP ? Alignment.bottomCenter : Alignment.topCenter,
-      children: <Widget>[
-
-
-        //make the back widget take up the entire back side
-        widget.body != null ? Positioned(
-          top: widget.parallaxEnabled ? _getParallax() : 0.0,
-          child: Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            child: widget.body,
-          ),
-        ) : Container(),
-
-
-        //the backdrop to overlay on the body
-        !widget.backdropEnabled ? Container() : GestureDetector(
-          onTap: widget.backdropTapClosesPanel ? _close : null,
-          child: FadeTransition(
-            opacity: Tween(begin: 0.0, end: widget.backdropOpacity).animate(_ac),
-            child: Container(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-
-              //set color to null so that touch events pass through
-              //to the body when the panel is closed, otherwise,
-              //if a color exists, then touch events won't go through
-              color: _ac.value == 0.0 ? null : widget.backdropColor,
-            ),
-          ),
-        ),
-
-
-        //the actual sliding part
-        !_isPanelVisible ? Container() : _gestureHandler(
-          child: Container(
-            height: _ac.value * (widget.maxHeight - widget.minHeight) + widget.minHeight,
-            margin: widget.margin,
-            padding: widget.padding,
-            decoration: widget.renderPanelSheet ? BoxDecoration(
-              border: widget.border,
-              borderRadius: widget.borderRadius,
-              boxShadow: widget.boxShadow,
-              color: widget.color,
-            ) : null,
-            child: Stack(
-              children: <Widget>[
-
-                //open panel
-                Positioned(
-                  top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
-                  bottom: widget.slideDirection == SlideDirection.DOWN ? 0.0 : null,
-                  width:  MediaQuery.of(context).size.width -
-                          (widget.margin != null ? widget.margin.horizontal : 0) -
-                          (widget.padding != null ? widget.padding.horizontal : 0),
-                  child: Container(
-                    height: widget.maxHeight,
-                    child: widget.panel != null
-                            ? widget.panel
-                            : widget.panelBuilder(_sc),
-                  )
+    return SizedBox.expand(
+      child: LayoutBuilder(
+        builder: (context, constraints) => Stack(
+          alignment: widget.slideDirection == SlideDirection.UP
+              ? Alignment.bottomCenter
+              : Alignment.topCenter,
+          children: <Widget>[
+            //make the back widget take up the entire back side
+            widget.body != null ?
+              Positioned(
+                top: widget.parallaxEnabled ? _getParallax() : 0.0,
+                child: Container(
+                  height: constraints.maxHeight,
+                  width: constraints.maxWidth,
+                  child: widget.body,
                 ),
+              ) : Container(),
 
-                // collapsed panel
-                Positioned(
-                  top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
-                  bottom: widget.slideDirection == SlideDirection.DOWN ? 0.0 : null,
-                  width:  MediaQuery.of(context).size.width -
-                          (widget.margin != null ? widget.margin.horizontal : 0) -
-                          (widget.padding != null ? widget.padding.horizontal : 0),
+            //the backdrop to overlay on the body
+            !widget.backdropEnabled ? Container() : 
+              GestureDetector(
+                onTap: widget.backdropTapClosesPanel ? _close : null,
+                child: FadeTransition(
+                  opacity: Tween(begin: 0.0, end: widget.backdropOpacity)
+                      .animate(_ac),
                   child: Container(
-                    height: widget.minHeight,
-                    child: FadeTransition(
-                      opacity: Tween(begin: 1.0, end: 0.0).animate(_ac),
+                    height: constraints.maxHeight,
+                    width: constraints.maxWidth,
 
-                      // if the panel is open ignore pointers (touch events) on the collapsed
-                      // child so that way touch events go through to whatever is underneath
-                      child: IgnorePointer(
-                        ignoring: _isPanelOpen,
-                        child: widget.collapsed ?? Container(),
-                      ),
-                    ),
+                    //set color to null so that touch events pass through
+                    //to the body when the panel is closed, otherwise,
+                    //if a color exists, then touch events won't go through
+                    color: _ac.value == 0.0 ? null : widget.backdropColor,
                   ),
                 ),
+              ),
+
+            //the actual sliding part
+            !_isPanelVisible ? Container() :
+              _gestureHandler(
+                child: Container(
+                  height: _ac.value * (widget.maxHeight - widget.minHeight) +
+                      widget.minHeight,
+                  margin: widget.margin,
+                  padding: widget.padding,
+                  decoration: widget.renderPanelSheet
+                      ? BoxDecoration(
+                          border: widget.border,
+                          borderRadius: widget.borderRadius,
+                          boxShadow: widget.boxShadow,
+                          color: widget.color,
+                        )
+                      : null,
+                  child: Stack(
+                    children: <Widget>[
+                      //open panel
+                      Positioned(
+                        top: widget.slideDirection == SlideDirection.UP
+                            ? 0.0
+                            : null,
+                        bottom: widget.slideDirection == SlideDirection.DOWN
+                            ? 0.0
+                            : null,
+                        width: constraints.maxWidth -
+                            (widget.margin?.horizontal ?? 0) -
+                            (widget.padding?.horizontal ?? 0),
+                        child: Container(
+                          height: widget.maxHeight,
+                          child: widget.panel ?? widget.panelBuilder(_sc),
+                        ),
+                      ),
+
+                      // collapsed panel
+                      Positioned(
+                        top: widget.slideDirection == SlideDirection.UP
+                            ? 0.0
+                            : null,
+                        bottom: widget.slideDirection == SlideDirection.DOWN
+                            ? 0.0
+                            : null,
+                        width: constraints.maxWidth -
+                            (widget.margin?.horizontal ?? 0) -
+                            (widget.padding?.horizontal ?? 0),
+                        child: Container(
+                          height: widget.minHeight,
+                          child: FadeTransition(
+                            opacity: Tween(begin: 1.0, end: 0.0).animate(_ac),
+
+                            // if the panel is open ignore pointers (touch events) on the collapsed
+                            // child so that way touch events go through to whatever is underneath
+                            child: IgnorePointer(
+                              ignoring: _isPanelOpen,
+                              child: widget.collapsed ?? Container(),
+                            ),
+                          ),
+                        ),
+                      ),
 
 
-              ],
-            ),
-          ),
+                    ],
+                  ),
+                ),
+              ),
+
+          ],
         ),
-
-      ],
+      ),
     );
   }
 
