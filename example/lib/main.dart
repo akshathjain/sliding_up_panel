@@ -114,7 +114,7 @@ class _HomePageState extends State<HomePage> {
 
           //the SlidingUpPanel Title
           Positioned(
-            top: 62.0,
+            top: 52.0,
             child: Container(
               padding: const EdgeInsets.fromLTRB(24.0, 18.0, 24.0, 18.0),
               child: Text(
