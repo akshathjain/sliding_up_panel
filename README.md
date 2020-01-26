@@ -19,7 +19,7 @@ Add the following to your `pubspec.yaml` file:
 dependencies:
   sliding_up_panel: ^1.0.0
 ```
-Note that `v1.0.0` introduced some breaking changes outlined [below](Breaking-Changes).
+Note that `v1.0.0` introduced some breaking changes outlined [below](#breaking-changes).
 
 <br>
 
