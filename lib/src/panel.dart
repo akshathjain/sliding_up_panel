@@ -196,12 +196,13 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   bool _scrollingEnabled = false;
   VelocityTracker _vt = new VelocityTracker();
 
-  bool _isPanelVisible = widget.defaultVisible;
+  bool _isPanelVisible = true;
 
   @override
   void initState(){
     super.initState();
 
+    _isPanelVisible = widget.defaultVisible;
     _ac = new AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
