@@ -4,7 +4,7 @@ version: 1.0.0
 homepage: https://github.com/akshathjain/sliding_up_panel
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.2 <3.0.0"
 
 dependencies:
   flutter:

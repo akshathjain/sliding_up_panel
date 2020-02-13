@@ -46,6 +46,13 @@ class SlidingUpPanel extends StatefulWidget {
   /// to fill the screen.
   final Widget body;
 
+  /// The Widget that on top the sliding panel.
+  /// This Widget will het the sizes of minHeight
+  final Widget header;
+
+  /// The height of the header over the sliding panel.
+  final double headerHeight;
+
   /// The height of the sliding panel when fully collapsed.
   final double minHeight;
 
@@ -146,7 +153,9 @@ class SlidingUpPanel extends StatefulWidget {
     this.panel,
     this.panelBuilder,
     this.body,
+    this.header,
     this.collapsed,
+    this.headerHeight = 0.0,
     this.minHeight = 100.0,
     this.maxHeight = 500.0,
     this.border,
@@ -274,59 +283,77 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
         //the actual sliding part
         !_isPanelVisible ? Container() : _gestureHandler(
-          child: Container(
-            height: _ac.value * (widget.maxHeight - widget.minHeight) + widget.minHeight,
-            margin: widget.margin,
-            padding: widget.padding,
-            decoration: widget.renderPanelSheet ? BoxDecoration(
-              border: widget.border,
-              borderRadius: widget.borderRadius,
-              boxShadow: widget.boxShadow,
-              color: widget.color,
-            ) : null,
-            child: Stack(
-              children: <Widget>[
-
-                //open panel
-                Positioned(
-                  top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
-                  bottom: widget.slideDirection == SlideDirection.DOWN ? 0.0 : null,
-                  width:  MediaQuery.of(context).size.width -
-                          (widget.margin != null ? widget.margin.horizontal : 0) -
-                          (widget.padding != null ? widget.padding.horizontal : 0),
-                  child: Container(
-                    height: widget.maxHeight,
-                    child: widget.panel != null
-                            ? widget.panel
-                            : widget.panelBuilder(_sc),
-                  )
+          child: Column(
+            mainAxisAlignment:widget.slideDirection == SlideDirection.UP ? MainAxisAlignment.end : MainAxisAlignment.start,
+            children: <Widget>[
+              if(widget.header != null)
+                Container(
+                  height: widget.headerHeight,
+                  margin: widget.margin,
+                  padding: widget.padding,
+                  decoration: BoxDecoration(
+                    border: widget.border,
+                    borderRadius: widget.borderRadius,
+                    boxShadow: widget.boxShadow,
+                    color: widget.color,
+                  ),
+                  child: widget.header,
                 ),
+              Container(
+                height: _ac.value * (widget.maxHeight - widget.minHeight) + widget.minHeight,
+                margin: widget.margin,
+                padding: widget.padding,
+                decoration: widget.renderPanelSheet ? BoxDecoration(
+                  border: widget.header == null ? widget.border : null,
+                  borderRadius: widget.header == null ? widget.borderRadius : null,
+                  boxShadow: widget.header == null ? widget.boxShadow : null,
+                  color: widget.color,
+                ) : null,
+                child: Stack(
+                  children: <Widget>[
 
-                // collapsed panel
-                Positioned(
-                  top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
-                  bottom: widget.slideDirection == SlideDirection.DOWN ? 0.0 : null,
-                  width:  MediaQuery.of(context).size.width -
-                          (widget.margin != null ? widget.margin.horizontal : 0) -
-                          (widget.padding != null ? widget.padding.horizontal : 0),
-                  child: Container(
-                    height: widget.minHeight,
-                    child: FadeTransition(
-                      opacity: Tween(begin: 1.0, end: 0.0).animate(_ac),
+                    //open panel
+                    Positioned(
+                      top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
+                      bottom: widget.slideDirection == SlideDirection.DOWN ? 0.0 : null,
+                      width:  MediaQuery.of(context).size.width -
+                              (widget.margin != null ? widget.margin.horizontal : 0) -
+                              (widget.padding != null ? widget.padding.horizontal : 0),
+                      child: Container(
+                        height: widget.maxHeight,
+                        child: widget.panel != null
+                                ? widget.panel
+                                : widget.panelBuilder(_sc),
+                      )
+                    ),
 
-                      // if the panel is open ignore pointers (touch events) on the collapsed
-                      // child so that way touch events go through to whatever is underneath
-                      child: IgnorePointer(
-                        ignoring: _isPanelOpen,
-                        child: widget.collapsed ?? Container(),
+                    // collapsed panel
+                    Positioned(
+                      top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
+                      bottom: widget.slideDirection == SlideDirection.DOWN ? 0.0 : null,
+                      width:  MediaQuery.of(context).size.width -
+                              (widget.margin != null ? widget.margin.horizontal : 0) -
+                              (widget.padding != null ? widget.padding.horizontal : 0),
+                      child: Container(
+                        height: widget.minHeight,
+                        child: FadeTransition(
+                          opacity: Tween(begin: 1.0, end: 0.0).animate(_ac),
+
+                          // if the panel is open ignore pointers (touch events) on the collapsed
+                          // child so that way touch events go through to whatever is underneath
+                          child: IgnorePointer(
+                            ignoring: _isPanelOpen,
+                            child: widget.collapsed ?? Container(),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+
+
+                  ],
                 ),
-
-
-              ],
-            ),
+              ),
+            ],
           ),
         ),
 
@@ -508,13 +535,6 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   bool get _isPanelShown => _isPanelVisible;
 
 }
-
-
-
-
-
-
-
 
 class PanelController{
   _SlidingUpPanelState _panelState;
