@@ -9,18 +9,14 @@ Licensing: More information can be found here: https://github.com/akshathjain/sl
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-enum SlideDirection{
+enum SlideDirection {
   UP,
   DOWN,
 }
 
-enum PanelState{
-  OPEN,
-  CLOSED
-}
+enum PanelState { OPEN, CLOSED }
 
 class SlidingUpPanel extends StatefulWidget {
-
   /// The Widget that slides into view. When the
   /// panel is collapsed and if [collapsed] is null,
   /// then top portion of this Widget will be displayed;
@@ -175,16 +171,16 @@ class SlidingUpPanel extends StatefulWidget {
     this.isDraggable = true,
     this.slideDirection = SlideDirection.UP,
     this.defaultPanelState = PanelState.CLOSED,
-  }) : assert(panel != null || panelBuilder != null),
-       assert(0 <= backdropOpacity && backdropOpacity <= 1.0),
-       super(key: key);
+  })  : assert(panel != null || panelBuilder != null),
+        assert(0 <= backdropOpacity && backdropOpacity <= 1.0),
+        super(key: key);
 
   @override
   _SlidingUpPanelState createState() => _SlidingUpPanelState();
 }
 
-class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProviderStateMixin{
-
+class _SlidingUpPanelState extends State<SlidingUpPanel>
+    with SingleTickerProviderStateMixin {
   AnimationController _ac;
 
   ScrollController _sc;
@@ -194,148 +190,170 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   bool _isPanelVisible = true;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
 
     _ac = new AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-      value: widget.defaultPanelState == PanelState.CLOSED ? 0.0 : 1.0 //set the default panel state (i.e. set initial value of _ac)
-    )..addListener((){
-      setState((){});
+        vsync: this,
+        duration: const Duration(milliseconds: 300),
+        value: widget.defaultPanelState == PanelState.CLOSED
+            ? 0.0
+            : 1.0 //set the default panel state (i.e. set initial value of _ac)
+        )
+      ..addListener(() {
+        setState(() {});
 
-      if(widget.onPanelSlide != null) widget.onPanelSlide(_ac.value);
+        if (widget.onPanelSlide != null) widget.onPanelSlide(_ac.value);
 
-      if(widget.onPanelOpened != null && _ac.value == 1.0) widget.onPanelOpened();
+        if (widget.onPanelOpened != null && _ac.value == 1.0)
+          widget.onPanelOpened();
 
-      if(widget.onPanelClosed != null && _ac.value == 0.0) widget.onPanelClosed();
-    });
+        if (widget.onPanelClosed != null && _ac.value == 0.0)
+          widget.onPanelClosed();
+      });
 
     _sc = new ScrollController();
 
     // prevent the panel content from being scrolled only if the widget is
     // draggable and panel scrolling is enabled
-    _sc.addListener((){
-      if(widget.isDraggable && !_scrollingEnabled)
-        _sc.jumpTo(0);
+    _sc.addListener(() {
+      if (widget.isDraggable && !_scrollingEnabled) _sc.jumpTo(0);
     });
 
     widget.controller?._addState(
-      // _close,
-      // _open,
-      // _hide,
-      // _show,
-      // _setPanelPosition,
-      // _animatePanelToPosition,
-      // _getPanelPosition,
-      // _isPanelAnimating,
-      // _isPanelOpen,
-      // _isPanelClosed,
-      // _isPanelShown,
-      this
-    );
+        // _close,
+        // _open,
+        // _hide,
+        // _show,
+        // _setPanelPosition,
+        // _animatePanelToPosition,
+        // _getPanelPosition,
+        // _isPanelAnimating,
+        // _isPanelOpen,
+        // _isPanelClosed,
+        // _isPanelShown,
+        this);
   }
 
   @override
   Widget build(BuildContext context) {
     return Stack(
-      alignment: widget.slideDirection == SlideDirection.UP ? Alignment.bottomCenter : Alignment.topCenter,
+      alignment: widget.slideDirection == SlideDirection.UP
+          ? Alignment.bottomCenter
+          : Alignment.topCenter,
       children: <Widget>[
-
-
         //make the back widget take up the entire back side
-        widget.body != null ? Positioned(
-          top: widget.parallaxEnabled ? _getParallax() : 0.0,
-          child: Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            child: widget.body,
-          ),
-        ) : Container(),
-
+        widget.body != null
+            ? Positioned(
+                top: widget.parallaxEnabled ? _getParallax() : 0.0,
+                child: Container(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: widget.body,
+                ),
+              )
+            : Container(),
 
         //the backdrop to overlay on the body
-        !widget.backdropEnabled ? Container() : GestureDetector(
-          onTap: widget.backdropTapClosesPanel ? _close : null,
-          child: FadeTransition(
-            opacity: Tween(begin: 0.0, end: widget.backdropOpacity).animate(_ac),
-            child: Container(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-
-              //set color to null so that touch events pass through
-              //to the body when the panel is closed, otherwise,
-              //if a color exists, then touch events won't go through
-              color: _ac.value == 0.0 ? null : widget.backdropColor,
-            ),
-          ),
-        ),
-
-
-        //the actual sliding part
-        !_isPanelVisible ? Container() : _gestureHandler(
-          child: Container(
-            height: _ac.value * (widget.maxHeight - widget.minHeight) + widget.minHeight,
-            margin: widget.margin,
-            padding: widget.padding,
-            decoration: widget.renderPanelSheet ? BoxDecoration(
-              border: widget.border,
-              borderRadius: widget.borderRadius,
-              boxShadow: widget.boxShadow,
-              color: widget.color,
-            ) : null,
-            child: Stack(
-              children: <Widget>[
-
-                //open panel
-                Positioned(
-                  top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
-                  bottom: widget.slideDirection == SlideDirection.DOWN ? 0.0 : null,
-                  width:  MediaQuery.of(context).size.width -
-                          (widget.margin != null ? widget.margin.horizontal : 0) -
-                          (widget.padding != null ? widget.padding.horizontal : 0),
+        !widget.backdropEnabled
+            ? Container()
+            : GestureDetector(
+                onTap: widget.backdropTapClosesPanel ? _close : null,
+                child: FadeTransition(
+                  opacity: Tween(begin: 0.0, end: widget.backdropOpacity)
+                      .animate(_ac),
                   child: Container(
-                    height: widget.maxHeight,
-                    child: widget.panel != null
-                            ? widget.panel
-                            : widget.panelBuilder(_sc),
-                  )
-                ),
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width,
 
-                // collapsed panel
-                Positioned(
-                  top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
-                  bottom: widget.slideDirection == SlideDirection.DOWN ? 0.0 : null,
-                  width:  MediaQuery.of(context).size.width -
-                          (widget.margin != null ? widget.margin.horizontal : 0) -
-                          (widget.padding != null ? widget.padding.horizontal : 0),
-                  child: Container(
-                    height: widget.minHeight,
-                    child: FadeTransition(
-                      opacity: Tween(begin: 1.0, end: 0.0).animate(_ac),
-
-                      // if the panel is open ignore pointers (touch events) on the collapsed
-                      // child so that way touch events go through to whatever is underneath
-                      child: IgnorePointer(
-                        ignoring: _isPanelOpen,
-                        child: widget.collapsed ?? Container(),
-                      ),
-                    ),
+                    //set color to null so that touch events pass through
+                    //to the body when the panel is closed, otherwise,
+                    //if a color exists, then touch events won't go through
+                    color: _ac.value == 0.0 ? null : widget.backdropColor,
                   ),
                 ),
+              ),
 
+        //the actual sliding part
+        !_isPanelVisible
+            ? Container()
+            : _gestureHandler(
+                child: Container(
+                  height: _ac.value * (widget.maxHeight - widget.minHeight) +
+                      widget.minHeight,
+                  margin: widget.margin,
+                  padding: widget.padding,
+                  decoration: widget.renderPanelSheet
+                      ? BoxDecoration(
+                          border: widget.border,
+                          borderRadius: widget.borderRadius,
+                          boxShadow: widget.boxShadow,
+                          color: widget.color,
+                        )
+                      : null,
+                  child: Stack(
+                    children: <Widget>[
+                      //open panel
+                      Positioned(
+                          top: widget.slideDirection == SlideDirection.UP
+                              ? 0.0
+                              : null,
+                          bottom: widget.slideDirection == SlideDirection.DOWN
+                              ? 0.0
+                              : null,
+                          width: MediaQuery.of(context).size.width -
+                              (widget.margin != null
+                                  ? widget.margin.horizontal
+                                  : 0) -
+                              (widget.padding != null
+                                  ? widget.padding.horizontal
+                                  : 0),
+                          child: Container(
+                            height: widget.maxHeight,
+                            child: widget.panel != null
+                                ? widget.panel
+                                : widget.panelBuilder(_sc),
+                          )),
 
-              ],
-            ),
-          ),
-        ),
+                      // collapsed panel
+                      Positioned(
+                        top: widget.slideDirection == SlideDirection.UP
+                            ? 0.0
+                            : null,
+                        bottom: widget.slideDirection == SlideDirection.DOWN
+                            ? 0.0
+                            : null,
+                        width: MediaQuery.of(context).size.width -
+                            (widget.margin != null
+                                ? widget.margin.horizontal
+                                : 0) -
+                            (widget.padding != null
+                                ? widget.padding.horizontal
+                                : 0),
+                        child: Container(
+                          height: widget.minHeight,
+                          child: FadeTransition(
+                            opacity: Tween(begin: 1.0, end: 0.0).animate(_ac),
 
+                            // if the panel is open ignore pointers (touch events) on the collapsed
+                            // child so that way touch events go through to whatever is underneath
+                            child: IgnorePointer(
+                              ignoring: _isPanelOpen,
+                              child: widget.collapsed ?? Container(),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
       ],
     );
   }
 
   @override
-  void dispose(){
+  void dispose() {
     _ac.dispose();
     super.dispose();
   }
@@ -344,20 +362,23 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   // and a listener if panelBuilder is used.
   // this is because the listener is designed only for use with linking the scrolling of
   // panels and using it for panels that don't want to linked scrolling yields odd results
-  Widget _gestureHandler({Widget child}){
+  Widget _gestureHandler({Widget child}) {
     if (!widget.isDraggable) return child;
 
-    if (widget.panel != null){
+    if (widget.panel != null) {
       return GestureDetector(
-        onVerticalDragUpdate: (DragUpdateDetails dets) => _onGestureSlide(dets.delta.dy),
-        onVerticalDragEnd: (DragEndDetails dets) => _onGestureEnd(dets.velocity),
+        onVerticalDragUpdate: (DragUpdateDetails dets) =>
+            _onGestureSlide(dets.delta.dy),
+        onVerticalDragEnd: (DragEndDetails dets) =>
+            _onGestureEnd(dets.velocity),
         child: child,
       );
     }
 
     return Listener(
-      onPointerMove: (PointerMoveEvent p){
-        _vt.addPosition(p.timeStamp, p.position); // add current position for velocity tracking
+      onPointerMove: (PointerMoveEvent p) {
+        _vt.addPosition(p.timeStamp,
+            p.position); // add current position for velocity tracking
         _onGestureSlide(p.delta.dy);
       },
       onPointerUp: (PointerUpEvent p) => _onGestureEnd(_vt.getVelocity()),
@@ -365,20 +386,22 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     );
   }
 
-
-  double _getParallax(){
-    if(widget.slideDirection == SlideDirection.UP)
-      return -_ac.value * (widget.maxHeight - widget.minHeight) * widget.parallaxOffset;
+  double _getParallax() {
+    if (widget.slideDirection == SlideDirection.UP)
+      return -_ac.value *
+          (widget.maxHeight - widget.minHeight) *
+          widget.parallaxOffset;
     else
-      return _ac.value * (widget.maxHeight - widget.minHeight) * widget.parallaxOffset;
+      return _ac.value *
+          (widget.maxHeight - widget.minHeight) *
+          widget.parallaxOffset;
   }
 
   // handles the sliding gesture
-  void _onGestureSlide(double dy){
-
+  void _onGestureSlide(double dy) {
     // only slide the panel if scrolling is not enabled
-    if(!_scrollingEnabled){
-      if(widget.slideDirection == SlideDirection.UP)
+    if (!_scrollingEnabled) {
+      if (widget.slideDirection == SlideDirection.UP)
         _ac.value -= dy / (widget.maxHeight - widget.minHeight);
       else
         _ac.value += dy / (widget.maxHeight - widget.minHeight);
@@ -387,11 +410,11 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     // if the panel is open and the user hasn't scrolled, we need to determine
     // whether to enable scrolling if the user swipes up, or disable closing and
     // begin to close the panel if the user swipes down
-    if(_isPanelOpen && _sc.hasClients && _sc.offset <= 0){
+    if (_isPanelOpen && _sc.hasClients && _sc.offset <= 0) {
       setState(() {
-        if(dy < 0){
+        if (dy < 0) {
           _scrollingEnabled = true;
-        }else{
+        } else {
           _scrollingEnabled = false;
         }
       });
@@ -399,26 +422,27 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   }
 
   // handles when user stops sliding
-  void _onGestureEnd(Velocity velocity){
+  void _onGestureEnd(Velocity velocity) {
     double minFlingVelocity = 365.0;
 
     //let the current animation finish before starting a new one
-    if(_ac.isAnimating) return;
+    if (_ac.isAnimating) return;
 
     // if scrolling is allowed and the panel is open, we don't want to close
     // the panel if they swipe up on the scrollable
-    if(_isPanelOpen && _scrollingEnabled) return;
+    if (_isPanelOpen && _scrollingEnabled) return;
 
     //check if the velocity is sufficient to constitute fling
-    if(velocity.pixelsPerSecond.dy.abs() >= minFlingVelocity){
-      double visualVelocity = - velocity.pixelsPerSecond.dy / (widget.maxHeight - widget.minHeight);
+    if (velocity.pixelsPerSecond.dy.abs() >= minFlingVelocity) {
+      double visualVelocity =
+          -velocity.pixelsPerSecond.dy / (widget.maxHeight - widget.minHeight);
 
-      if(widget.slideDirection == SlideDirection.DOWN)
+      if (widget.slideDirection == SlideDirection.DOWN)
         visualVelocity = -visualVelocity;
 
-      if(widget.panelSnapping){
+      if (widget.panelSnapping) {
         _ac.fling(velocity: visualVelocity);
-      }else{
+      } else {
         // actual scroll physics will be implemented in a future release
         _ac.animateTo(
           _ac.value + visualVelocity * 0.16,
@@ -432,12 +456,11 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
     // check if the controller is already halfway there
     if (widget.panelSnapping) {
-      if(_ac.value > 0.5)
+      if (_ac.value > 0.5)
         _open();
       else
         _close();
     }
-
   }
 
   //---------------------------------
@@ -445,18 +468,18 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   //---------------------------------
 
   //close the panel
-  Future<void> _close(){
+  Future<void> _close() {
     return _ac.fling(velocity: -1.0);
   }
 
   //open the panel
-  Future<void> _open(){
+  Future<void> _open() {
     return _ac.fling(velocity: 1.0);
   }
 
   //hide the panel (completely offscreen)
-  Future<void> _hide(){
-    return _ac.fling(velocity: -1.0).then((x){
+  Future<void> _hide() {
+    return _ac.fling(velocity: -1.0).then((x) {
       setState(() {
         _isPanelVisible = false;
       });
@@ -464,8 +487,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   }
 
   //show the panel (in collapsed mode)
-  Future<void> _show(){
-    return _ac.fling(velocity: -1.0).then((x){
+  Future<void> _show() {
+    return _ac.fling(velocity: -1.0).then((x) {
       setState(() {
         _isPanelVisible = true;
       });
@@ -474,14 +497,14 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   //set the panel position to value - must
   //be between 0.0 and 1.0
-  Future<void> _animatePanelToPosition(double value){
+  Future<void> _animatePanelToPosition(double value) {
     assert(0.0 <= value && value <= 1.0);
     return _ac.animateTo(value);
   }
 
   //set the panel position to value - must
   //be between 0.0 and 1.0
-  set _panelPosition(double value){
+  set _panelPosition(double value) {
     assert(0.0 <= value && value <= 1.0);
     _ac.value = value;
   }
@@ -506,20 +529,12 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   //returns whether or not the
   //panel is shown/hidden
   bool get _isPanelShown => _isPanelVisible;
-
 }
 
-
-
-
-
-
-
-
-class PanelController{
+class PanelController {
   _SlidingUpPanelState _panelState;
 
-  void _addState(_SlidingUpPanelState panelState){
+  void _addState(_SlidingUpPanelState panelState) {
     this._panelState = panelState;
   }
 
@@ -529,27 +544,27 @@ class PanelController{
   bool get isAttached => _panelState != null;
 
   /// Closes the sliding panel to its collapsed state (i.e. to the  minHeight)
-  Future<void> close(){
+  Future<void> close() {
     assert(isAttached, "PanelController must be attached to a SlidingUpPanel");
     return _panelState._close();
   }
 
   /// Opens the sliding panel fully
   /// (i.e. to the maxHeight)
-  Future<void> open(){
+  Future<void> open() {
     assert(isAttached, "PanelController must be attached to a SlidingUpPanel");
     return _panelState._open();
   }
 
   /// Hides the sliding panel (i.e. is invisible)
-  Future<void> hide(){
+  Future<void> hide() {
     assert(isAttached, "PanelController must be attached to a SlidingUpPanel");
     return _panelState._hide();
   }
 
   /// Shows the sliding panel in its collapsed state
   /// (i.e. "un-hide" the sliding panel)
-  Future<void> show(){
+  Future<void> show() {
     assert(isAttached, "PanelController must be attached to a SlidingUpPanel");
     return _panelState._show();
   }
@@ -557,7 +572,7 @@ class PanelController{
   /// Animates the panel position to the value.
   /// The value must between 0.0 and 1.0
   /// where 0.0 is fully collapsed and 1.0 is completely open
-  Future<void> animatePanelToPosition(double value){
+  Future<void> animatePanelToPosition(double value) {
     assert(isAttached, "PanelController must be attached to a SlidingUpPanel");
     assert(0.0 <= value && value <= 1.0);
     return _panelState._animatePanelToPosition(value);
@@ -566,7 +581,7 @@ class PanelController{
   /// Sets the panel position (without animation).
   /// The value must between 0.0 and 1.0
   /// where 0.0 is fully collapsed and 1.0 is completely open.
-  set panelPosition(double value){
+  set panelPosition(double value) {
     assert(isAttached, "PanelController must be attached to a SlidingUpPanel");
     assert(0.0 <= value && value <= 1.0);
     _panelState._panelPosition = value;
@@ -578,37 +593,36 @@ class PanelController{
   /// as a decimal between 0.0 and 1.0
   /// where 0.0 is fully collapsed and
   /// 1.0 is full open.
-  double get panelPosition{
+  double get panelPosition {
     assert(isAttached, "PanelController must be attached to a SlidingUpPanel");
     return _panelState._panelPosition;
   }
 
   /// Returns whether or not the panel is
   /// currently animating.
-  bool get isPanelAnimating{
+  bool get isPanelAnimating {
     assert(isAttached, "PanelController must be attached to a SlidingUpPanel");
     return _panelState._isPanelAnimating;
   }
 
   /// Returns whether or not the
   /// panel is open.
-  bool get isPanelOpen{
+  bool get isPanelOpen {
     assert(isAttached, "PanelController must be attached to a SlidingUpPanel");
     return _panelState._isPanelOpen;
   }
 
   /// Returns whether or not the
   /// panel is closed.
-  bool get isPanelClosed{
+  bool get isPanelClosed {
     assert(isAttached, "PanelController must be attached to a SlidingUpPanel");
     return _panelState._isPanelClosed;
   }
 
   /// Returns whether or not the
   /// panel is shown/hidden.
-  bool get isPanelShown{
+  bool get isPanelShown {
     assert(isAttached, "PanelController must be attached to a SlidingUpPanel");
     return _panelState._isPanelShown;
   }
-
 }
