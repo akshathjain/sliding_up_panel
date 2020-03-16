@@ -202,8 +202,6 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
       duration: const Duration(milliseconds: 300),
       value: widget.defaultPanelState == PanelState.CLOSED ? 0.0 : 1.0 //set the default panel state (i.e. set initial value of _ac)
     )..addListener((){
-      setState((){});
-
       if(widget.onPanelSlide != null) widget.onPanelSlide(_ac.value);
 
       if(widget.onPanelOpened != null && _ac.value == 1.0) widget.onPanelOpened();
@@ -274,16 +272,22 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
         //the actual sliding part
         !_isPanelVisible ? Container() : _gestureHandler(
-          child: Container(
-            height: _ac.value * (widget.maxHeight - widget.minHeight) + widget.minHeight,
-            margin: widget.margin,
-            padding: widget.padding,
-            decoration: widget.renderPanelSheet ? BoxDecoration(
-              border: widget.border,
-              borderRadius: widget.borderRadius,
-              boxShadow: widget.boxShadow,
-              color: widget.color,
-            ) : null,
+          child: AnimatedBuilder(
+            animation: _ac,
+            builder: (context, child) {
+              return Container(
+                height: _ac.value * (widget.maxHeight - widget.minHeight) + widget.minHeight,
+                margin: widget.margin,
+                padding: widget.padding,
+                decoration: widget.renderPanelSheet ? BoxDecoration(
+                  border: widget.border,
+                  borderRadius: widget.borderRadius,
+                  boxShadow: widget.boxShadow,
+                  color: widget.color,
+                ) : null,
+                child: child,
+              );
+            },
             child: Stack(
               children: <Widget>[
 
@@ -311,7 +315,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                           (widget.padding != null ? widget.padding.horizontal : 0),
                   child: Container(
                     height: widget.minHeight,
-                    child: FadeTransition(
+                    child: widget.collapsed == null ? Container() : FadeTransition(
                       opacity: Tween(begin: 1.0, end: 0.0).animate(_ac),
 
                       // if the panel is open ignore pointers (touch events) on the collapsed
