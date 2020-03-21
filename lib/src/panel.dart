@@ -99,6 +99,11 @@ class SlidingUpPanel extends StatefulWidget {
   /// backdrop closes the panel. Defaults to true.
   final bool backdropTapClosesPanel;
 
+  /// If non-null, this callback is called when backdrop
+  /// is tapped and the backdropTapClosesPanel
+  /// is enabled
+  final VoidCallback onBackdropTapped;
+
   /// If non-null, this callback
   /// is called as the panel slides around with the
   /// current position of the panel. The position is a double
@@ -167,6 +172,7 @@ class SlidingUpPanel extends StatefulWidget {
     this.backdropColor = Colors.black,
     this.backdropOpacity = 0.5,
     this.backdropTapClosesPanel = true,
+    this.onBackdropTapped,
     this.onPanelSlide,
     this.onPanelOpened,
     this.onPanelClosed,
@@ -256,7 +262,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
         //the backdrop to overlay on the body
         !widget.backdropEnabled ? Container() : GestureDetector(
-          onTap: widget.backdropTapClosesPanel ? _close : null,
+          onTap: widget.backdropTapClosesPanel ? _closeFromTap : null,
           child: FadeTransition(
             opacity: Tween(begin: 0.0, end: widget.backdropOpacity).animate(_ac),
             child: Container(
@@ -506,6 +512,16 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   //returns whether or not the
   //panel is shown/hidden
   bool get _isPanelShown => _isPanelVisible;
+
+  //---------------------------------
+  //Callback related functions
+  //---------------------------------
+
+  // close the panel from tap
+  Future<void> _closeFromTap() {
+    widget.onBackdropTapped();
+    return _ac.fling(velocity: -1.0);
+  }
 
 }
 
