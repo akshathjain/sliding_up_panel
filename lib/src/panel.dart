@@ -35,7 +35,7 @@ class SlidingUpPanel extends StatefulWidget {
   /// the panel position with the scroll position. Useful for implementing an
   /// infinite scroll behavior. If [panel] and [panelBuilder] are both non-null,
   /// [panel] will be used.
-  final Widget Function(ScrollController sc) panelBuilder;
+  final Widget Function(DelegatingScrollController sc) panelBuilder;
 
   /// The Widget displayed overtop the [panel] when collapsed.
   /// This fades out as the panel is opened.
@@ -140,6 +140,9 @@ class SlidingUpPanel extends StatefulWidget {
   /// in the closed position and must be opened. PanelState.OPEN indicates that
   /// by default the Panel is open and must be swiped closed by the user.
   final PanelState defaultPanelState;
+  
+  final int scrollViewCount;
+  final int defaultScrollView;
 
   SlidingUpPanel({
     Key key,
@@ -175,6 +178,8 @@ class SlidingUpPanel extends StatefulWidget {
     this.isDraggable = true,
     this.slideDirection = SlideDirection.UP,
     this.defaultPanelState = PanelState.CLOSED,
+    this.scrollViewCount = 1,
+    this.defaultScrollView = 0,
   }) : assert(panel != null || panelBuilder != null),
        assert(0 <= backdropOpacity && backdropOpacity <= 1.0),
        super(key: key);
@@ -187,7 +192,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   AnimationController _ac;
 
-  ScrollController _sc;
+  DelegatingScrollController _sc;
   bool _scrollingEnabled = false;
   VelocityTracker _vt = new VelocityTracker();
 
@@ -211,7 +216,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
       if(widget.onPanelClosed != null && _ac.value == 0.0) widget.onPanelClosed();
     });
 
-    _sc = new ScrollController();
+    _sc = new DelegatingScrollController(widget.scrollViewCount, defaultScrollView: widget.defaultScrollView);
 
     // prevent the panel content from being scrolled only if the widget is
     // draggable and panel scrolling is enabled
@@ -611,4 +616,110 @@ class PanelController{
     return _panelState._isPanelShown;
   }
 
+}
+
+class DelegatingScrollController implements ScrollController {
+  final List<ScrollController> _delegates;
+
+  ScrollController _currentDelegate;
+
+  DelegatingScrollController(int scrollViewCount, {int defaultScrollView = 0})
+    : _delegates = [for (int i = 0; i < scrollViewCount; i++) ScrollController()] {
+    _currentDelegate = _delegates[defaultScrollView];
+  }
+
+  void delegateTo(int i) {
+    this._currentDelegate = _delegates[i];
+  }
+
+  @override
+  void debugFillDescription(List<String> description) {
+    _currentDelegate.debugFillDescription(description);
+  }
+
+  @override
+  String toString() {
+    return _currentDelegate.toString();
+  }
+
+  @override
+  ScrollPosition createScrollPosition(ScrollPhysics physics, ScrollContext context, ScrollPosition oldPosition) {
+    return _currentDelegate.createScrollPosition(physics, context, oldPosition);
+  }
+
+  @override
+  void dispose() {
+    _currentDelegate.dispose();
+  }
+
+  @override
+  void detach(ScrollPosition position) {
+    _currentDelegate.detach(position);
+  }
+
+  @override
+  void attach(ScrollPosition position) {
+    _currentDelegate.attach(position);
+  }
+
+  @override
+  void jumpTo(double value) {
+    _currentDelegate.jumpTo(value);
+  }
+
+  @override
+  Future<Function> animateTo(double offset, {@required Duration duration, @required Curve curve}) {
+    return _currentDelegate.animateTo(offset, duration: duration, curve: curve);
+  }
+
+  @override
+  double get offset {
+    return _currentDelegate.offset;
+  }
+
+  @override
+  ScrollPosition get position {
+    return _currentDelegate.position;
+  }
+
+  @override
+  bool get hasClients {
+    return _currentDelegate.hasClients;
+  }
+
+  @override
+  Iterable<ScrollPosition> get positions {
+    return _currentDelegate.positions;
+  }
+
+  @override
+  double get initialScrollOffset {
+    return _currentDelegate.initialScrollOffset;
+  }
+
+  @override
+  void addListener(listener) {
+    _currentDelegate.addListener(listener);
+  }
+
+  @override
+  String get debugLabel => _currentDelegate.debugLabel;
+
+  @override
+  bool get hasListeners => _currentDelegate.hasListeners;
+
+  @override
+  bool get keepScrollOffset => _currentDelegate.keepScrollOffset;
+
+  @override
+  void notifyListeners() {
+    _currentDelegate.notifyListeners();
+  }
+
+  @override
+  void removeListener(listener) {
+    _currentDelegate.removeListener(listener);
+  }
+
+  delegate(int i) => _delegates[i];
 }
