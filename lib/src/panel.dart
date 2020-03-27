@@ -106,6 +106,10 @@ class SlidingUpPanel extends StatefulWidget {
   final void Function(double position) onPanelSlide;
 
   /// If non-null, this callback is called when the
+  /// panel is starting to open
+  final VoidCallback onPanelOpenStart;
+
+  /// If non-null, this callback is called when the
   /// panel is fully opened
   final VoidCallback onPanelOpened;
 
@@ -169,6 +173,7 @@ class SlidingUpPanel extends StatefulWidget {
     this.backdropTapClosesPanel = true,
     this.onPanelSlide,
     this.onPanelOpened,
+    this.onPanelOpenStart,
     this.onPanelClosed,
     this.parallaxEnabled = false,
     this.parallaxOffset = 0.1,
@@ -375,6 +380,9 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   // handles the sliding gesture
   void _onGestureSlide(double dy){
+    if (widget.onPanelOpenStart != null && dy < 0 && _ac.value == 0) {
+      widget.onPanelOpenStart();
+    }
 
     // only slide the panel if scrolling is not enabled
     if(!_scrollingEnabled){
