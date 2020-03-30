@@ -202,8 +202,6 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
       duration: const Duration(milliseconds: 300),
       value: widget.defaultPanelState == PanelState.CLOSED ? 0.0 : 1.0 //set the default panel state (i.e. set initial value of _ac)
     )..addListener((){
-      setState(() {});
-
       if(widget.onPanelSlide != null) widget.onPanelSlide(_ac.value);
 
       if(widget.onPanelOpened != null && _ac.value == 1.0) widget.onPanelOpened();
@@ -243,33 +241,41 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
         //the backdrop to overlay on the body
         !widget.backdropEnabled ? Container() : GestureDetector(
           onTap: widget.backdropTapClosesPanel ? _close : null,
-          child: FadeTransition(
-            opacity: Tween(begin: 0.0, end: widget.backdropOpacity).animate(_ac),
-            child: Container(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
+          child: AnimatedBuilder(
+            animation: _ac,
+            builder: (context, _) {
+              return Container(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
 
-              //set color to null so that touch events pass through
-              //to the body when the panel is closed, otherwise,
-              //if a color exists, then touch events won't go through
-              color: _ac.value == 0.0 ? null : widget.backdropColor,
-            ),
+                //set color to null so that touch events pass through
+                //to the body when the panel is closed, otherwise,
+                //if a color exists, then touch events won't go through
+                color: _ac.value == 0.0 ? null : widget.backdropColor.withOpacity(widget.backdropOpacity * _ac.value),
+              );
+            }
           ),
         ),
 
 
         //the actual sliding part
         !_isPanelVisible ? Container() : _gestureHandler(
-          child: Container(
-            height: _ac.value * (widget.maxHeight - widget.minHeight) + widget.minHeight,
-            margin: widget.margin,
-            padding: widget.padding,
-            decoration: widget.renderPanelSheet ? BoxDecoration(
-              border: widget.border,
-              borderRadius: widget.borderRadius,
-              boxShadow: widget.boxShadow,
-              color: widget.color,
-            ) : null,
+          child: AnimatedBuilder(
+            animation: _ac,
+            builder: (context, child) {
+              return Container(
+                height: _ac.value * (widget.maxHeight - widget.minHeight) + widget.minHeight,
+                margin: widget.margin,
+                padding: widget.padding,
+                decoration: widget.renderPanelSheet ? BoxDecoration(
+                  border: widget.border,
+                  borderRadius: widget.borderRadius,
+                  boxShadow: widget.boxShadow,
+                  color: widget.color,
+                ) : null,
+                child: child,
+              );
+            },
             child: Stack(
               children: <Widget>[
 
@@ -297,7 +303,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                           (widget.padding != null ? widget.padding.horizontal : 0),
                   child: Container(
                     height: widget.minHeight,
-                    child: FadeTransition(
+                    child: widget.collapsed == null ? Container() : FadeTransition(
                       opacity: Tween(begin: 1.0, end: 0.0).animate(_ac),
 
                       // if the panel is open ignore pointers (touch events) on the collapsed
