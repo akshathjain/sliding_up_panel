@@ -228,8 +228,14 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
 
         //make the back widget take up the entire back side
-        widget.body != null ? Positioned(
-          top: widget.parallaxEnabled ? _getParallax() : 0.0,
+        widget.body != null ? AnimatedBuilder(
+          animation: _ac,
+          builder: (context, child){
+            return Positioned(
+              top: widget.parallaxEnabled ? _getParallax() : 0.0,
+              child: child,
+            );
+          },
           child: Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
