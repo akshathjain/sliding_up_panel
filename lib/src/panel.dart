@@ -209,29 +209,15 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
       if(widget.onPanelClosed != null && _ac.value == 0.0) widget.onPanelClosed();
     });
 
-    _sc = new ScrollController();
-
     // prevent the panel content from being scrolled only if the widget is
     // draggable and panel scrolling is enabled
+    _sc = new ScrollController();
     _sc.addListener((){
       if(widget.isDraggable && !_scrollingEnabled)
         _sc.jumpTo(0);
     });
 
-    widget.controller?._addState(
-      // _close,
-      // _open,
-      // _hide,
-      // _show,
-      // _setPanelPosition,
-      // _animatePanelToPosition,
-      // _getPanelPosition,
-      // _isPanelAnimating,
-      // _isPanelOpen,
-      // _isPanelClosed,
-      // _isPanelShown,
-      this
-    );
+    widget.controller?._addState(this);
   }
 
   @override
