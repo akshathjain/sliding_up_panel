@@ -1,6 +1,6 @@
 /*
 Name: Akshath Jain
-Date: 3/18/2019 - 1/25/2020
+Date: 3/18/2019 - 3/30/2020
 Purpose: Defines the sliding_up_panel widget
 Copyright: © 2020, Akshath Jain. All rights reserved.
 Licensing: More information can be found here: https://github.com/akshathjain/sliding_up_panel/blob/master/LICENSE
@@ -310,7 +310,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                       // child so that way touch events go through to whatever is underneath
                       child: IgnorePointer(
                         ignoring: _isPanelOpen,
-                        child: widget.collapsed ?? Container(),
+                        child: widget.collapsed
                       ),
                     ),
                   ),
