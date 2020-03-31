@@ -1,3 +1,7 @@
+## [1.0.1] - [March 30, 2020]
+### Fixes
+- Addressed issue #94: Too much widget rebuild occurring when using PanelBuilder. This fix results in huge performance benefits with complex widgets as the `panelChild`
+
 ## [1.0.0] - [January 25, 2020]
 
 #### Fixes
