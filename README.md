@@ -441,7 +441,7 @@ At times, it can be useful to manually change the state of the `SlidingUpPanel`.
 |`close()`| `Future<void>` | Closes the sliding panel to its collapsed state (i.e. to the  `minHeight`) |
 |`hide()`| `Future<void>` | Hides the sliding panel (i.e. is invisible) |
 |`show()`| `Future<void>` | Shows the sliding panel in its collapsed state (i.e. "un-hide" the sliding panel) |
-|`animatePanelToPosition(double value)`| `Future<void>` | Animates the panel position to the value. The value must between 0.0 and 1.0 where 0.0 is fully collapsed and 1.0 is completely open. |
+|`animatePanelToPosition(double value, {Duration duration, Curve curve = Curves.linear})`| `Future<void>` | Animates the panel position to the value. The value must between 0.0 and 1.0 where 0.0 is fully collapsed and 1.0 is completely open. (optional) duration specifies the time for the animation to complete. (optional) curve specifies the easing behavior of the animation. |
 
 
 ```dart
