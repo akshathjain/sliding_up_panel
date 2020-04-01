@@ -1,7 +1,7 @@
 ## [1.0.1] - [March 31, 2020]
 ### Fixes
-- Addressed issue #94: Too much widget rebuild occurring when using PanelBuilder. This fix results in huge performance benefits with complex widgets as the `panelChild`
-- Addressed issue #102: Fixed issue where tapping on the panel closes it (when using the `panelBuilder`)
+- Addressed issue #94: Too much widget rebuild occurring when using PanelBuilder. This fix results in huge performance benefits when using the `panelChild` property
+- Addressed issue #102, #111: Fixed issue where tapping on the panel closes it (when using the `panelBuilder`)
 
 ### Features
 - Addressed issue #107: Added duration and curve properties to the `PanelController`'s `animatePanelToPosition` method

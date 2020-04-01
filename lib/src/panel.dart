@@ -8,6 +8,9 @@ Licensing: More information can be found here: https://github.com/akshathjain/sl
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'dart:math';
+
+import 'package:flutter/physics.dart';
 
 enum SlideDirection{
   UP,
@@ -51,6 +54,13 @@ class SlidingUpPanel extends StatefulWidget {
 
   /// The height of the sliding panel when fully open.
   final double maxHeight;
+
+  /// A point between [minHeight] and [maxHeight] that the panel snaps to
+  /// while animating. A fast swipe on the panel will disregard this point
+  /// and go directly to the open position. This value is represented as a
+  /// percentage of the total animation distance ([maxHeight] - [minHeight]),
+  /// so it must be between 0.0 and 1.0, exclusive.
+  final double snapPoint;
 
   /// A border to draw around the sliding panel sheet.
   final Border border;
@@ -149,6 +159,7 @@ class SlidingUpPanel extends StatefulWidget {
     this.collapsed,
     this.minHeight = 100.0,
     this.maxHeight = 500.0,
+    this.snapPoint,
     this.border,
     this.borderRadius,
     this.boxShadow = const <BoxShadow>[
@@ -177,6 +188,7 @@ class SlidingUpPanel extends StatefulWidget {
     this.defaultPanelState = PanelState.CLOSED,
   }) : assert(panel != null || panelBuilder != null),
        assert(0 <= backdropOpacity && backdropOpacity <= 1.0),
+       assert (snapPoint == null || 0 < snapPoint && snapPoint < 1.0),
        super(key: key);
 
   @override
@@ -338,6 +350,13 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     super.dispose();
   }
 
+  double _getParallax(){
+    if(widget.slideDirection == SlideDirection.UP)
+      return -_ac.value * (widget.maxHeight - widget.minHeight) * widget.parallaxOffset;
+    else
+      return _ac.value * (widget.maxHeight - widget.minHeight) * widget.parallaxOffset;
+  }
+
   // returns a gesture detector if panel is used
   // and a listener if panelBuilder is used.
   // this is because the listener is designed only for use with linking the scrolling of
@@ -362,14 +381,6 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
       onPointerUp: (PointerUpEvent p) => _onGestureEnd(_vt.getVelocity()),
       child: child,
     );
-  }
-
-
-  double _getParallax(){
-    if(widget.slideDirection == SlideDirection.UP)
-      return -_ac.value * (widget.maxHeight - widget.minHeight) * widget.parallaxOffset;
-    else
-      return _ac.value * (widget.maxHeight - widget.minHeight) * widget.parallaxOffset;
   }
 
   // handles the sliding gesture
@@ -398,8 +409,9 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   }
 
   // handles when user stops sliding
-  void _onGestureEnd(Velocity velocity){
+  void _onGestureEnd(Velocity v){
     double minFlingVelocity = 365.0;
+    double kSnap = 3.5;
 
     //let the current animation finish before starting a new one
     if(_ac.isAnimating) return;
@@ -408,17 +420,29 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     // the panel if they swipe up on the scrollable
     if(_isPanelOpen && _scrollingEnabled) return;
 
-    //check if the velocity is sufficient to constitute fling
-    if(velocity.pixelsPerSecond.dy.abs() >= minFlingVelocity){
-      double visualVelocity = - velocity.pixelsPerSecond.dy / (widget.maxHeight - widget.minHeight);
+    //check if the velocity is sufficient to constitute fling to end
+    double visualVelocity = -v.pixelsPerSecond.dy / (widget.maxHeight - widget.minHeight);
 
-      if(widget.slideDirection == SlideDirection.DOWN)
-        visualVelocity = -visualVelocity;
+    // reverse visual velocity to account for slide direction
+    if(widget.slideDirection == SlideDirection.DOWN)
+      visualVelocity = -visualVelocity;
 
-      if(widget.panelSnapping){
+    // check if velocity is sufficient for a fling
+    if(v.pixelsPerSecond.dy.abs() >= minFlingVelocity){
+
+      // snapPoint exists
+      if(widget.panelSnapping && widget.snapPoint != null){
+        if(v.pixelsPerSecond.dy.abs() >= kSnap*minFlingVelocity)
+          _ac.fling(velocity: visualVelocity);
+        else
+          _flingPanelToPosition(widget.snapPoint, visualVelocity);
+
+      // no snap point exists
+      }else if(widget.panelSnapping){
         _ac.fling(velocity: visualVelocity);
+
+      // panel snapping disabled
       }else{
-        // actual scroll physics will be implemented in a future release
         _ac.animateTo(
           _ac.value + visualVelocity * 0.16,
           duration: Duration(milliseconds: 410),
@@ -431,12 +455,36 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
     // check if the controller is already halfway there
     if (widget.panelSnapping) {
-      if(_ac.value > 0.5)
-        _open();
-      else
+      double d2Close = _ac.value;
+      double d2Open = 1 - _ac.value;
+      double d2Snap = ((widget.snapPoint ?? 3) -_ac.value).abs(); // large value if null results in not every being the min
+
+      double minDistance = min(d2Close, min(d2Snap, d2Open));
+
+      if(minDistance == d2Close){
         _close();
+      }else if(minDistance == d2Snap){
+        _flingPanelToPosition(widget.snapPoint, visualVelocity);
+      }else{
+        _open();
+      }
     }
 
+  }
+
+  void _flingPanelToPosition(double targetPos, double velocity){
+    final Simulation simulation = SpringSimulation(
+      SpringDescription.withDampingRatio(
+        mass: 1.0,
+        stiffness: 500.0,
+        ratio: 1.0,
+      ),
+      _ac.value,
+      targetPos,
+      velocity
+    );
+
+    _ac.animateWith(simulation);
   }
 
   //---------------------------------
