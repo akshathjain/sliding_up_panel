@@ -519,11 +519,18 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     });
   }
 
-  //set the panel position to value - must
+  //animate the panel position to value - must
   //be between 0.0 and 1.0
   Future<void> _animatePanelToPosition(double value, {Duration duration, Curve curve = Curves.linear}){
     assert(0.0 <= value && value <= 1.0);
     return _ac.animateTo(value, duration: duration, curve: curve);
+  }
+
+  //animate the panel position to the snap point
+  //REQUIRES that widget.snapPoint != null
+  Future<void> _animatePanelToSnapPoint({Duration duration, Curve curve = Curves.linear}){
+    assert(widget.snapPoint != null);
+    return _ac.animateTo(widget.snapPoint, duration: duration, curve: curve);
   }
 
   //set the panel position to value - must
@@ -610,6 +617,16 @@ class PanelController{
     assert(isAttached, "PanelController must be attached to a SlidingUpPanel");
     assert(0.0 <= value && value <= 1.0);
     return _panelState._animatePanelToPosition(value, duration: duration, curve: curve);
+  }
+
+  /// Animates the panel position to the snap point
+  /// Requires that the SlidingUpPanel snapPoint property is not null
+  /// (optional) duration specifies the time for the animation to complete
+  /// (optional) curve specifies the easing behavior of the animation.
+  Future<void> animatePanelToSnapPoint({Duration duration, Curve curve = Curves.linear}){
+    assert(isAttached, "PanelController must be attached to a SlidingUpPanel");
+    assert(_panelState.widget.snapPoint != null, "SlidingUpPanel snapPoint property must not be null");
+    return _panelState._animatePanelToSnapPoint(duration: duration, curve: curve);
   }
 
   /// Sets the panel position (without animation).
