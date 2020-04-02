@@ -2,7 +2,7 @@
 ### Fixes
 - Addressed issue #94: Too much widget rebuild occurring when using PanelBuilder. This fix results in huge performance benefits when using the `panelChild` property
 - Addressed issues #102, #111: Fixed issue where tapping on the panel closes it (when using the `panelBuilder`)
-- Addressed issues #24, #70: Changed `backdropTapClosesPanel` to use `onTapDown` instead of `onTap` so swipes on backdrop allow for panel closing
+- Addressed issues #24, #70, #121: Changed `backdropTapClosesPanel` to use `onTapDown` instead of `onTap` so swipes on backdrop allow for panel closing
 
 ### Features
 - Addressed issue #107: Added duration and curve properties to the `PanelController`'s `animatePanelToPosition` method
