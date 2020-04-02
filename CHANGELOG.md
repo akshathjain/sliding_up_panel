@@ -1,6 +1,6 @@
 ## [1.0.1] - [April 2, 2020]
 ### Fixes
-- Addressed issue #94: Too much widget rebuild occurring when using PanelBuilder. This fix results in huge performance benefits when using the `panelChild` property
+- Addressed issue #94: Too much widget rebuild occurring when the user slides the panel. This fix results in huge performance benefits when using the `panelChild` and `panelBuilder` properties
 - Addressed issues #102, #111: Fixed issue where tapping on the panel closes it (when using the `panelBuilder`)
 - Addressed issues #24, #70, #108, #121: Changed `backdropTapClosesPanel` to use `onTap` and `onVerticalDragEnd` so swipes on the backdrop cause the panel to close
 
