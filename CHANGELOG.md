@@ -1,3 +1,17 @@
+## [1.0.1] - [April 2, 2020]
+### Fixes
+- Addressed issue #94: Too much widget rebuild occurring when using PanelBuilder. This fix results in huge performance benefits when using the `panelChild` property
+- Addressed issues #102, #111: Fixed issue where tapping on the panel closes it (when using the `panelBuilder`)
+- Addressed issues #24, #70, #108, #121: Changed `backdropTapClosesPanel` to use `onTap` and `onVerticalDragEnd` so swipes on the backdrop cause the panel to close
+
+### Features
+- Addressed issue #107: Added duration and curve properties to the `PanelController`'s `animatePanelToPosition` method
+- Addressed issues #12,#77,#86,#100: Added a `snapPoint` property to allow the panel to snap to a position midway during its slide
+
+### Documentation
+- Updated documentation to reflect new features and fixes
+- Updated copyright year in the LICENSE
+
 ## [1.0.0] - [January 25, 2020]
 
 #### Fixes
