@@ -258,7 +258,12 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
         //the backdrop to overlay on the body
         !widget.backdropEnabled ? Container() : GestureDetector(
-          onTap: widget.backdropTapClosesPanel ? _close : null,
+          onVerticalDragEnd: widget.backdropTapClosesPanel ? (DragEndDetails dets){
+            // only trigger a close if the drag is towards panel close position
+            if((widget.slideDirection == SlideDirection.UP ? 1 : -1) * dets.velocity.pixelsPerSecond.dy > 0)
+              _close();
+          } : null,
+          onTap: widget.backdropTapClosesPanel ? () => _close() : null,
           child: AnimatedBuilder(
             animation: _ac,
             builder: (context, _) {
@@ -411,7 +416,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   // handles when user stops sliding
   void _onGestureEnd(Velocity v){
     double minFlingVelocity = 365.0;
-    double kSnap = 3.5;
+    double kSnap = 8;
 
     //let the current animation finish before starting a new one
     if(_ac.isAnimating) return;
@@ -427,12 +432,19 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     if(widget.slideDirection == SlideDirection.DOWN)
       visualVelocity = -visualVelocity;
 
+
+    // get minimum distances to figure out where the panel is at
+    double d2Close = _ac.value;
+    double d2Open = 1 - _ac.value;
+    double d2Snap = ((widget.snapPoint ?? 3) -_ac.value).abs(); // large value if null results in not every being the min
+    double minDistance = min(d2Close, min(d2Snap, d2Open));
+
     // check if velocity is sufficient for a fling
     if(v.pixelsPerSecond.dy.abs() >= minFlingVelocity){
 
       // snapPoint exists
       if(widget.panelSnapping && widget.snapPoint != null){
-        if(v.pixelsPerSecond.dy.abs() >= kSnap*minFlingVelocity)
+        if(v.pixelsPerSecond.dy.abs() >= kSnap*minFlingVelocity || minDistance == d2Snap)
           _ac.fling(velocity: visualVelocity);
         else
           _flingPanelToPosition(widget.snapPoint, visualVelocity);
@@ -455,11 +467,6 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
     // check if the controller is already halfway there
     if (widget.panelSnapping) {
-      double d2Close = _ac.value;
-      double d2Open = 1 - _ac.value;
-      double d2Snap = ((widget.snapPoint ?? 3) -_ac.value).abs(); // large value if null results in not every being the min
-
-      double minDistance = min(d2Close, min(d2Snap, d2Open));
 
       if(minDistance == d2Close){
         _close();
