@@ -57,7 +57,7 @@ class SlidingUpPanel extends StatefulWidget {
 
   /// A point between [minHeight] and [maxHeight] that the panel snaps to
   /// while animating. A fast swipe on the panel will disregard this point
-  /// and go directly to the open position. This value is represented as a
+  /// and go directly to the open/close position. This value is represented as a
   /// percentage of the total animation distance ([maxHeight] - [minHeight]),
   /// so it must be between 0.0 and 1.0, exclusive.
   final double snapPoint;
