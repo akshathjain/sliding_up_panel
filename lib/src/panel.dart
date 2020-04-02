@@ -1,6 +1,6 @@
 /*
 Name: Akshath Jain
-Date: 3/18/2019 - 3/30/2020
+Date: 3/18/2019 - 4/2/2020
 Purpose: Defines the sliding_up_panel widget
 Copyright: © 2020, Akshath Jain. All rights reserved.
 Licensing: More information can be found here: https://github.com/akshathjain/sliding_up_panel/blob/master/LICENSE
