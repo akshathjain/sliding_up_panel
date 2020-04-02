@@ -10,6 +10,7 @@
 
 ### Documentation
 - Updated documentation to reflect new features and fixes
+- Updated copyright year in the LICENSE
 
 ## [1.0.0] - [January 25, 2020]
 
