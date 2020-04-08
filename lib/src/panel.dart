@@ -197,6 +197,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   VelocityTracker _vt = new VelocityTracker();
 
   bool _isPanelVisible = true;
+  double _previousAnimationControllerValue = 0;
 
   @override
   void initState(){
@@ -213,7 +214,16 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
       if(widget.onPanelOpened != null && _ac.value == 1.0) widget.onPanelOpened();
 
-      if(widget.onPanelClosed != null && _ac.value == 0.0) widget.onPanelClosed();
+      final roundedPreviousValue = (_previousAnimationControllerValue * 100000).roundToDouble()/100000;
+
+      if (widget.onPanelOpenStart != null && roundedPreviousValue == 0 && _ac.value > 0) {
+        widget.onPanelOpenStart();
+      }
+      if (widget.onPanelClosed  != null && roundedPreviousValue > 0 && _ac.value == 0) {
+        widget.onPanelClosed();
+      }
+
+      _previousAnimationControllerValue = _ac.value;
     });
 
     _sc = new ScrollController();
@@ -243,7 +253,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return SafeArea(
+      child:Stack(
       alignment: widget.slideDirection == SlideDirection.UP ? Alignment.bottomCenter : Alignment.topCenter,
       children: <Widget>[
 
@@ -279,8 +290,9 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
         //the actual sliding part
         !_isPanelVisible ? Container() : _gestureHandler(
+          child: SafeArea(
           child: Container(
-            height: _ac.value * (widget.maxHeight - widget.minHeight) + widget.minHeight,
+            height: _ac.value * (widget.maxHeight - widget.minHeight) + widget.minHeight + 20,
             margin: widget.margin,
             padding: widget.padding,
             decoration: widget.renderPanelSheet ? BoxDecoration(
@@ -315,7 +327,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                           (widget.margin != null ? widget.margin.horizontal : 0) -
                           (widget.padding != null ? widget.padding.horizontal : 0),
                   child: Container(
-                    height: widget.minHeight,
+                    height: widget.minHeight + 20,
                     child: FadeTransition(
                       opacity: Tween(begin: 1.0, end: 0.0).animate(_ac),
 
@@ -334,8 +346,10 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
             ),
           ),
         ),
+        ),
 
       ],
+    ),
     );
   }
 
@@ -380,10 +394,6 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   // handles the sliding gesture
   void _onGestureSlide(double dy){
-    if (widget.onPanelOpenStart != null && dy < 0 && _ac.value == 0) {
-      widget.onPanelOpenStart();
-    }
-
     // only slide the panel if scrolling is not enabled
     if(!_scrollingEnabled){
       if(widget.slideDirection == SlideDirection.UP)
