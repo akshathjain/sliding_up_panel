@@ -49,6 +49,18 @@ class SlidingUpPanel extends StatefulWidget {
   /// to fill the screen.
   final Widget body;
 
+  /// Optional persistent widget that floats above the [panel] and attaches
+  /// to the top of the [panel]. Content at the top of the panel will be covered
+  /// by this widget. Add padding to the bottom of the `panel` to
+  /// avoid coverage.
+  final Widget header;
+
+  /// Optional persistent widget that floats above the [panel] and
+  /// attaches to the bottom of the [panel]. Content at the bottom of the panel
+  /// will be covered by this widget. Add padding to the bottom of the `panel`
+  /// to avoid coverage.
+  final Widget footer;
+
   /// The height of the sliding panel when fully collapsed.
   final double minHeight;
 
@@ -186,6 +198,8 @@ class SlidingUpPanel extends StatefulWidget {
     this.isDraggable = true,
     this.slideDirection = SlideDirection.UP,
     this.defaultPanelState = PanelState.CLOSED,
+    this.header,
+    this.footer
   }) : assert(panel != null || panelBuilder != null),
        assert(0 <= backdropOpacity && backdropOpacity <= 1.0),
        assert (snapPoint == null || 0 < snapPoint && snapPoint < 1.0),
@@ -316,6 +330,20 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                             : widget.panelBuilder(_sc),
                   )
                 ),
+
+                // header
+                widget.header != null ? Positioned(
+                  top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
+                  bottom: widget.slideDirection == SlideDirection.DOWN ? 0.0 : null,
+                  child: widget.header,
+                ) : Container(),
+
+                // footer
+                widget.footer != null ? Positioned(
+                  top: widget.slideDirection == SlideDirection.UP ? null : 0.0,
+                  bottom: widget.slideDirection == SlideDirection.DOWN ? null : 0.0,
+                  child: widget.footer
+                ) : Container(),
 
                 // collapsed panel
                 Positioned(

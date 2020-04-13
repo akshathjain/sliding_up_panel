@@ -1,3 +1,11 @@
+## [1.0.2] - [April 13, 2020]
+### Features
+- Addressed issue #71, #103 - Added an optional `header` widget that floats above the `panel` and attaches to the top
+- Added an optional `footer` widget that floats above the `panel` and attaches to the bottom
+
+### Documentation
+- Updated documentation to reflect new features and fixes
+
 ## [1.0.1] - [April 2, 2020]
 ### Fixes
 - Addressed issue #94: Too much widget rebuild occurring when the user slides the panel. This fix results in huge performance benefits when using the `panelChild` and `panelBuilder` properties
