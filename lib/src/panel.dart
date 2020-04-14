@@ -1,6 +1,6 @@
 /*
 Name: Akshath Jain
-Date: 3/18/2019 - 1/25/2020
+Date: 3/18/2019 - 4/2/2020
 Purpose: Defines the sliding_up_panel widget
 Copyright: © 2020, Akshath Jain. All rights reserved.
 Licensing: More information can be found here: https://github.com/akshathjain/sliding_up_panel/blob/master/LICENSE
@@ -8,6 +8,9 @@ Licensing: More information can be found here: https://github.com/akshathjain/sl
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'dart:math';
+
+import 'package:flutter/physics.dart';
 
 enum SlideDirection{
   UP,
@@ -46,11 +49,30 @@ class SlidingUpPanel extends StatefulWidget {
   /// to fill the screen.
   final Widget body;
 
+  /// Optional persistent widget that floats above the [panel] and attaches
+  /// to the top of the [panel]. Content at the top of the panel will be covered
+  /// by this widget. Add padding to the bottom of the `panel` to
+  /// avoid coverage.
+  final Widget header;
+
+  /// Optional persistent widget that floats above the [panel] and
+  /// attaches to the bottom of the [panel]. Content at the bottom of the panel
+  /// will be covered by this widget. Add padding to the bottom of the `panel`
+  /// to avoid coverage.
+  final Widget footer;
+
   /// The height of the sliding panel when fully collapsed.
   final double minHeight;
 
   /// The height of the sliding panel when fully open.
   final double maxHeight;
+
+  /// A point between [minHeight] and [maxHeight] that the panel snaps to
+  /// while animating. A fast swipe on the panel will disregard this point
+  /// and go directly to the open/close position. This value is represented as a
+  /// percentage of the total animation distance ([maxHeight] - [minHeight]),
+  /// so it must be between 0.0 and 1.0, exclusive.
+  final double snapPoint;
 
   /// A border to draw around the sliding panel sheet.
   final Border border;
@@ -140,7 +162,7 @@ class SlidingUpPanel extends StatefulWidget {
   /// in the closed position and must be opened. PanelState.OPEN indicates that
   /// by default the Panel is open and must be swiped closed by the user.
   final PanelState defaultPanelState;
-  
+
   final int scrollViewCount;
   final int defaultScrollView;
 
@@ -152,6 +174,7 @@ class SlidingUpPanel extends StatefulWidget {
     this.collapsed,
     this.minHeight = 100.0,
     this.maxHeight = 500.0,
+    this.snapPoint,
     this.border,
     this.borderRadius,
     this.boxShadow = const <BoxShadow>[
@@ -180,8 +203,11 @@ class SlidingUpPanel extends StatefulWidget {
     this.defaultPanelState = PanelState.CLOSED,
     this.scrollViewCount = 1,
     this.defaultScrollView = 0,
+    this.header,
+    this.footer
   }) : assert(panel != null || panelBuilder != null),
        assert(0 <= backdropOpacity && backdropOpacity <= 1.0),
+       assert (snapPoint == null || 0 < snapPoint && snapPoint < 1.0),
        super(key: key);
 
   @override
@@ -207,8 +233,6 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
       duration: const Duration(milliseconds: 300),
       value: widget.defaultPanelState == PanelState.CLOSED ? 0.0 : 1.0 //set the default panel state (i.e. set initial value of _ac)
     )..addListener((){
-      setState((){});
-
       if(widget.onPanelSlide != null) widget.onPanelSlide(_ac.value);
 
       if(widget.onPanelOpened != null && _ac.value == 1.0) widget.onPanelOpened();
@@ -225,20 +249,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
         _sc.jumpTo(0);
     });
 
-    widget.controller?._addState(
-      // _close,
-      // _open,
-      // _hide,
-      // _show,
-      // _setPanelPosition,
-      // _animatePanelToPosition,
-      // _getPanelPosition,
-      // _isPanelAnimating,
-      // _isPanelOpen,
-      // _isPanelClosed,
-      // _isPanelShown,
-      this
-    );
+    widget.controller?._addState(this);
   }
 
   @override
@@ -249,8 +260,14 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
 
         //make the back widget take up the entire back side
-        widget.body != null ? Positioned(
-          top: widget.parallaxEnabled ? _getParallax() : 0.0,
+        widget.body != null ? AnimatedBuilder(
+          animation: _ac,
+          builder: (context, child){
+            return Positioned(
+              top: widget.parallaxEnabled ? _getParallax() : 0.0,
+              child: child,
+            );
+          },
           child: Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
@@ -261,34 +278,47 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
         //the backdrop to overlay on the body
         !widget.backdropEnabled ? Container() : GestureDetector(
-          onTap: widget.backdropTapClosesPanel ? _close : null,
-          child: FadeTransition(
-            opacity: Tween(begin: 0.0, end: widget.backdropOpacity).animate(_ac),
-            child: Container(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
+          onVerticalDragEnd: widget.backdropTapClosesPanel ? (DragEndDetails dets){
+            // only trigger a close if the drag is towards panel close position
+            if((widget.slideDirection == SlideDirection.UP ? 1 : -1) * dets.velocity.pixelsPerSecond.dy > 0)
+              _close();
+          } : null,
+          onTap: widget.backdropTapClosesPanel ? () => _close() : null,
+          child: AnimatedBuilder(
+            animation: _ac,
+            builder: (context, _) {
+              return Container(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
 
-              //set color to null so that touch events pass through
-              //to the body when the panel is closed, otherwise,
-              //if a color exists, then touch events won't go through
-              color: _ac.value == 0.0 ? null : widget.backdropColor,
-            ),
+                //set color to null so that touch events pass through
+                //to the body when the panel is closed, otherwise,
+                //if a color exists, then touch events won't go through
+                color: _ac.value == 0.0 ? null : widget.backdropColor.withOpacity(widget.backdropOpacity * _ac.value),
+              );
+            }
           ),
         ),
 
 
         //the actual sliding part
         !_isPanelVisible ? Container() : _gestureHandler(
-          child: Container(
-            height: _ac.value * (widget.maxHeight - widget.minHeight) + widget.minHeight,
-            margin: widget.margin,
-            padding: widget.padding,
-            decoration: widget.renderPanelSheet ? BoxDecoration(
-              border: widget.border,
-              borderRadius: widget.borderRadius,
-              boxShadow: widget.boxShadow,
-              color: widget.color,
-            ) : null,
+          child: AnimatedBuilder(
+            animation: _ac,
+            builder: (context, child) {
+              return Container(
+                height: _ac.value * (widget.maxHeight - widget.minHeight) + widget.minHeight,
+                margin: widget.margin,
+                padding: widget.padding,
+                decoration: widget.renderPanelSheet ? BoxDecoration(
+                  border: widget.border,
+                  borderRadius: widget.borderRadius,
+                  boxShadow: widget.boxShadow,
+                  color: widget.color,
+                ) : null,
+                child: child,
+              );
+            },
             child: Stack(
               children: <Widget>[
 
@@ -307,6 +337,20 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                   )
                 ),
 
+                // header
+                widget.header != null ? Positioned(
+                  top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
+                  bottom: widget.slideDirection == SlideDirection.DOWN ? 0.0 : null,
+                  child: widget.header,
+                ) : Container(),
+
+                // footer
+                widget.footer != null ? Positioned(
+                  top: widget.slideDirection == SlideDirection.UP ? null : 0.0,
+                  bottom: widget.slideDirection == SlideDirection.DOWN ? null : 0.0,
+                  child: widget.footer
+                ) : Container(),
+
                 // collapsed panel
                 Positioned(
                   top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
@@ -316,14 +360,14 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                           (widget.padding != null ? widget.padding.horizontal : 0),
                   child: Container(
                     height: widget.minHeight,
-                    child: FadeTransition(
+                    child: widget.collapsed == null ? Container() : FadeTransition(
                       opacity: Tween(begin: 1.0, end: 0.0).animate(_ac),
 
                       // if the panel is open ignore pointers (touch events) on the collapsed
                       // child so that way touch events go through to whatever is underneath
                       child: IgnorePointer(
                         ignoring: _isPanelOpen,
-                        child: widget.collapsed ?? Container(),
+                        child: widget.collapsed
                       ),
                     ),
                   ),
@@ -345,6 +389,13 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     super.dispose();
   }
 
+  double _getParallax(){
+    if(widget.slideDirection == SlideDirection.UP)
+      return -_ac.value * (widget.maxHeight - widget.minHeight) * widget.parallaxOffset;
+    else
+      return _ac.value * (widget.maxHeight - widget.minHeight) * widget.parallaxOffset;
+  }
+
   // returns a gesture detector if panel is used
   // and a listener if panelBuilder is used.
   // this is because the listener is designed only for use with linking the scrolling of
@@ -361,6 +412,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     }
 
     return Listener(
+      onPointerDown: (PointerDownEvent p) => _vt.addPosition(p.timeStamp, p.position),
       onPointerMove: (PointerMoveEvent p){
         _vt.addPosition(p.timeStamp, p.position); // add current position for velocity tracking
         _onGestureSlide(p.delta.dy);
@@ -368,14 +420,6 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
       onPointerUp: (PointerUpEvent p) => _onGestureEnd(_vt.getVelocity()),
       child: child,
     );
-  }
-
-
-  double _getParallax(){
-    if(widget.slideDirection == SlideDirection.UP)
-      return -_ac.value * (widget.maxHeight - widget.minHeight) * widget.parallaxOffset;
-    else
-      return _ac.value * (widget.maxHeight - widget.minHeight) * widget.parallaxOffset;
   }
 
   // handles the sliding gesture
@@ -404,8 +448,9 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   }
 
   // handles when user stops sliding
-  void _onGestureEnd(Velocity velocity){
+  void _onGestureEnd(Velocity v){
     double minFlingVelocity = 365.0;
+    double kSnap = 8;
 
     //let the current animation finish before starting a new one
     if(_ac.isAnimating) return;
@@ -414,17 +459,36 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     // the panel if they swipe up on the scrollable
     if(_isPanelOpen && _scrollingEnabled) return;
 
-    //check if the velocity is sufficient to constitute fling
-    if(velocity.pixelsPerSecond.dy.abs() >= minFlingVelocity){
-      double visualVelocity = - velocity.pixelsPerSecond.dy / (widget.maxHeight - widget.minHeight);
+    //check if the velocity is sufficient to constitute fling to end
+    double visualVelocity = -v.pixelsPerSecond.dy / (widget.maxHeight - widget.minHeight);
 
-      if(widget.slideDirection == SlideDirection.DOWN)
-        visualVelocity = -visualVelocity;
+    // reverse visual velocity to account for slide direction
+    if(widget.slideDirection == SlideDirection.DOWN)
+      visualVelocity = -visualVelocity;
 
-      if(widget.panelSnapping){
+
+    // get minimum distances to figure out where the panel is at
+    double d2Close = _ac.value;
+    double d2Open = 1 - _ac.value;
+    double d2Snap = ((widget.snapPoint ?? 3) -_ac.value).abs(); // large value if null results in not every being the min
+    double minDistance = min(d2Close, min(d2Snap, d2Open));
+
+    // check if velocity is sufficient for a fling
+    if(v.pixelsPerSecond.dy.abs() >= minFlingVelocity){
+
+      // snapPoint exists
+      if(widget.panelSnapping && widget.snapPoint != null){
+        if(v.pixelsPerSecond.dy.abs() >= kSnap*minFlingVelocity || minDistance == d2Snap)
+          _ac.fling(velocity: visualVelocity);
+        else
+          _flingPanelToPosition(widget.snapPoint, visualVelocity);
+
+      // no snap point exists
+      }else if(widget.panelSnapping){
         _ac.fling(velocity: visualVelocity);
+
+      // panel snapping disabled
       }else{
-        // actual scroll physics will be implemented in a future release
         _ac.animateTo(
           _ac.value + visualVelocity * 0.16,
           duration: Duration(milliseconds: 410),
@@ -437,12 +501,31 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
     // check if the controller is already halfway there
     if (widget.panelSnapping) {
-      if(_ac.value > 0.5)
-        _open();
-      else
+
+      if(minDistance == d2Close){
         _close();
+      }else if(minDistance == d2Snap){
+        _flingPanelToPosition(widget.snapPoint, visualVelocity);
+      }else{
+        _open();
+      }
     }
 
+  }
+
+  void _flingPanelToPosition(double targetPos, double velocity){
+    final Simulation simulation = SpringSimulation(
+      SpringDescription.withDampingRatio(
+        mass: 1.0,
+        stiffness: 500.0,
+        ratio: 1.0,
+      ),
+      _ac.value,
+      targetPos,
+      velocity
+    );
+
+    _ac.animateWith(simulation);
   }
 
   //---------------------------------
@@ -477,11 +560,18 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     });
   }
 
-  //set the panel position to value - must
+  //animate the panel position to value - must
   //be between 0.0 and 1.0
-  Future<void> _animatePanelToPosition(double value){
+  Future<void> _animatePanelToPosition(double value, {Duration duration, Curve curve = Curves.linear}){
     assert(0.0 <= value && value <= 1.0);
-    return _ac.animateTo(value);
+    return _ac.animateTo(value, duration: duration, curve: curve);
+  }
+
+  //animate the panel position to the snap point
+  //REQUIRES that widget.snapPoint != null
+  Future<void> _animatePanelToSnapPoint({Duration duration, Curve curve = Curves.linear}){
+    assert(widget.snapPoint != null);
+    return _ac.animateTo(widget.snapPoint, duration: duration, curve: curve);
   }
 
   //set the panel position to value - must
@@ -561,11 +651,23 @@ class PanelController{
 
   /// Animates the panel position to the value.
   /// The value must between 0.0 and 1.0
-  /// where 0.0 is fully collapsed and 1.0 is completely open
-  Future<void> animatePanelToPosition(double value){
+  /// where 0.0 is fully collapsed and 1.0 is completely open.
+  /// (optional) duration specifies the time for the animation to complete
+  /// (optional) curve specifies the easing behavior of the animation.
+  Future<void> animatePanelToPosition(double value, {Duration duration, Curve curve = Curves.linear}){
     assert(isAttached, "PanelController must be attached to a SlidingUpPanel");
     assert(0.0 <= value && value <= 1.0);
-    return _panelState._animatePanelToPosition(value);
+    return _panelState._animatePanelToPosition(value, duration: duration, curve: curve);
+  }
+
+  /// Animates the panel position to the snap point
+  /// Requires that the SlidingUpPanel snapPoint property is not null
+  /// (optional) duration specifies the time for the animation to complete
+  /// (optional) curve specifies the easing behavior of the animation.
+  Future<void> animatePanelToSnapPoint({Duration duration, Curve curve = Curves.linear}){
+    assert(isAttached, "PanelController must be attached to a SlidingUpPanel");
+    assert(_panelState.widget.snapPoint != null, "SlidingUpPanel snapPoint property must not be null");
+    return _panelState._animatePanelToSnapPoint(duration: duration, curve: curve);
   }
 
   /// Sets the panel position (without animation).
