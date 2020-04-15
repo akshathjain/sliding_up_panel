@@ -45,9 +45,18 @@ class SlidingUpPanel extends StatefulWidget {
   final Widget collapsed;
 
   /// The Widget that lies underneath the sliding panel.
-  /// This Widget automatically sizes itself
-  /// to fill the screen.
+  /// This Widget automatically sizes itself to fill the screen, if
+  /// [bodyHeight] and [bodyWidth] not set. Otherwise the height will
+  /// scale to [bodyHeigth] and the width will scale to [bodyWidth].
   final Widget body;
+
+  /// Allows to set the height of the body.
+  /// If it is null, it automatically sizes itself to device height.
+  final double bodyHeight;
+
+  /// Allows to set the width of the body.
+  /// If it is null, it automatically sizes itself to device width.
+  final double bodyWidth;
 
   /// Optional persistent widget that floats above the [panel] and attaches
   /// to the top of the [panel]. Content at the top of the panel will be covered
@@ -199,7 +208,9 @@ class SlidingUpPanel extends StatefulWidget {
     this.slideDirection = SlideDirection.UP,
     this.defaultPanelState = PanelState.CLOSED,
     this.header,
-    this.footer
+    this.footer, 
+    this.bodyHeight, 
+    this.bodyWidth
   }) : assert(panel != null || panelBuilder != null),
        assert(0 <= backdropOpacity && backdropOpacity <= 1.0),
        assert (snapPoint == null || 0 < snapPoint && snapPoint < 1.0),
@@ -263,8 +274,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
             );
           },
           child: Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
+            height: widget.bodyHeight ?? MediaQuery.of(context).size.height,
+            width: widget.bodyWidth ?? MediaQuery.of(context).size.width,
             child: widget.body,
           ),
         ) : Container(),
