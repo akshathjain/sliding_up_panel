@@ -733,7 +733,7 @@ class DelegatingScrollController implements ScrollController {
   void delegateTo(int i) {
     _listeners.forEach((listener) => _currentDelegate.removeListener(listener));
     this._currentDelegate = _delegates[i];
-    _listeners.forEach((listener) => _currentDelegate.removeListener(listener));
+    _listeners.forEach((listener) => _currentDelegate.addListener(listener));
   }
 
   @override
