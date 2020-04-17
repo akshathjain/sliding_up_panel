@@ -730,8 +730,12 @@ class DelegatingScrollController implements ScrollController {
     _currentDelegate = _delegates[defaultScrollView];
   }
 
+  VoidCallback _currentListener;
+  
   void delegateTo(int i) {
+    removeListener(_currentListener);
     this._currentDelegate = _delegates[i];
+    addListener(_currentListener);
   }
 
   @override
@@ -801,6 +805,7 @@ class DelegatingScrollController implements ScrollController {
 
   @override
   void addListener(listener) {
+    _currentListener = listener;
     _currentDelegate.addListener(listener);
   }
 
