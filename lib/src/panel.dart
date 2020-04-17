@@ -722,7 +722,7 @@ class PanelController{
 
 class DelegatingScrollController implements ScrollController {
   final List<ScrollController> _delegates;
-
+  final List<VoidCallback> _listeners = [];
   ScrollController _currentDelegate;
 
   DelegatingScrollController(int scrollViewCount, {int defaultScrollView = 0})
@@ -730,12 +730,10 @@ class DelegatingScrollController implements ScrollController {
     _currentDelegate = _delegates[defaultScrollView];
   }
 
-  VoidCallback _currentListener;
-  
   void delegateTo(int i) {
-    removeListener(_currentListener);
+    _listeners.forEach((listener) => _currentDelegate.removeListener(listener));
     this._currentDelegate = _delegates[i];
-    addListener(_currentListener);
+    _listeners.forEach((listener) => _currentDelegate.removeListener(listener));
   }
 
   @override
@@ -805,7 +803,7 @@ class DelegatingScrollController implements ScrollController {
 
   @override
   void addListener(listener) {
-    _currentListener = listener;
+    _listeners.add(listener);
     _currentDelegate.addListener(listener);
   }
 
@@ -825,6 +823,7 @@ class DelegatingScrollController implements ScrollController {
 
   @override
   void removeListener(listener) {
+    _listeners.remove(listener);
     _currentDelegate.removeListener(listener);
   }
 
