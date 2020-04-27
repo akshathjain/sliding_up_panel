@@ -219,7 +219,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   AnimationController _ac;
 
   DelegatingScrollController _sc;
-  bool _scrollingEnabled = false;
+  bool get _scrollingEnabled => _sc.isScrollingEnabled;
   VelocityTracker _vt = new VelocityTracker();
 
   bool _isPanelVisible = true;
@@ -439,9 +439,9 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     if(_isPanelOpen && _sc.hasClients && _sc.offset <= 0){
       setState(() {
         if(dy < 0){
-          _scrollingEnabled = true;
+          _sc.setScrollingEnabled(true);
         }else{
-          _scrollingEnabled = false;
+          _sc.setScrollingEnabled(false);
         }
       });
     }
@@ -721,111 +721,125 @@ class PanelController{
 }
 
 class DelegatingScrollController implements ScrollController {
-  final List<ScrollController> _delegates;
+  final List<_ScrollDelegate> _delegates;
   final List<VoidCallback> _listeners = [];
-  ScrollController _currentDelegate;
+  
+  _ScrollDelegate _currentDelegate;
+  ScrollController get _currentScrollController => _currentDelegate.scrollController;
+  bool get isScrollingEnabled => _currentDelegate.isScrollingEnabled;
 
   DelegatingScrollController(int scrollViewCount, {int defaultScrollView = 0})
-    : _delegates = [for (int i = 0; i < scrollViewCount; i++) ScrollController()] {
+    : _delegates = [for (int i = 0; i < scrollViewCount; i++) _ScrollDelegate(ScrollController())] {
     _currentDelegate = _delegates[defaultScrollView];
   }
 
   void delegateTo(int i) {
-    _listeners.forEach((listener) => _currentDelegate.removeListener(listener));
+    _listeners.forEach((listener) => _currentScrollController.removeListener(listener));
     this._currentDelegate = _delegates[i];
-    _listeners.forEach((listener) => _currentDelegate.addListener(listener));
+    _listeners.forEach((listener) => _currentScrollController.addListener(listener));
   }
+  
+  void setScrollingEnabled(bool isEnabled) {
+    _currentDelegate.isScrollingEnabled = isEnabled;
+  }  
 
   @override
   void debugFillDescription(List<String> description) {
-    _currentDelegate.debugFillDescription(description);
+    _currentScrollController.debugFillDescription(description);
   }
 
   @override
   String toString() {
-    return _currentDelegate.toString();
+    return _currentScrollController.toString();
   }
 
   @override
   ScrollPosition createScrollPosition(ScrollPhysics physics, ScrollContext context, ScrollPosition oldPosition) {
-    return _currentDelegate.createScrollPosition(physics, context, oldPosition);
+    return _currentScrollController.createScrollPosition(physics, context, oldPosition);
   }
 
   @override
   void dispose() {
-    _currentDelegate.dispose();
+    _currentScrollController.dispose();
   }
 
   @override
   void detach(ScrollPosition position) {
-    _currentDelegate.detach(position);
+    _currentScrollController.detach(position);
   }
 
   @override
   void attach(ScrollPosition position) {
-    _currentDelegate.attach(position);
+    _currentScrollController.attach(position);
   }
 
   @override
   void jumpTo(double value) {
-    _currentDelegate.jumpTo(value);
+    _currentScrollController.jumpTo(value);
   }
 
   @override
   Future<Function> animateTo(double offset, {@required Duration duration, @required Curve curve}) {
-    return _currentDelegate.animateTo(offset, duration: duration, curve: curve);
+    return _currentScrollController.animateTo(offset, duration: duration, curve: curve);
   }
 
   @override
   double get offset {
-    return _currentDelegate.offset;
+    return _currentScrollController.offset;
   }
 
   @override
   ScrollPosition get position {
-    return _currentDelegate.position;
+    return _currentScrollController.position;
   }
 
   @override
   bool get hasClients {
-    return _currentDelegate.hasClients;
+    return _currentScrollController.hasClients;
   }
 
   @override
   Iterable<ScrollPosition> get positions {
-    return _currentDelegate.positions;
+    return _currentScrollController.positions;
   }
 
   @override
   double get initialScrollOffset {
-    return _currentDelegate.initialScrollOffset;
+    return _currentScrollController.initialScrollOffset;
   }
 
   @override
   void addListener(listener) {
     _listeners.add(listener);
-    _currentDelegate.addListener(listener);
+    _currentScrollController.addListener(listener);
   }
 
   @override
-  String get debugLabel => _currentDelegate.debugLabel;
+  String get debugLabel => _currentScrollController.debugLabel;
 
   @override
-  bool get hasListeners => _currentDelegate.hasListeners;
+  bool get hasListeners => _currentScrollController.hasListeners;
 
   @override
-  bool get keepScrollOffset => _currentDelegate.keepScrollOffset;
+  bool get keepScrollOffset => _currentScrollController.keepScrollOffset;
 
   @override
   void notifyListeners() {
-    _currentDelegate.notifyListeners();
+    _currentScrollController.notifyListeners();
   }
 
   @override
   void removeListener(listener) {
     _listeners.remove(listener);
-    _currentDelegate.removeListener(listener);
+    _currentScrollController.removeListener(listener);
   }
 
   delegate(int i) => _delegates[i];
+}
+
+class _ScrollDelegate {
+  final ScrollController scrollController;
+  bool isScrollingEnabled = false;
+
+  _ScrollDelegate(this.scrollController);
 }
