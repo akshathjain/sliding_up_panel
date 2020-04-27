@@ -439,9 +439,9 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     if(_isPanelOpen && _sc.hasClients && _sc.offset <= 0){
       setState(() {
         if(dy < 0){
-          _sc.setScrollingEnabled(true);
+          _sc.isScrollingEnabled = true;
         }else{
-          _sc.setScrollingEnabled(false);
+          _sc.isScrollingEnabled = false;
         }
       });
     }
@@ -726,7 +726,11 @@ class DelegatingScrollController implements ScrollController {
   
   _ScrollDelegate _currentDelegate;
   ScrollController get _currentScrollController => _currentDelegate.scrollController;
+
   bool get isScrollingEnabled => _currentDelegate.isScrollingEnabled;
+  set isScrollingEnabled(bool isEnabled) {
+    _currentDelegate.isScrollingEnabled = isEnabled;
+  }
 
   DelegatingScrollController(int scrollViewCount, {int defaultScrollView = 0})
     : _delegates = [for (int i = 0; i < scrollViewCount; i++) _ScrollDelegate(ScrollController())] {
@@ -738,10 +742,6 @@ class DelegatingScrollController implements ScrollController {
     this._currentDelegate = _delegates[i];
     _listeners.forEach((listener) => _currentScrollController.addListener(listener));
   }
-  
-  void setScrollingEnabled(bool isEnabled) {
-    _currentDelegate.isScrollingEnabled = isEnabled;
-  }  
 
   @override
   void debugFillDescription(List<String> description) {
