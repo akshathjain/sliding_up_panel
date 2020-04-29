@@ -220,9 +220,11 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   DelegatingScrollController _sc;
   bool get _scrollingEnabled => _sc.isScrollingEnabled;
+  bool get _isOnTop => _sc.isOnTop;
   VelocityTracker _vt = new VelocityTracker();
 
   bool _isPanelVisible = true;
+  bool _isTrackingStarted = false;
 
   @override
   void initState(){
@@ -424,9 +426,17 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   // handles the sliding gesture
   void _onGestureSlide(double dy){
+    if (_isTrackingStarted && dy < 0) {
+      _isTrackingStarted = false;
+    }
+
+    if (!_isTrackingStarted) {
+      _isTrackingStarted = true;
+      _sc.isOnTop = _sc.offset <= 0;
+    }
 
     // only slide the panel if scrolling is not enabled
-    if(!_scrollingEnabled){
+    if(_isOnTop && !_scrollingEnabled){
       if(widget.slideDirection == SlideDirection.UP)
         _ac.value -= dy / (widget.maxHeight - widget.minHeight);
       else
@@ -449,6 +459,12 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   // handles when user stops sliding
   void _onGestureEnd(Velocity v){
+    _isTrackingStarted = false;
+
+    if (_isPanelOpen && !_isOnTop) {
+      return;
+    }
+
     double minFlingVelocity = 365.0;
     double kSnap = 8;
 
@@ -732,6 +748,11 @@ class DelegatingScrollController implements ScrollController {
     _currentDelegate.isScrollingEnabled = isEnabled;
   }
 
+  bool get isOnTop => _currentDelegate.isOnTop;
+  set isOnTop(bool value) {
+    _currentDelegate.isOnTop = value;
+  }
+
   DelegatingScrollController(int scrollViewCount, {int defaultScrollView = 0})
     : _delegates = [for (int i = 0; i < scrollViewCount; i++) _ScrollDelegate(ScrollController())] {
     _currentDelegate = _delegates[defaultScrollView];
@@ -840,6 +861,7 @@ class DelegatingScrollController implements ScrollController {
 class _ScrollDelegate {
   final ScrollController scrollController;
   bool isScrollingEnabled = false;
+  bool isOnTop = false;
 
   _ScrollDelegate(this.scrollController);
 }
