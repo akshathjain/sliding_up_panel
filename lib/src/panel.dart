@@ -163,6 +163,13 @@ class SlidingUpPanel extends StatefulWidget {
   /// by default the Panel is open and must be swiped closed by the user.
   final PanelState defaultPanelState;
 
+
+  /// Optional Size() constaints for area where sliding panel operates
+  /// by default sliding panel uses MediaQuery to get the size for the area
+  ///
+
+  final Size outerSizeBounds;
+
   SlidingUpPanel({
     Key key,
     this.panel,
@@ -199,7 +206,8 @@ class SlidingUpPanel extends StatefulWidget {
     this.slideDirection = SlideDirection.UP,
     this.defaultPanelState = PanelState.CLOSED,
     this.header,
-    this.footer
+    this.footer,
+    this.outerSizeBounds
   }) : assert(panel != null || panelBuilder != null),
        assert(0 <= backdropOpacity && backdropOpacity <= 1.0),
        assert (snapPoint == null || 0 < snapPoint && snapPoint < 1.0),
@@ -263,8 +271,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
             );
           },
           child: Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
+            height: getOuterDimensions().height,
+            width: getOuterDimensions().width,
             child: widget.body,
           ),
         ) : Container(),
@@ -282,8 +290,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
             animation: _ac,
             builder: (context, _) {
               return Container(
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
+                height: getOuterDimensions().height,
+                width: getOuterDimensions().width,
 
                 //set color to null so that touch events pass through
                 //to the body when the panel is closed, otherwise,
@@ -320,7 +328,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                 Positioned(
                   top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
                   bottom: widget.slideDirection == SlideDirection.DOWN ? 0.0 : null,
-                  width:  MediaQuery.of(context).size.width -
+                  width:  getOuterDimensions().width -
                           (widget.margin != null ? widget.margin.horizontal : 0) -
                           (widget.padding != null ? widget.padding.horizontal : 0),
                   child: Container(
@@ -349,7 +357,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                 Positioned(
                   top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
                   bottom: widget.slideDirection == SlideDirection.DOWN ? 0.0 : null,
-                  width:  MediaQuery.of(context).size.width -
+                  width:  getOuterDimensions().width -
                           (widget.margin != null ? widget.margin.horizontal : 0) -
                           (widget.padding != null ? widget.padding.horizontal : 0),
                   child: Container(
@@ -414,6 +422,14 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
       onPointerUp: (PointerUpEvent p) => _onGestureEnd(_vt.getVelocity()),
       child: child,
     );
+  }
+
+  Size getOuterDimensions() {
+    if (this.widget.outerSizeBounds != null) {
+      return this.widget.outerSizeBounds;
+    }
+
+    return MediaQuery.of(context).size;
   }
 
   // handles the sliding gesture
