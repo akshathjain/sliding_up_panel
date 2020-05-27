@@ -163,6 +163,11 @@ class SlidingUpPanel extends StatefulWidget {
   /// by default the Panel is open and must be swiped closed by the user.
   final PanelState defaultPanelState;
 
+  /// The initialHeight of the Panel
+  /// This value only gets applied when [defaultPanelState] is PanelState.CLOSED
+  /// Defaults to 0.0
+  final double initialHeight;
+
   SlidingUpPanel({
     Key key,
     this.panel,
@@ -198,6 +203,7 @@ class SlidingUpPanel extends StatefulWidget {
     this.isDraggable = true,
     this.slideDirection = SlideDirection.UP,
     this.defaultPanelState = PanelState.CLOSED,
+    this.initialHeight = 0.0,
     this.header,
     this.footer
   }) : assert(panel != null || panelBuilder != null),
@@ -226,7 +232,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     _ac = new AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
-      value: widget.defaultPanelState == PanelState.CLOSED ? 0.0 : 1.0 //set the default panel state (i.e. set initial value of _ac)
+      value: widget.defaultPanelState == PanelState.CLOSED ? widget.initialHeight : 1.0 //set the default panel state (i.e. set initial value of _ac)
     )..addListener((){
       if(widget.onPanelSlide != null) widget.onPanelSlide(_ac.value);
 
