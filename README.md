@@ -17,7 +17,7 @@ A draggable Flutter widget that makes implementing a SlidingUpPanel much easier!
 Add the following to your `pubspec.yaml` file:
 ```yaml
 dependencies:
-  sliding_up_panel: ^1.0.0
+  sliding_up_panel: ^1.0.2
 ```
 Note that `v1.0.0` introduced some breaking changes outlined [below](#breaking-changes).
 
@@ -97,8 +97,11 @@ There are several options that allow for more control:
 |`panelBuilder` [beta]| NOTE: This feature is still in beta and may have some problems. Please open an issue on [GitHub](https://github.com/akshathjain/sliding_up_panel) if you encounter something unexpected. <br><br> Provides a `ScrollController` to attach to a scrollable object in the panel that links the panel position with the scroll position. Useful for implementing an infinite scroll behavior. If `panel` and `panelBuilder` are both non-null, `panel` will be used. |
 | `collapsed` | The Widget displayed overtop the `panel` when collapsed. This fades out as the `panel` is opened. |
 | `body` | The Widget that lies underneath the sliding panel. This Widget automatically sizes itself to fill the screen. |
+| `header` | Optional persistent widget that floats above the `panel` and attaches to the top of the `panel`. Content at the top of the panel will be covered by this widget. Add padding to the top of the `panel` to avoid coverage. |
+| `footer` | Optional persistent widget that floats above the `panel` and attaches to the bottom of the `panel`. Content at the bottom of the panel will be covered by this widget. Add padding to the bottom of the `panel` to avoid coverage. |
 | `minHeight` | The height of the sliding panel when fully collapsed. |
 | `maxHeight` | The height of the sliding panel when fully open. |
+| `snapPoint` [beta] | NOTE: This feature is still in beta and may have some problems. Please open an issue on [GitHub](https://github.com/akshathjain/sliding_up_panel) if you encounter something unexpected. <br><br> A point between `minHeight` and `maxHeight` that the panel snaps to while animating. A fast swipe on the panel will disregard this point and go directly to the open/close position. This value is represented as a percentage of the total animation distance (`maxHeight` - `minHeight`), so it must be between 0.0 and 1.0, exclusive. |
 | `border` | A border to draw around the sliding panel sheet. |
 | `borderRadius` | If non-null, the corners of the sliding panel sheet are rounded by this. |
 | `boxShadow` | A list of shadows cast behind the sliding panel sheet. |
@@ -441,7 +444,8 @@ At times, it can be useful to manually change the state of the `SlidingUpPanel`.
 |`close()`| `Future<void>` | Closes the sliding panel to its collapsed state (i.e. to the  `minHeight`) |
 |`hide()`| `Future<void>` | Hides the sliding panel (i.e. is invisible) |
 |`show()`| `Future<void>` | Shows the sliding panel in its collapsed state (i.e. "un-hide" the sliding panel) |
-|`animatePanelToPosition(double value)`| `Future<void>` | Animates the panel position to the value. The value must between 0.0 and 1.0 where 0.0 is fully collapsed and 1.0 is completely open. |
+|`animatePanelToPosition(double value, {Duration duration, Curve curve = Curves.linear})`| `Future<void>` | Animates the panel position to the value. The value must between 0.0 and 1.0 where 0.0 is fully collapsed and 1.0 is completely open. (optional) `duration` specifies the time for the animation to complete. (optional) `curve` specifies the easing behavior of the animation. |
+|`animatePanelToSnapPoint(double value, {Duration duration, Curve curve = Curves.linear})` [beta]| `Future<void>` | NOTE: This feature is still in beta and may have some problems. Please open an issue on [GitHub](https://github.com/akshathjain/sliding_up_panel) if you encounter something unexpected. <br><br> Animates the panel position to the snap point. Requires that the SlidingUpPanel `snapPoint` property is not null. (optional) `duration` specifies the time for the animation to complete. (optional) `curve` specifies the easing behavior of the animation. |
 
 
 ```dart
