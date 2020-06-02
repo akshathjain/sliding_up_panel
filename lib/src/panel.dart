@@ -239,14 +239,13 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
       if(widget.onPanelOpened != null && _ac.value == 1.0) widget.onPanelOpened();
 
       // to avoid floating point errors, these need to be rounded since numbers close to zero can trigger below events
-      final roundedAcValue = (_ac.value * 100000).roundToDouble() / 100000;
       final roundedPreviousValue = (_previousAnimationControllerValue * 100000).roundToDouble()/100000;
       
-      if (widget.onPanelOpenStart != null && roundedPreviousValue == 0 && roundedAcValue > 0) {
+      if (widget.onPanelOpenStart != null && roundedPreviousValue == 0 && _roundedAcValue > 0) {
         widget.onPanelOpenStart();
       }
       
-      if (widget.onPanelClosed  != null && roundedPreviousValue > 0 && roundedAcValue == 0) {
+      if (widget.onPanelClosed  != null && roundedPreviousValue > 0 && _roundedAcValue == 0) {
         widget.onPanelClosed();
       }
 
@@ -602,15 +601,18 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   //returns whether or not the
   //panel is open
-  bool get _isPanelOpen => _ac.value == 1.0;
+  bool get _isPanelOpen => _roundedAcValue == 1.0;
 
   //returns whether or not the
   //panel is closed
-  bool get _isPanelClosed => _ac.value == 0.0;
+  bool get _isPanelClosed => _roundedAcValue == 0.0;
 
   //returns whether or not the
   //panel is shown/hidden
   bool get _isPanelShown => _isPanelVisible;
+
+  //uses rounded value to avoid floating point errors in 0.0 or 1.0 equality
+  double get _roundedAcValue => (_ac.value * 100000).roundToDouble() / 100000;
 
 }
 
