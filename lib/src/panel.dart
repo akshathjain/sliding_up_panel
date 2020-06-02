@@ -222,7 +222,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
         widget.onPanelOpenStart();
       }
       
-      if (widget.onPanelClosed  != null && roundedPreviousValue > 0 && _ac.value == 0) {
+      if (widget.onPanelClosed  != null && roundedPreviousValue > 0 && roundedAcValue == 0) {
         widget.onPanelClosed();
       }
 
