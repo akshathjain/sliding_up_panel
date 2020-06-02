@@ -599,13 +599,15 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   //the panel is still animating
   bool get _isPanelAnimating => _ac.isAnimating;
 
+  static const THRESH = 0.05;
+  
   //returns whether or not the
   //panel is open
-  bool get _isPanelOpen => _roundedAcValue == 1.0;
+  bool get _isPanelOpen => (_roundedAcValue - 1.0).abs() < THRESH;
 
   //returns whether or not the
   //panel is closed
-  bool get _isPanelClosed => _roundedAcValue == 0.0;
+  bool get _isPanelClosed => _roundedAcValue.abs() < THRESH;
 
   //returns whether or not the
   //panel is shown/hidden
