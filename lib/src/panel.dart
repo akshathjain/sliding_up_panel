@@ -271,27 +271,29 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
 
         //the backdrop to overlay on the body
-        !widget.backdropEnabled ? Container() : GestureDetector(
-          onVerticalDragEnd: widget.backdropTapClosesPanel ? (DragEndDetails dets){
-            // only trigger a close if the drag is towards panel close position
-            if((widget.slideDirection == SlideDirection.UP ? 1 : -1) * dets.velocity.pixelsPerSecond.dy > 0)
-              _close();
-          } : null,
-          onTap: widget.backdropTapClosesPanel ? () => _close() : null,
-          child: AnimatedBuilder(
-            animation: _ac,
-            builder: (context, _) {
-              return Container(
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
+        !widget.backdropEnabled ? Container() : ExcludeSemantics(
+            child: GestureDetector(
+              onVerticalDragEnd: widget.backdropTapClosesPanel ? (DragEndDetails dets){
+                // only trigger a close if the drag is towards panel close position
+                if((widget.slideDirection == SlideDirection.UP ? 1 : -1) * dets.velocity.pixelsPerSecond.dy > 0)
+                  _close();
+              } : null,
+              onTap: widget.backdropTapClosesPanel ? () => _close() : null,
+              child: AnimatedBuilder(
+                animation: _ac,
+                builder: (context, _) {
+                  return Container(
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width,
 
-                //set color to null so that touch events pass through
-                //to the body when the panel is closed, otherwise,
-                //if a color exists, then touch events won't go through
-                color: _ac.value == 0.0 ? null : widget.backdropColor.withOpacity(widget.backdropOpacity * _ac.value),
-              );
-            }
-          ),
+                      //set color to null so that touch events pass through
+                      //to the body when the panel is closed, otherwise,
+                      //if a color exists, then touch events won't go through
+                      color: _ac.value == 0.0 ? null : widget.backdropColor.withOpacity(widget.backdropOpacity * _ac.value),
+                    );
+                  }
+              ),
+            ),
         ),
 
 
