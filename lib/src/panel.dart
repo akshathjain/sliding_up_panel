@@ -265,8 +265,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child:Stack(
+    return Stack(
+      overflow: Overflow.visible,
       alignment: widget.slideDirection == SlideDirection.UP ? Alignment.bottomCenter : Alignment.topCenter,
       children: <Widget>[
 
@@ -389,7 +389,6 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
             ),
           ),
         ],
-      )
     );
   }
 
