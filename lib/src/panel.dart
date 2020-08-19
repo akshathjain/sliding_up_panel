@@ -400,9 +400,9 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   double _getParallax(){
     if(widget.slideDirection == SlideDirection.UP)
-      return -_ac.value * (widget.maxHeight - widget.minHeight) * widget.parallaxOffset;
+      return -_ac.value * (widget.maxHeight - widget.minHeight) * widget.parallaxOffset - MediaQuery.of(context).padding.bottom;
     else
-      return _ac.value * (widget.maxHeight - widget.minHeight) * widget.parallaxOffset;
+      return _ac.value * (widget.maxHeight - widget.minHeight) * widget.parallaxOffset - MediaQuery.of(context).padding.bottom;
   }
 
   // returns a gesture detector if panel is used
