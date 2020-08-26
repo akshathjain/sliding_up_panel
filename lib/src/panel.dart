@@ -406,6 +406,17 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     }
 
     return Listener(
+      onPointerSignal: (p) {
+        if (p is PointerScrollEvent) {
+          _vt.addPosition(p.timeStamp, p.position);
+          var dy = -p.scrollDelta.dy;
+          _onGestureSlide(dy);
+
+          if (dy == 0) {
+            _onGestureEnd(_vt.getVelocity());
+          }
+        }
+      },
       onPointerDown: (PointerDownEvent p) => _vt.addPosition(p.timeStamp, p.position),
       onPointerMove: (PointerMoveEvent p){
         _vt.addPosition(p.timeStamp, p.position); // add current position for velocity tracking
