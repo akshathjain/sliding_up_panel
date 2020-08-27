@@ -13,7 +13,6 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 
 import 'package:flutter/physics.dart';
-import 'package:rxdart/rxdart.dart';
 
 enum SlideDirection{
   UP,
@@ -214,8 +213,7 @@ class SlidingUpPanel extends StatefulWidget {
 
 class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProviderStateMixin{
 
-  StreamSubscription<void> _debounceSubscription;
-  final _debouncedScrollingSubject = PublishSubject<void>();
+  Timer _scrollEventTimer;
 
   AnimationController _ac;
 
@@ -250,10 +248,6 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     });
 
     widget.controller?._addState(this);
-
-    _debounceSubscription = _debouncedScrollingSubject
-        .debounceTime(const Duration(milliseconds: 50))
-        .listen((event) => _onGestureEnd(_vt.getVelocity()));
   }
 
   @override
@@ -390,7 +384,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   @override
   void dispose(){
     _ac.dispose();
-    _debounceSubscription.cancel();
+    _scrollEventTimer?.cancel();
 
     super.dispose();
   }
@@ -423,7 +417,12 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
           _vt.addPosition(p.timeStamp, p.position);
           var dy = -p.scrollDelta.dy;
           _onGestureSlide(dy);
-          _debouncedScrollingSubject.add((){});
+
+          if (_scrollEventTimer?.isActive ?? false) {
+            _scrollEventTimer.cancel();
+          }
+          _scrollEventTimer = Timer(const Duration(milliseconds: 50),
+                  () => _onGestureEnd(_vt.getVelocity()));
         }
       },
       onPointerDown: (PointerDownEvent p) => _vt.addPosition(p.timeStamp, p.position),
