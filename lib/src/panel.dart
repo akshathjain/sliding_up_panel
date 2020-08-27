@@ -6,11 +6,14 @@ Copyright: © 2020, Akshath Jain. All rights reserved.
 Licensing: More information can be found here: https://github.com/akshathjain/sliding_up_panel/blob/master/LICENSE
 */
 
+import 'dart:async';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
 import 'package:flutter/physics.dart';
+import 'package:rxdart/rxdart.dart';
 
 enum SlideDirection{
   UP,
@@ -211,6 +214,9 @@ class SlidingUpPanel extends StatefulWidget {
 
 class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProviderStateMixin{
 
+  StreamSubscription<void> _debounceSubscription;
+  final _debouncedScrollingSubject = PublishSubject<void>();
+
   AnimationController _ac;
 
   ScrollController _sc;
@@ -244,6 +250,10 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     });
 
     widget.controller?._addState(this);
+
+    _debounceSubscription = _debouncedScrollingSubject
+        .debounceTime(const Duration(milliseconds: 50))
+        .listen((event) => _onGestureEnd(_vt.getVelocity()));
   }
 
   @override
@@ -380,6 +390,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   @override
   void dispose(){
     _ac.dispose();
+    _debounceSubscription.cancel();
+
     super.dispose();
   }
 
@@ -411,10 +423,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
           _vt.addPosition(p.timeStamp, p.position);
           var dy = -p.scrollDelta.dy;
           _onGestureSlide(dy);
-
-          if (dy == 0) {
-            _onGestureEnd(_vt.getVelocity());
-          }
+          _debouncedScrollingSubject.add((){});
         }
       },
       onPointerDown: (PointerDownEvent p) => _vt.addPosition(p.timeStamp, p.position),
