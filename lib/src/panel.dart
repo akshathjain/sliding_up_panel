@@ -215,7 +215,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   ScrollController _sc;
   bool _scrollingEnabled = false;
-  VelocityTracker _vt = new VelocityTracker();
+  PointerDeviceKind _pointerDeviceKind = PointerDeviceKind.unknown;
+  VelocityTracker _vt;
 
   bool _isPanelVisible = true;
 
@@ -223,6 +224,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   void initState(){
     super.initState();
 
+    _vt = new VelocityTracker(_pointerDeviceKind);
+    
     _ac = new AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
