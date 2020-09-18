@@ -7,6 +7,7 @@ Licensing: More information can be found here: https://github.com/akshathjain/sl
 */
 
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
@@ -248,6 +249,12 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _vt ??= VelocityTracker(defaultPointerDeviceKind(context));
+  }
+
+  @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) => Stack(
@@ -405,6 +412,24 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
   void dispose() {
     _ac.dispose();
     super.dispose();
+  }
+
+  // Used by VelocityTracker
+// https://github.com/flutter/flutter/pull/64267#issuecomment-694196304
+  PointerDeviceKind defaultPointerDeviceKind(BuildContext context) {
+    final platform = Theme.of(context)?.platform ?? defaultTargetPlatform;
+    switch (platform) {
+      case TargetPlatform.iOS:
+      case TargetPlatform.android:
+        return PointerDeviceKind.touch;
+      case TargetPlatform.linux:
+      case TargetPlatform.macOS:
+      case TargetPlatform.windows:
+        return PointerDeviceKind.mouse;
+      case TargetPlatform.fuchsia:
+        return PointerDeviceKind.unknown;
+    }
+    return PointerDeviceKind.unknown;
   }
 
   double _getParallax() {
