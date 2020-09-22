@@ -128,6 +128,10 @@ class SlidingUpPanel extends StatefulWidget {
   final void Function(double position) onPanelSlide;
 
   /// If non-null, this callback is called when the
+  /// panel is starting to open
+  final VoidCallback onPanelOpenStart;
+
+  /// If non-null, this callback is called when the
   /// panel is fully opened
   final VoidCallback onPanelOpened;
 
@@ -192,6 +196,7 @@ class SlidingUpPanel extends StatefulWidget {
     this.backdropTapClosesPanel = true,
     this.onPanelSlide,
     this.onPanelOpened,
+    this.onPanelOpenStart,
     this.onPanelClosed,
     this.parallaxEnabled = false,
     this.parallaxOffset = 0.1,
@@ -218,6 +223,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   VelocityTracker _vt = new VelocityTracker();
 
   bool _isPanelVisible = true;
+  double _previousAnimationControllerValue = 0;
 
   @override
   void initState(){
@@ -232,7 +238,18 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
       if(widget.onPanelOpened != null && _ac.value == 1.0) widget.onPanelOpened();
 
-      if(widget.onPanelClosed != null && _ac.value == 0.0) widget.onPanelClosed();
+      // to avoid floating point errors, these need to be rounded since numbers close to zero can trigger below events
+      final roundedPreviousValue = (_previousAnimationControllerValue * 100000).roundToDouble()/100000;
+      
+      if (widget.onPanelOpenStart != null && roundedPreviousValue == 0 && _roundedAcValue > 0) {
+        widget.onPanelOpenStart();
+      }
+      
+      if (widget.onPanelClosed  != null && roundedPreviousValue > 0 && _roundedAcValue == 0) {
+        widget.onPanelClosed();
+      }
+
+      _previousAnimationControllerValue = _ac.value;
     });
 
     // prevent the panel content from being scrolled only if the widget is
@@ -367,14 +384,11 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                     ),
                   ),
                 ),
-
-
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-
-      ],
+        ],
     );
   }
 
@@ -386,10 +400,11 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   double _getParallax(){
     final bottomPadding = MediaQuery.of(context).viewPadding.bottom;
-    if(widget.slideDirection == SlideDirection.UP)
+    if(widget.slideDirection == SlideDirection.UP) {
       return -_ac.value * (widget.maxHeight - widget.minHeight) * widget.parallaxOffset - bottomPadding;
-    else
+    } else {
       return _ac.value * (widget.maxHeight - widget.minHeight) * widget.parallaxOffset - bottomPadding;
+    }
   }
 
   // returns a gesture detector if panel is used
@@ -420,7 +435,6 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   // handles the sliding gesture
   void _onGestureSlide(double dy){
-
     // only slide the panel if scrolling is not enabled
     if(!_scrollingEnabled){
       if(widget.slideDirection == SlideDirection.UP)
@@ -586,17 +600,22 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   //the panel is still animating
   bool get _isPanelAnimating => _ac.isAnimating;
 
+  static const THRESH = 0.05;
+  
   //returns whether or not the
   //panel is open
-  bool get _isPanelOpen => _ac.value == 1.0;
+  bool get _isPanelOpen => (_roundedAcValue - 1.0).abs() < THRESH;
 
   //returns whether or not the
   //panel is closed
-  bool get _isPanelClosed => _ac.value == 0.0;
+  bool get _isPanelClosed => _roundedAcValue.abs() < THRESH;
 
   //returns whether or not the
   //panel is shown/hidden
   bool get _isPanelShown => _isPanelVisible;
+
+  //uses rounded value to avoid floating point errors in 0.0 or 1.0 equality
+  double get _roundedAcValue => (_ac.value * 100000).roundToDouble() / 100000;
 
 }
 
