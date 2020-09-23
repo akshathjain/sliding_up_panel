@@ -223,7 +223,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   ScrollController _sc;
   bool _scrollingEnabled = false;
-  VelocityTracker _vt = new VelocityTracker();
+  // https://stackoverflow.com/questions/63914443/i-got-too-few-positional-arguments-error-flutter-and-i-cant-understand-why
+  VelocityTracker _vt = new VelocityTracker(PointerDeviceKind.touch);
 
   bool _isPanelVisible = true;
 
