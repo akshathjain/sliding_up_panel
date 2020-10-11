@@ -430,7 +430,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     // if the panel is open and the user hasn't scrolled, we need to determine
     // whether to enable scrolling if the user swipes up, or disable closing and
     // begin to close the panel if the user swipes down
-    if(_isPanelOpen && _sc.hasClients && _sc.offset <= 0){
+    if(_isPanelOpen && _sc.hasClients && (_sc.positions.length > 1 || _sc.offset <= 0)){
       setState(() {
         if(dy < 0){
           _scrollingEnabled = true;
