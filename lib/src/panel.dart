@@ -220,6 +220,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   bool _isPanelVisible = true;
 
   bool shouldSlide = true;
+  bool slideStarted = false;
 
   @override
   void initState(){
@@ -420,10 +421,12 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
       onPointerMove: (PointerMoveEvent p){
         _vt.addPosition(p.timeStamp, p.position);
         // add current position for velocity tracking
-        if (p.delta.dx.abs() > p.delta.dy.abs() && shouldSlide) {
+        if (p.delta.dx.abs() > p.delta.dy.abs() && !slideStarted) {
           shouldSlide = false;
-        } else if (p.delta.dx.abs() < p.delta.dy.abs() && !shouldSlide) {
+          slideStarted = true;
+        } else if (p.delta.dx.abs() < p.delta.dy.abs() && !slideStarted) {
           shouldSlide = true;
+          slideStarted = true;
         }
         if (shouldSlide) {
           _onGestureSlide(p.delta.dy);
@@ -432,8 +435,10 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
       onPointerUp: (PointerUpEvent p) {
         if (shouldSlide) {
           _onGestureEnd(_vt.getVelocity());
+          slideStarted = false;
         } else {
           shouldSlide = true;
+          slideStarted = false;
         }
       },
       child: child,
