@@ -123,6 +123,7 @@ There are several options that allow for more control:
 | `isDraggable` | Allows toggling of draggability of the SlidingUpPanel. Set this to false to prevent the user from being able to drag the panel up and down. Defaults to true. |
 | `slideDirection` | Either `SlideDirection.UP` or `SlideDirection.DOWN`. Indicates which way the panel should slide. Defaults to `UP`. If set to `DOWN`, the panel attaches itself to the top of the screen and is fully opened when the user swipes down on the panel. |
 | `defaultPanelState` | The default state of the panel; either PanelState.OPEN or `PanelState.CLOSED`. This value defaults to `PanelState.CLOSED` which indicates that the panel is in the closed position and must be opened. `PanelState.OPEN` indicates that by default the Panel is open and must be swiped closed by the user. |
+| `applySafeArea` | Applies `SafeArea` and `LayoutBuilder` widgets to either `panel` or `panelBuilder`. The default value is false. Use this only if you have issues with widgets getting cut off in landscape mode on certain devices, such as iPhones with notches. |
 
 <br>
 <br>
