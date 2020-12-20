@@ -608,7 +608,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
 
 
-class PanelController{
+class PanelController extends ChangeNotifier {
   _SlidingUpPanelState _panelState;
 
   void _addState(_SlidingUpPanelState panelState){
