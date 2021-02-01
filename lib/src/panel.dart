@@ -211,13 +211,15 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
 
   ScrollController _sc;
   bool _scrollingEnabled = false;
-  VelocityTracker _vt = new VelocityTracker();
+  PointerDeviceKind _pointerDeviceKind = PointerDeviceKind.unknown;
+  VelocityTracker _vt;
 
   bool _isPanelVisible;
 
   @override
   void initState() {
     super.initState();
+    _vt = new VelocityTracker.withKind(_pointerDeviceKind);
     _isPanelVisible =
         widget.defaultPanelState == PanelState.HIDDEN ? false : true;
     _ac = new AnimationController(
@@ -644,7 +646,6 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
   //returns whether or not the
   //panel is shown/hidden
   bool get _isPanelShown => _isPanelVisible;
-  
 }
 
 class PanelController {
@@ -653,7 +654,9 @@ class PanelController {
   void _addState(_SlidingUpPanelState panelState) {
     this._panelState = panelState;
   }
+
   AnimationController get animationController => _panelState._ac;
+
   /// Determine if the panelController is attached to an instance
   /// of the SlidingUpPanel (this property must return true before any other
   /// functions can be used)
