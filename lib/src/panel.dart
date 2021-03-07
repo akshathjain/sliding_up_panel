@@ -77,7 +77,7 @@ class SlidingUpPanel extends StatefulWidget {
   final BorderRadiusGeometry? borderRadius;
 
   /// A list of shadows cast behind the sliding panel sheet.
-  final List<BoxShadow> boxShadow;
+  final List<BoxShadow>? boxShadow;
 
   /// The color to fill the background of the sliding panel sheet.
   final Color color;
