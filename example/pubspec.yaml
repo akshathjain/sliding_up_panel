@@ -3,6 +3,8 @@ description: A simple example app for the sliding_up_panel package.
 
 version: 1.0.0
 
+publish_to: none
+
 environment:
   sdk: ">=2.1.0 <3.0.0"
 
@@ -25,5 +27,4 @@ dev_dependencies:
 
 
 flutter:
-
   uses-material-design: true
