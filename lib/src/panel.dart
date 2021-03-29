@@ -163,6 +163,12 @@ class SlidingUpPanel extends StatefulWidget {
   /// by default the Panel is open and must be swiped closed by the user.
   final PanelState defaultPanelState;
 
+  /// Applies SafeArea and LayoutBuilder widgets to either panel or panelBuilder.
+  /// The default value is false.
+  /// Use this only if you have issues with widgets getting cut off in landscape
+  /// mode on certain devices, such as iPhones with notches.
+  final bool applySafeArea;
+
   SlidingUpPanel({
     Key key,
     this.panel,
@@ -199,7 +205,8 @@ class SlidingUpPanel extends StatefulWidget {
     this.slideDirection = SlideDirection.UP,
     this.defaultPanelState = PanelState.CLOSED,
     this.header,
-    this.footer
+    this.footer,
+    this.applySafeArea = false
   }) : assert(panel != null || panelBuilder != null),
        assert(0 <= backdropOpacity && backdropOpacity <= 1.0),
        assert (snapPoint == null || 0 < snapPoint && snapPoint < 1.0),
@@ -218,6 +225,9 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   VelocityTracker _vt = new VelocityTracker();
 
   bool _isPanelVisible = true;
+
+  bool shouldSlide = true;
+  bool slideStarted = false;
 
   @override
   void initState(){
@@ -248,6 +258,20 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
+    if (widget.applySafeArea) {
+      return SafeArea(
+          child: LayoutBuilder(
+              builder: (context, constraints) {
+                return _panel(context, constraints);
+              }
+          )
+      );
+    } else {
+      return _panel(context, null);
+    }
+  }
+
+  Widget _panel(BuildContext context, BoxConstraints constraints) {
     return Stack(
       alignment: widget.slideDirection == SlideDirection.UP ? Alignment.bottomCenter : Alignment.topCenter,
       children: <Widget>[
@@ -262,9 +286,12 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
               child: child,
             );
           },
-          child: Container(
+          child: widget.applySafeArea ? Container(
             height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
+            width: constraints.maxWidth,
+            child: widget.body,
+          ) : Container(
+            height: MediaQuery.of(context).size.height,
             child: widget.body,
           ),
         ) : Container(),
@@ -279,18 +306,18 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
           } : null,
           onTap: widget.backdropTapClosesPanel ? () => _close() : null,
           child: AnimatedBuilder(
-            animation: _ac,
-            builder: (context, _) {
-              return Container(
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
+              animation: _ac,
+              builder: (context, _) {
+                return Container(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
 
-                //set color to null so that touch events pass through
-                //to the body when the panel is closed, otherwise,
-                //if a color exists, then touch events won't go through
-                color: _ac.value == 0.0 ? null : widget.backdropColor.withOpacity(widget.backdropOpacity * _ac.value),
-              );
-            }
+                  //set color to null so that touch events pass through
+                  //to the body when the panel is closed, otherwise,
+                  //if a color exists, then touch events won't go through
+                  color: _ac.value == 0.0 ? null : widget.backdropColor.withOpacity(widget.backdropOpacity * _ac.value),
+                );
+              }
           ),
         ),
 
@@ -302,6 +329,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
             builder: (context, child) {
               return Container(
                 height: _ac.value * (widget.maxHeight - widget.minHeight) + widget.minHeight,
+                width: constraints.maxWidth,
                 margin: widget.margin,
                 padding: widget.padding,
                 decoration: widget.renderPanelSheet ? BoxDecoration(
@@ -318,17 +346,23 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
                 //open panel
                 Positioned(
-                  top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
-                  bottom: widget.slideDirection == SlideDirection.DOWN ? 0.0 : null,
-                  width:  MediaQuery.of(context).size.width -
-                          (widget.margin != null ? widget.margin.horizontal : 0) -
-                          (widget.padding != null ? widget.padding.horizontal : 0),
-                  child: Container(
-                    height: widget.maxHeight,
-                    child: widget.panel != null
-                            ? widget.panel
-                            : widget.panelBuilder(_sc),
-                  )
+                    top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
+                    bottom: widget.slideDirection == SlideDirection.DOWN ? 0.0 : null,
+                    width: (widget.applySafeArea ? constraints.maxWidth : MediaQuery.of(context).size.width) -
+                        (widget.margin != null ? widget.margin.horizontal : 0) -
+                        (widget.padding != null ? widget.padding.horizontal : 0),
+                    child: widget.applySafeArea ?  Container(
+                      height: widget.maxHeight,
+                      width: constraints.maxWidth,
+                      child: widget.panel != null
+                          ? widget.panel
+                          : widget.panelBuilder(_sc),
+                    ) :  Container(
+                      height: widget.maxHeight,
+                      child: widget.panel != null
+                          ? widget.panel
+                          : widget.panelBuilder(_sc),
+                    )
                 ),
 
                 // header
@@ -340,9 +374,9 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
                 // footer
                 widget.footer != null ? Positioned(
-                  top: widget.slideDirection == SlideDirection.UP ? null : 0.0,
-                  bottom: widget.slideDirection == SlideDirection.DOWN ? null : 0.0,
-                  child: widget.footer
+                    top: widget.slideDirection == SlideDirection.UP ? null : 0.0,
+                    bottom: widget.slideDirection == SlideDirection.DOWN ? null : 0.0,
+                    child: widget.footer
                 ) : Container(),
 
                 // collapsed panel
@@ -350,8 +384,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                   top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
                   bottom: widget.slideDirection == SlideDirection.DOWN ? 0.0 : null,
                   width:  MediaQuery.of(context).size.width -
-                          (widget.margin != null ? widget.margin.horizontal : 0) -
-                          (widget.padding != null ? widget.padding.horizontal : 0),
+                      (widget.margin != null ? widget.margin.horizontal : 0) -
+                      (widget.padding != null ? widget.padding.horizontal : 0),
                   child: Container(
                     height: widget.minHeight,
                     child: widget.collapsed == null ? Container() : FadeTransition(
@@ -360,8 +394,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                       // if the panel is open ignore pointers (touch events) on the collapsed
                       // child so that way touch events go through to whatever is underneath
                       child: IgnorePointer(
-                        ignoring: _isPanelOpen,
-                        child: widget.collapsed
+                          ignoring: _isPanelOpen,
+                          child: widget.collapsed
                       ),
                     ),
                   ),
@@ -408,10 +442,28 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     return Listener(
       onPointerDown: (PointerDownEvent p) => _vt.addPosition(p.timeStamp, p.position),
       onPointerMove: (PointerMoveEvent p){
-        _vt.addPosition(p.timeStamp, p.position); // add current position for velocity tracking
-        _onGestureSlide(p.delta.dy);
+        _vt.addPosition(p.timeStamp, p.position);
+        // add current position for velocity tracking
+        if (p.delta.dx.abs() > p.delta.dy.abs() && !slideStarted) {
+          shouldSlide = false;
+          slideStarted = true;
+        } else if (p.delta.dx.abs() < p.delta.dy.abs() && !slideStarted) {
+          shouldSlide = true;
+          slideStarted = true;
+        }
+        if (shouldSlide) {
+          _onGestureSlide(p.delta.dy);
+        }
       },
-      onPointerUp: (PointerUpEvent p) => _onGestureEnd(_vt.getVelocity()),
+      onPointerUp: (PointerUpEvent p) {
+        if (shouldSlide) {
+          _onGestureEnd(_vt.getVelocity());
+          slideStarted = false;
+        } else {
+          shouldSlide = true;
+          slideStarted = false;
+        }
+      },
       child: child,
     );
   }
@@ -430,7 +482,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     // if the panel is open and the user hasn't scrolled, we need to determine
     // whether to enable scrolling if the user swipes up, or disable closing and
     // begin to close the panel if the user swipes down
-    if(_isPanelOpen && _sc.hasClients && _sc.offset <= 0){
+    if(_isPanelOpen && _sc.hasClients && (_sc.positions.length > 1 || _sc.offset <= 0)){
       setState(() {
         if(dy < 0){
           _scrollingEnabled = true;
