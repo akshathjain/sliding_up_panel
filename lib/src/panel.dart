@@ -38,7 +38,7 @@ class SlidingUpPanel extends StatefulWidget {
   /// the panel position with the scroll position. Useful for implementing an
   /// infinite scroll behavior. If [panel] and [panelBuilder] are both non-null,
   /// [panel] will be used.
-  final Widget Function(ScrollController sc) panelBuilder;
+  final Widget Function(ScrollController sc, double t) panelBuilder;
 
   /// The Widget displayed overtop the [panel] when collapsed.
   /// This fades out as the panel is opened.
@@ -327,7 +327,12 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                     height: widget.maxHeight,
                     child: widget.panel != null
                             ? widget.panel
-                            : widget.panelBuilder(_sc),
+                            : AnimatedBuilder(
+                              animation: _ac, 
+                              builder: (_, __) {
+                                return widget.panelBuilder(_sc, _ac.value);
+                              },
+                            ),
                   )
                 ),
 
