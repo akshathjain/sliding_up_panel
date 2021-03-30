@@ -215,7 +215,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   ScrollController _sc;
   bool _scrollingEnabled = false;
-  VelocityTracker _vt = new VelocityTracker();
+  VelocityTracker _vt;
 
   bool _isPanelVisible = true;
 
@@ -406,12 +406,14 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     }
 
     return Listener(
-      onPointerDown: (PointerDownEvent p) => _vt.addPosition(p.timeStamp, p.position),
+      onPointerDown: (PointerDownEvent p) {
+        _vt = VelocityTracker(p.kind)..addPosition(p.timeStamp, p.position);
+      },
       onPointerMove: (PointerMoveEvent p){
-        _vt.addPosition(p.timeStamp, p.position); // add current position for velocity tracking
+        _vt?.addPosition(p.timeStamp, p.position); // add current position for velocity tracking
         _onGestureSlide(p.delta.dy);
       },
-      onPointerUp: (PointerUpEvent p) => _onGestureEnd(_vt.getVelocity()),
+      onPointerUp: (PointerUpEvent p) => _onGestureEnd(_vt?.getVelocity() ?? Velocity(pixelsPerSecond: Offset.zero)),
       child: child,
     );
   }
