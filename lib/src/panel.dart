@@ -6,6 +6,8 @@ Copyright: © 2020, Akshath Jain. All rights reserved.
 Licensing: More information can be found here: https://github.com/akshathjain/sliding_up_panel/blob/master/LICENSE
 */
 
+import 'dart:async';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
@@ -211,6 +213,8 @@ class SlidingUpPanel extends StatefulWidget {
 
 class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProviderStateMixin{
 
+  Timer _scrollEventTimer;
+
   AnimationController _ac;
 
   ScrollController _sc;
@@ -380,6 +384,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   @override
   void dispose(){
     _ac.dispose();
+    _scrollEventTimer?.cancel();
+
     super.dispose();
   }
 
@@ -406,6 +412,19 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     }
 
     return Listener(
+      onPointerSignal: (p) {
+        if (p is PointerScrollEvent) {
+          _vt.addPosition(p.timeStamp, p.position);
+          var dy = -p.scrollDelta.dy;
+          _onGestureSlide(dy);
+
+          if (_scrollEventTimer?.isActive ?? false) {
+            _scrollEventTimer.cancel();
+          }
+          _scrollEventTimer = Timer(const Duration(milliseconds: 50),
+                  () => _onGestureEnd(_vt.getVelocity()));
+        }
+      },
       onPointerDown: (PointerDownEvent p) => _vt.addPosition(p.timeStamp, p.position),
       onPointerMove: (PointerMoveEvent p){
         _vt.addPosition(p.timeStamp, p.position); // add current position for velocity tracking
