@@ -215,7 +215,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   ScrollController _sc;
   bool _scrollingEnabled = false;
-  VelocityTracker _vt = new VelocityTracker();
+  PointerDeviceKind _pointerDeviceKind = PointerDeviceKind.unknown;
+  VelocityTracker _vt;
 
   bool _isPanelVisible = true;
 
@@ -223,6 +224,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   void initState(){
     super.initState();
 
+    _vt = new VelocityTracker(_pointerDeviceKind);
+    
     _ac = new AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
@@ -233,6 +236,9 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
       if(widget.onPanelOpened != null && _ac.value == 1.0) widget.onPanelOpened();
 
       if(widget.onPanelClosed != null && _ac.value == 0.0) widget.onPanelClosed();
+      
+      //Notify listeners when the panel is sliding
+      widget.controller.notifyListeners();
     });
 
     // prevent the panel content from being scrolled only if the widget is
@@ -605,7 +611,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
 
 
-class PanelController{
+class PanelController extends ChangeNotifier {
   _SlidingUpPanelState _panelState;
 
   void _addState(_SlidingUpPanelState panelState){
