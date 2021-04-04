@@ -634,11 +634,19 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
 
   //returns whether or not the
   //panel is open
-  bool get _isPanelOpen => _ac.value == 1.0;
+  bool get _isPanelOpen {
+    // allow 0.01 deviation to match
+    // AnimationController's _kFlingTolerance
+    return _ac.value >= 0.99;
+  }
 
   //returns whether or not the
   //panel is closed
-  bool get _isPanelClosed => _ac.value == 0.0;
+  bool get _isPanelClosed {
+    // allow 0.01 deviation to match
+    // AnimationController's _kFlingTolerance
+    return _ac.value <= 0.01;
+  }
 
   //returns whether or not the
   //panel is shown/hidden
