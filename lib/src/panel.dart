@@ -135,6 +135,10 @@ class SlidingUpPanel extends StatefulWidget {
   /// is fully collapsed.
   final VoidCallback onPanelClosed;
 
+  /// If non-null, this callback is called when the panel
+  /// controller is attached to a SlidingUpPanel
+  final VoidCallback onAttached;
+
   /// If non-null and true, the SlidingUpPanel exhibits a
   /// parallax effect as the panel slides up. Essentially,
   /// the body slides up as the panel slides up.
@@ -199,7 +203,8 @@ class SlidingUpPanel extends StatefulWidget {
     this.slideDirection = SlideDirection.UP,
     this.defaultPanelState = PanelState.CLOSED,
     this.header,
-    this.footer
+    this.footer,
+    this.onAttached
   }) : assert(panel != null || panelBuilder != null),
        assert(0 <= backdropOpacity && backdropOpacity <= 1.0),
        assert (snapPoint == null || 0 < snapPoint && snapPoint < 1.0),
@@ -244,6 +249,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     });
 
     widget.controller?._addState(this);
+    if(widget.onAttached != null) widget.onAttached();
   }
 
   @override
