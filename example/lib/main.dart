@@ -1,8 +1,8 @@
 /*
 Name: Akshath Jain
-Date: 3/18/2019 - 1/25/2020
+Date: 3/18/2019 - 4/26/2021
 Purpose: Example app that implements the package: sliding_up_panel
-Copyright: © 2020, Akshath Jain. All rights reserved.
+Copyright: © 2021, Akshath Jain. All rights reserved.
 Licensing: More information can be found here: https://github.com/akshathjain/sliding_up_panel/blob/master/LICENSE
 */
 
@@ -47,8 +47,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   final double _initFabHeight = 120.0;
-  double _fabHeight;
-  double _panelHeightOpen;
+  double _fabHeight = 0;
+  double _panelHeightOpen = 0;
   double _panelHeightClosed = 95.0;
 
   @override
