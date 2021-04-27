@@ -1,3 +1,10 @@
+## [1.1.0] - [April 26, 2021]
+### Features
+- Addressed issue #223,#240 - Added null safety support
+
+### Documentation
+- Updated documentation to reflect new features and fixes
+
 ## [1.0.2] - [April 13, 2020]
 ### Features
 - Addressed issue #71, #103 - Added an optional `header` widget that floats above the `panel` and attaches to the top
