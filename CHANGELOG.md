@@ -1,4 +1,4 @@
-## [1.1.0] - [April 26, 2021]
+## [2.0.0] - [April 26, 2021]
 ### Features
 - Addressed issue #223,#240 - Added null safety support
 

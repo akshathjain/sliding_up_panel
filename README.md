@@ -17,7 +17,7 @@ A draggable Flutter widget that makes implementing a SlidingUpPanel much easier!
 Add the following to your `pubspec.yaml` file:
 ```yaml
 dependencies:
-  sliding_up_panel: ^1.1.0
+  sliding_up_panel: ^2.0.0
 ```
 Note that `v1.0.0` introduced some breaking changes outlined [below](#breaking-changes).
 
