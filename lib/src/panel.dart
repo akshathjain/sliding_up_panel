@@ -667,6 +667,8 @@ class PanelController {
   /// (i.e. to the maxHeight)
   Future<void> open() {
     assert(isAttached, "PanelController must be attached to a SlidingUpPanel");
+    // Enable scrolling when panel is opened programmatically
+    _panelState!._scrollingEnabled = true;
     return _panelState!._open();
   }
 
