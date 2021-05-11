@@ -574,6 +574,12 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
 
   //close the panel
   Future<void> _close() {
+    if (_scrollingEnabled) {
+      setState(() {
+        _sc.jumpTo(0);
+        _scrollingEnabled = false;
+      });
+    }
     return _ac.fling(velocity: -1.0);
   }
 
