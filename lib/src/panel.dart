@@ -17,7 +17,7 @@ enum SlideDirection {
   DOWN,
 }
 
-enum PanelState { OPEN, CLOSED }
+enum PanelState { OPEN, CLOSED, HIDDEN }
 
 class SlidingUpPanel extends StatefulWidget {
   /// The Widget that slides into view. When the
@@ -213,12 +213,13 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
   bool _scrollingEnabled = false;
   VelocityTracker _vt = new VelocityTracker.withKind(PointerDeviceKind.touch);
 
-  bool _isPanelVisible = true;
+  late bool _isPanelVisible;
 
   @override
   void initState() {
     super.initState();
-
+    _isPanelVisible =
+        widget.defaultPanelState == PanelState.HIDDEN ? false : true;
     _ac = new AnimationController(
         vsync: this,
         duration: const Duration(milliseconds: 300),
@@ -232,8 +233,9 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
         if (widget.onPanelOpened != null && _ac.value == 1.0)
           widget.onPanelOpened!();
 
-        if (widget.onPanelClosed != null && _ac.value == 0.0)
-          widget.onPanelClosed!();
+        if (widget.onPanelClosed != null &&
+            _ac.value == 0.0 &&
+            !_ac.isAnimating) widget.onPanelClosed!();
       });
 
     // prevent the panel content from being scrolled only if the widget is
