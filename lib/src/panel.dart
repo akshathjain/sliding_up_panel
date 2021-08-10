@@ -211,8 +211,6 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
   late ScrollController _sc;
 
   bool _scrollingEnabled = false;
-  VelocityTracker _vt = new VelocityTracker.withKind(PointerDeviceKind.touch);
-
   bool _isPanelVisible = true;
 
   @override
@@ -452,15 +450,9 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
       );
     }
 
-    return Listener(
-      onPointerDown: (PointerDownEvent p) =>
-          _vt.addPosition(p.timeStamp, p.position),
-      onPointerMove: (PointerMoveEvent p) {
-        _vt.addPosition(p.timeStamp,
-            p.position); // add current position for velocity tracking
-        _onGestureSlide(p.delta.dy);
-      },
-      onPointerUp: (PointerUpEvent p) => _onGestureEnd(_vt.getVelocity()),
+    return _VerticalDragListener(
+      onDrag: _onGestureSlide,
+      onDragFinished: _onGestureEnd,
       child: child,
     );
   }
@@ -645,10 +637,135 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
   bool get _isPanelShown => _isPanelVisible;
 }
 
-class PanelController {
-  _SlidingUpPanelState? _panelState;
+class _VerticalDragListener extends StatefulWidget {
+  const _VerticalDragListener({
+    Key key,
+    @required this.child,
+    this.onDrag,
+    this.onDragFinished,
+  }) : super(key: key);
 
-  void _addState(_SlidingUpPanelState panelState) {
+  final Widget child;
+  final ValueChanged<double> onDrag;
+  final ValueChanged<Velocity> onDragFinished;
+
+  @override
+  _VerticalDragListenerState createState() => _VerticalDragListenerState();
+}
+
+class _VerticalDragListenerState extends State<_VerticalDragListener> {
+  int _pointer;
+  VelocityTracker _pointerVelocity;
+  Axis _pointerDragAxis;
+
+  double _lastY;
+
+  @override
+  Widget build(BuildContext context) {
+    return Listener(
+      onPointerDown: _onPointerDown,
+      onPointerMove: _onDrag,
+      onPointerUp: (e) => _onDragFinished(e.pointer),
+      onPointerCancel: (e) => _onDragFinished(e.pointer),
+      child: widget.child,
+    );
+  }
+
+  void _onPointerDown(PointerDownEvent e) {
+    // Update current pointer, but only if drag is not in progress
+    // This is needed to prevent multi-touch gesture from dragging the panel
+    _pointer ??= e.pointer;
+
+    // Don't do anything if `e.pointer` is not a currently dragged pointer.
+    // This is needed to prevent multi-touch gesture from dragging the panel
+    if (_pointer != e.pointer) {
+      return;
+    }
+
+    _pointerVelocity = VelocityTracker();
+
+    _lastY = e.position.dy;
+  }
+
+  void _onDrag(PointerMoveEvent e) {
+    // Don't do anything if `e.pointer` is not a currently dragged pointer.
+    // This is needed to prevent multi-touch gesture from dragging the panel
+    if (_pointer != e.pointer) {
+      return;
+    }
+
+    _pointerVelocity.addPosition(e.timeStamp, e.position);
+    _updateDragAxisIfNeeded(_pointerVelocity);
+
+    // Don't track horizontal or unknown yet drag
+    if (_pointerDragAxis != Axis.vertical) {
+      return;
+    }
+
+    final delta = e.position.dy - _lastY;
+    widget.onDrag?.call(delta);
+
+    _lastY = e.position.dy;
+  }
+
+  void _onDragFinished(int pointer) {
+    // Don't do anything if `e.pointer` is not a currently dragged pointer.
+    // This is needed to prevent multi-touch gesture from dragging the panel
+    if (_pointer != pointer) {
+      return;
+    }
+
+    if (_pointerDragAxis == Axis.vertical) {
+      widget.onDragFinished?.call(_pointerVelocity.getVelocity());
+    }
+
+    _resetPointer();
+  }
+
+  void _resetPointer() {
+    _pointer = null;
+    _pointerVelocity = null;
+    _pointerDragAxis = null;
+    _lastY = null;
+  }
+
+  /// Updates current pointer drag axis (but only if it is not known already)
+  void _updateDragAxisIfNeeded(VelocityTracker v) {
+    if (_pointerDragAxis != null) {
+      return;
+    }
+
+    final axis = _dragAxis(v);
+    if (axis != null) {
+      _pointerDragAxis = axis;
+    }
+  }
+
+  static Axis _dragAxis(VelocityTracker v) {
+    if (v == null) {
+      return null;
+    }
+
+    final est = v.getVelocityEstimate();
+    // Don't return the drag axis if not sure :)
+    if (est == null || est.confidence < 0.95 || est.offset.distance < 16) {
+      return null;
+    }
+
+    final absDirection = est.offset.direction.abs();
+    // Drag is vertical when its absolute direction is between 45° and 135°
+    if (absDirection > pi / 4 && absDirection < 3 * pi / 4) {
+      return Axis.vertical;
+    } else {
+      return Axis.horizontal;
+    }
+  }
+}
+
+class PanelController{
+  _SlidingUpPanelState _panelState;
+
+  void _addState(_SlidingUpPanelState panelState){
     this._panelState = panelState;
   }
 
