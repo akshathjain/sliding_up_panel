@@ -616,6 +616,14 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
     return _ac.animateTo(widget.snapPoint!, duration: duration, curve: curve);
   }
 
+  void resetScrollController() {
+    _sc.dispose();
+    _sc = new ScrollController();
+    _sc.addListener(() {
+      if (widget.isDraggable && !_scrollingEnabled) _sc.jumpTo(0);
+    });
+  }
+
   //set the panel position to value - must
   //be between 0.0 and 1.0
   set _panelPosition(double value) {
@@ -656,6 +664,10 @@ class PanelController {
   /// of the SlidingUpPanel (this property must return true before any other
   /// functions can be used)
   bool get isAttached => _panelState != null;
+
+  void resetScrollController() {
+    this._panelState?.resetScrollController();
+  }
 
   /// Closes the sliding panel to its collapsed state (i.e. to the  minHeight)
   Future<void> close() {
