@@ -480,11 +480,11 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
     // begin to close the panel if the user swipes down
     if (_isPanelOpen && _sc.hasClients && _sc.offset <= 0) {
       // setState(() {
-        if (dy < 0) {
-          _scrollingEnabled = true;
-        } else {
-          _scrollingEnabled = false;
-        }
+      if (dy < 0) {
+        _scrollingEnabled = true;
+      } else {
+        _scrollingEnabled = false;
+      }
       // });
     }
   }
@@ -617,10 +617,12 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
   }
 
   void resetScrollController() {
-    _sc.dispose();
-    _sc = new ScrollController();
-    _sc.addListener(() {
-      if (widget.isDraggable && !_scrollingEnabled) _sc.jumpTo(0);
+    setState(() {
+      _sc.dispose();
+      _sc = new ScrollController();
+      _sc.addListener(() {
+        if (widget.isDraggable && !_scrollingEnabled) _sc.jumpTo(0);
+      });
     });
   }
 
