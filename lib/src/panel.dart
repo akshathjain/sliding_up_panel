@@ -663,6 +663,10 @@ class PanelController {
     return _panelState!._close();
   }
 
+  void disableScrolling() {
+    _panelState?._scrollingEnabled = false;
+  }
+
   /// Opens the sliding panel fully
   /// (i.e. to the maxHeight)
   Future<void> open() {
