@@ -6,6 +6,8 @@ Copyright: © 2020, Akshath Jain. All rights reserved.
 Licensing: More information can be found here: https://github.com/akshathjain/sliding_up_panel/blob/master/LICENSE
 */
 
+import 'dart:async';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
@@ -135,6 +137,10 @@ class SlidingUpPanel extends StatefulWidget {
   /// is fully collapsed.
   final VoidCallback? onPanelClosed;
 
+  /// Forcefully enable scrolling even at full height, for drag and drop
+  /// reordering
+  final Stream<bool>? onScrollEnabled;
+
   /// If non-null and true, the SlidingUpPanel exhibits a
   /// parallax effect as the panel slides up. Essentially,
   /// the body slides up as the panel slides up.
@@ -194,6 +200,7 @@ class SlidingUpPanel extends StatefulWidget {
       this.onPanelSlide,
       this.onPanelOpened,
       this.onPanelClosed,
+      this.onScrollEnabled,
       this.parallaxEnabled = false,
       this.parallaxOffset = 0.1,
       this.isDraggable = true,
@@ -215,7 +222,10 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
   late AnimationController _ac;
   late ScrollController _sc;
 
+  StreamSubscription<bool>? _scroll;
+  bool _forceScrollEnabled = false;
   bool _scrollingEnabled = false;
+
   VelocityTracker _vt = new VelocityTracker.withKind(PointerDeviceKind.touch);
 
   bool _isPanelVisible = true;
@@ -252,7 +262,14 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
     // draggable and panel scrolling is enabled
     _sc = new ScrollController();
     _sc.addListener(() {
-      if (widget.isDraggable && !_scrollingEnabled) _sc.jumpTo(0);
+      if (widget.isDraggable && !_scrollingEnabled && !_forceScrollEnabled) {
+        _sc.jumpTo(0);
+      }
+    });
+
+    // Listen to the scroll enabled to force scrolling enabled
+    _scroll = widget.onScrollEnabled?.listen((enable) {
+      _forceScrollEnabled = enable;
     });
 
     widget.controller?._addState(this);
@@ -494,7 +511,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
     // begin to close the panel if the user swipes down
     if (_isPanelOpen && _sc.hasClients && _sc.offset <= 0) {
       setState(() {
-        if (dy < 0) {
+        if (dy < 0 || _forceScrollEnabled) {
           _scrollingEnabled = true;
         } else {
           _scrollingEnabled = false;
