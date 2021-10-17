@@ -212,6 +212,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
 
   bool _scrollingEnabled = false;
   VelocityTracker _vt = new VelocityTracker.withKind(PointerDeviceKind.touch);
+  double _delta = 0;
 
   bool _isPanelVisible = true;
 
@@ -453,14 +454,22 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
     }
 
     return Listener(
-      onPointerDown: (PointerDownEvent p) =>
-          _vt.addPosition(p.timeStamp, p.position),
+      onPointerDown: (PointerDownEvent p) {
+          _delta = 0;
+          _vt.addPosition(p.timeStamp, p.position);
+      },
       onPointerMove: (PointerMoveEvent p) {
+        _delta += p.delta.dy;
         _vt.addPosition(p.timeStamp,
             p.position); // add current position for velocity tracking
         _onGestureSlide(p.delta.dy);
       },
-      onPointerUp: (PointerUpEvent p) => _onGestureEnd(_vt.getVelocity()),
+      onPointerUp: (PointerUpEvent p) {
+        _delta += p.delta.dy;
+        if (_delta.abs() >= kPanSlop ||
+            _vt.getVelocity().pixelsPerSecond.dy.abs() > minFlingVelocity)
+          _onGestureEnd(_vt.getVelocity());
+      },
       child: child,
     );
   }
