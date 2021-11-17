@@ -159,11 +159,15 @@ class SlidingUpPanel extends StatefulWidget {
   /// by default the Panel is open and must be swiped closed by the user.
   final PanelState defaultPanelState;
 
+  final int currentScrollPosition;
+  final double? controlHeight;
+
   SlidingUpPanel(
       {Key? key,
       this.panel,
       this.panelBuilder,
       this.body,
+      this.currentScrollPosition = 0,
       this.collapsed,
       this.minHeight = 100.0,
       this.maxHeight = 500.0,
@@ -195,7 +199,8 @@ class SlidingUpPanel extends StatefulWidget {
       this.slideDirection = SlideDirection.UP,
       this.defaultPanelState = PanelState.CLOSED,
       this.header,
-      this.footer})
+      this.footer,
+      this.controlHeight})
       : assert(panel != null || panelBuilder != null),
         assert(0 <= backdropOpacity && backdropOpacity <= 1.0),
         assert(snapPoint == null || 0 < snapPoint && snapPoint < 1.0),
@@ -207,6 +212,8 @@ class SlidingUpPanel extends StatefulWidget {
 
 class _SlidingUpPanelState extends State<SlidingUpPanel>
     with SingleTickerProviderStateMixin {
+  bool _isDragEnabled = true;
+
   late AnimationController _ac;
   late ScrollController _sc;
 
@@ -444,6 +451,14 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
 
     if (widget.panel != null) {
       return GestureDetector(
+        onVerticalDragStart: (DragStartDetails dets) {
+          if (widget.controlHeight != null &&
+              dets.localPosition.dy > widget.controlHeight!) {
+            _isDragEnabled = false;
+          } else {
+            _isDragEnabled = true;
+          }
+        },
         onVerticalDragUpdate: (DragUpdateDetails dets) =>
             _onGestureSlide(dets.delta.dy),
         onVerticalDragEnd: (DragEndDetails dets) =>
@@ -453,8 +468,15 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
     }
 
     return Listener(
-      onPointerDown: (PointerDownEvent p) =>
-          _vt.addPosition(p.timeStamp, p.position),
+      onPointerDown: (PointerDownEvent p) {
+        if (widget.controlHeight != null &&
+            p.localPosition.dy > widget.controlHeight!) {
+          _isDragEnabled = false;
+        } else {
+          _isDragEnabled = true;
+          _vt.addPosition(p.timeStamp, p.position);
+        }
+      },
       onPointerMove: (PointerMoveEvent p) {
         _vt.addPosition(p.timeStamp,
             p.position); // add current position for velocity tracking
@@ -478,14 +500,28 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
     // if the panel is open and the user hasn't scrolled, we need to determine
     // whether to enable scrolling if the user swipes up, or disable closing and
     // begin to close the panel if the user swipes down
-    if (_isPanelOpen && _sc.hasClients && _sc.offset <= 0) {
-      setState(() {
+    if (_isPanelOpen &&
+        _sc.hasClients &&
+        (_sc.positions.length > 1 || _sc.offset <= 0)) {
+      // setState(() {
+
+      if (_sc.positions.length > 1) {
+        if (_sc.positions.length > widget.currentScrollPosition &&
+            _sc.positions.elementAt(widget.currentScrollPosition).pixels <= 0) {
+          if (dy < 0) {
+            _scrollingEnabled = true;
+          } else {
+            _scrollingEnabled = false;
+          }
+        }
+      } else {
         if (dy < 0) {
           _scrollingEnabled = true;
         } else {
           _scrollingEnabled = false;
         }
-      });
+      }
+      // });
     }
   }
 
@@ -661,6 +697,10 @@ class PanelController {
   Future<void> close() {
     assert(isAttached, "PanelController must be attached to a SlidingUpPanel");
     return _panelState!._close();
+  }
+
+  void disableScrolling() {
+    _panelState?._scrollingEnabled = false;
   }
 
   /// Opens the sliding panel fully
