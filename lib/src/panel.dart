@@ -329,6 +329,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                     );
                   },
                   child: Stack(
+                    clipBehavior: Clip.none,  // allow to draw widgets outside the panel, e.g. attach buttons to the top of the panel
                     children: <Widget>[
                       //open panel
                       Positioned(
