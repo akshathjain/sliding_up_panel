@@ -17,7 +17,7 @@ enum SlideDirection {
   DOWN,
 }
 
-enum PanelState { OPEN, CLOSED }
+enum PanelState { OPEN, CLOSED, SNAPPED }
 
 class SlidingUpPanel extends StatefulWidget {
   /// The Widget that slides into view. When the
@@ -153,10 +153,11 @@ class SlidingUpPanel extends StatefulWidget {
   /// down on the panel.
   final SlideDirection slideDirection;
 
-  /// The default state of the panel; either PanelState.OPEN or PanelState.CLOSED.
+  /// The default state of the panel; PanelState.OPEN, PanelState.CLOSED or PanelState.SNAPPED.
   /// This value defaults to PanelState.CLOSED which indicates that the panel is
   /// in the closed position and must be opened. PanelState.OPEN indicates that
   /// by default the Panel is open and must be swiped closed by the user.
+  /// PanelState.SNAPPED indicates that by default the Pnale is opened only to the [snapPoint] position.
   final PanelState defaultPanelState;
 
   SlidingUpPanel(
@@ -220,13 +221,10 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
     super.initState();
 
     _ac = new AnimationController(
-        vsync: this,
-        duration: const Duration(milliseconds: 300),
-        value: widget.defaultPanelState == PanelState.CLOSED
-            ? 0.0
-            : 1.0 //set the default panel state (i.e. set initial value of _ac)
-        )
-      ..addListener(() {
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+      value: _getDefaultAnimationValue(),
+    )..addListener(() {
         if (widget.onPanelSlide != null) widget.onPanelSlide!(_ac.value);
 
         if (widget.onPanelOpened != null && _ac.value == 1.0)
@@ -433,6 +431,20 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
       return _ac.value *
           (widget.maxHeight - widget.minHeight) *
           widget.parallaxOffset;
+  }
+
+  // set default panel state (i.e set initial value of AnimationController)
+  double _getDefaultAnimationValue() {
+    switch (widget.defaultPanelState) {
+      case PanelState.OPEN:
+        return 1.0;
+      case PanelState.SNAPPED:
+        assert(widget.snapPoint != null,
+            "SlidingUpPanel snapPoint property must not be null");
+        return widget.snapPoint!;
+      default:
+        return 0.0;
+    }
   }
 
   // returns a gesture detector if panel is used
