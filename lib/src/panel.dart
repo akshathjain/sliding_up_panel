@@ -229,6 +229,12 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
       ..addListener(() {
         if (widget.onPanelSlide != null) widget.onPanelSlide!(_ac.value);
 
+        /// trigger a rebuild whenever the panel is opened/closed, so that
+        /// any children that depend on [_isPanelOpen] or [_isPanelClosed]
+        /// get rebuilt as well
+        if (_ac.value == 0.0 || _ac.value == 1.0)
+          setState(() {});
+
         if (widget.onPanelOpened != null && _ac.value == 1.0)
           widget.onPanelOpened!();
 
