@@ -15,9 +15,10 @@ dependencies:
   sliding_up_panel:
     path: ../
 
-  flutter_map: ^0.8.2
-  latlong: ^0.6.1
-  cached_network_image: ^2.0.0
+  #flutter_map: ^0.8.2
+  flutter_map: ^0.14.0
+  latlong2: ^0.8.1
+  cached_network_image: ^3.2.0
 
   cupertino_icons: ^0.1.2
 

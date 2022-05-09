@@ -5,7 +5,6 @@ Purpose: Example app that implements the package: sliding_up_panel
 Copyright: © 2021, Akshath Jain. All rights reserved.
 Licensing: More information can be found here: https://github.com/akshathjain/sliding_up_panel/blob/master/LICENSE
 */
-
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -13,7 +12,7 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong/latlong.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 void main() => runApp(SlidingUpPanelExample());
