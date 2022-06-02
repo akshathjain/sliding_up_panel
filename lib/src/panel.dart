@@ -278,7 +278,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
   @override
   Widget build(BuildContext context) {
     return Stack(
-      overflow: Overflow.visible,
+      clipBehavior: Clip.none,
       alignment: widget.slideDirection == SlideDirection.UP
           ? Alignment.bottomCenter
           : Alignment.topCenter,
