@@ -102,6 +102,9 @@ class SlidingUpPanel extends StatefulWidget {
   /// If non-null, this can be used to control the state of the panel.
   final PanelController? controller;
 
+  /// If non-null, this can be used to control the scrolling of the panel.
+  final ScrollController? scrollController;
+
   /// If non-null, shows a darkening shadow over the [body] as the panel slides open.
   final bool backdropEnabled;
 
@@ -182,6 +185,7 @@ class SlidingUpPanel extends StatefulWidget {
       this.renderPanelSheet = true,
       this.panelSnapping = true,
       this.controller,
+      this.scrollController,
       this.backdropEnabled = false,
       this.backdropColor = Colors.black,
       this.backdropOpacity = 0.5,
@@ -238,7 +242,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
 
     // prevent the panel content from being scrolled only if the widget is
     // draggable and panel scrolling is enabled
-    _sc = new ScrollController();
+    _sc = widget.scrollController ?? new ScrollController();
     _sc.addListener(() {
       if (widget.isDraggable && !_scrollingEnabled) _sc.jumpTo(0);
     });
