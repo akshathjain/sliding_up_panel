@@ -343,7 +343,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                           bottom: widget.slideDirection == SlideDirection.DOWN
                               ? 0.0
                               : null,
-                          width: MediaQuery.of(context).size.width -
+                          width: constraints.maxWidth -
                               (widget.margin != null
                                   ? widget.margin!.horizontal
                                   : 0) -
@@ -392,7 +392,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                         bottom: widget.slideDirection == SlideDirection.DOWN
                             ? 0.0
                             : null,
-                        width: MediaQuery.of(context).size.width -
+                        width: constraints.maxWidth -
                             (widget.margin != null
                                 ? widget.margin!.horizontal
                                 : 0) -
