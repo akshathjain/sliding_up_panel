@@ -214,6 +214,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
   VelocityTracker _vt = new VelocityTracker.withKind(PointerDeviceKind.touch);
 
   bool _isPanelVisible = true;
+  ValueNotifier<bool> _ignorePointerNotifier = ValueNotifier<bool>(false);
 
   @override
   void initState() {
@@ -229,11 +230,13 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
       ..addListener(() {
         if (widget.onPanelSlide != null) widget.onPanelSlide!(_ac.value);
 
-        if (widget.onPanelOpened != null && _ac.value == 1.0)
+        if (widget.onPanelOpened != null && _ac.value.round() == 1.0)
           widget.onPanelOpened!();
+        _ignorePointerNotifier.value = true;
 
-        if (widget.onPanelClosed != null && _ac.value == 0.0)
+        if (widget.onPanelClosed != null && _ac.value.round() == 0.0)
           widget.onPanelClosed!();
+        _ignorePointerNotifier.value = false;
       });
 
     // prevent the panel content from being scrolled only if the widget is
@@ -296,7 +299,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                         //set color to null so that touch events pass through
                         //to the body when the panel is closed, otherwise,
                         //if a color exists, then touch events won't go through
-                        color: _ac.value == 0.0
+                        color: _ac.value.round() == 0.0
                             ? null
                             : widget.backdropColor.withOpacity(
                                 widget.backdropOpacity * _ac.value),
@@ -404,9 +407,15 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
 
                                   // if the panel is open ignore pointers (touch events) on the collapsed
                                   // child so that way touch events go through to whatever is underneath
-                                  child: IgnorePointer(
-                                      ignoring: _isPanelOpen,
-                                      child: widget.collapsed),
+                                  child: ValueListenableBuilder(
+                                    builder: (BuildContext context, bool value,
+                                        Widget? child) {
+                                      return IgnorePointer(
+                                          ignoring: value,
+                                          child: widget.collapsed);
+                                    },
+                                    valueListenable: _ignorePointerNotifier,
+                                  ),
                                 ),
                         ),
                       ),
@@ -634,11 +643,11 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
 
   //returns whether or not the
   //panel is open
-  bool get _isPanelOpen => _ac.value == 1.0;
+  bool get _isPanelOpen => _ac.value.round() == 1.0;
 
   //returns whether or not the
   //panel is closed
-  bool get _isPanelClosed => _ac.value == 0.0;
+  bool get _isPanelClosed => _ac.value.round() == 0.0;
 
   //returns whether or not the
   //panel is shown/hidden
