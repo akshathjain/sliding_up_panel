@@ -3,7 +3,7 @@ description: A simple example app for the sliding_up_panel package.
 
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.0.1
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
@@ -15,7 +15,6 @@ dependencies:
   sliding_up_panel:
     path: ../
 
-  #flutter_map: ^0.8.2
   flutter_map: ^0.14.0
   latlong2: ^0.8.1
   cached_network_image: ^3.2.0

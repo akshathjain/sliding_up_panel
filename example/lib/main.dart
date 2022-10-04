@@ -43,7 +43,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  static final _markerLatLong = LatLng(40.441753, -80.011476);
+  static final _initMapCenterLatLong = LatLng(40.441589, -80.010948);
+
+  late MapController _mapController;
   final double _initFabHeight = 120.0;
+  final double _fixedHorizontalFabHeight = 48.0;
   double _fabHeight = 0;
   double _panelHeightOpen = 0;
   double _panelHeightClosed = 95.0;
@@ -52,79 +57,92 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
+    _mapController = MapController();
     _fabHeight = _initFabHeight;
   }
 
   @override
   Widget build(BuildContext context) {
-    _panelHeightOpen = MediaQuery.of(context).size.height * .80;
+    final Size screenSize = MediaQuery.of(context).size;
+    _panelHeightOpen = screenSize.height * .80;
 
     return Material(
-      child: Stack(
-        alignment: Alignment.topCenter,
-        children: <Widget>[
-          SlidingUpPanel(
-            maxHeight: _panelHeightOpen,
-            minHeight: _panelHeightClosed,
-            parallaxEnabled: true,
-            parallaxOffset: .5,
-            body: _body(),
-            panelBuilder: (sc) => _panel(sc),
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(18.0),
-                topRight: Radius.circular(18.0)),
-            onPanelSlide: (double pos) => setState(() {
-              _fabHeight = pos * (_panelHeightOpen - _panelHeightClosed) +
-                  _initFabHeight;
-            }),
-          ),
-
-          // the fab
-          Positioned(
-            right: 20.0,
-            bottom: _fabHeight,
-            child: FloatingActionButton(
-              child: Icon(
-                Icons.gps_fixed,
-                color: Theme.of(context).primaryColor,
-              ),
-              onPressed: () {},
-              backgroundColor: Colors.white,
+      child: OrientationBuilder(builder: (context, orientation) {
+        return Stack(
+          alignment: Alignment.topCenter,
+          children: <Widget>[
+            SlidingUpPanel(
+              maxHeight: _panelHeightOpen,
+              minHeight: _panelHeightClosed,
+              parallaxEnabled: orientation == Orientation.portrait,
+              parallaxOffset: .5,
+              body: _body(),
+              panelBuilder: (scrollController) => _panel(scrollController),
+              margin: EdgeInsets.only(
+                  left: orientation == Orientation.portrait ? 0 : 8,
+                  right: orientation == Orientation.portrait
+                      ? 0
+                      : screenSize.width / 3),
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(18.0),
+                  topRight: Radius.circular(18.0)),
+              onPanelSlide: (double pos) => setState(() {
+                _fabHeight = pos * (_panelHeightOpen - _panelHeightClosed) +
+                    _initFabHeight;
+              }),
             ),
-          ),
 
-          Positioned(
-              top: 0,
-              child: ClipRRect(
-                  child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).padding.top,
-                        color: Colors.transparent,
-                      )))),
-
-          //the SlidingUpPanel Title
-          Positioned(
-            top: 52.0,
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(24.0, 18.0, 24.0, 18.0),
-              child: Text(
-                "SlidingUpPanel Example",
-                style: TextStyle(fontWeight: FontWeight.w500),
-              ),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24.0),
-                boxShadow: [
-                  BoxShadow(
-                      color: Color.fromRGBO(0, 0, 0, .25), blurRadius: 16.0)
-                ],
+            // the fab
+            Positioned(
+              right: 20.0,
+              bottom: orientation == Orientation.portrait
+                  ? _fabHeight
+                  : _fixedHorizontalFabHeight,
+              child: FloatingActionButton(
+                child: Icon(
+                  Icons.gps_fixed,
+                  color: Theme.of(context).primaryColor,
+                ),
+                onPressed: () {
+                  setState(() => _mapController.move(_markerLatLong, 13));
+                },
+                backgroundColor: Colors.white,
               ),
             ),
-          ),
-        ],
-      ),
+
+            Positioned(
+                top: 0,
+                child: ClipRRect(
+                    child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).padding.top,
+                          color: Colors.transparent,
+                        )))),
+
+            //the SlidingUpPanel Title
+            Positioned(
+              top: 52.0,
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 8.0),
+                child: Text(
+                  "SlidingUpPanel Example",
+                  style: TextStyle(fontWeight: FontWeight.w500),
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24.0),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Color.fromRGBO(0, 0, 0, .25), blurRadius: 16.0)
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      }),
     );
   }
 
@@ -192,24 +210,28 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(
                     height: 12.0,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      CachedNetworkImage(
-                        imageUrl:
-                            "https://images.fineartamerica.com/images-medium-large-5/new-pittsburgh-emmanuel-panagiotakis.jpg",
-                        height: 120.0,
-                        width: (MediaQuery.of(context).size.width - 48) / 2 - 2,
-                        fit: BoxFit.cover,
-                      ),
-                      CachedNetworkImage(
-                        imageUrl:
-                            "https://cdn.pixabay.com/photo/2016/08/11/23/48/pnc-park-1587285_1280.jpg",
-                        width: (MediaQuery.of(context).size.width - 48) / 2 - 2,
-                        height: 120.0,
-                        fit: BoxFit.cover,
-                      ),
-                    ],
+                  LayoutBuilder(
+                    builder: ((context, constraints) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          CachedNetworkImage(
+                            imageUrl:
+                                "https://images.fineartamerica.com/images-medium-large-5/new-pittsburgh-emmanuel-panagiotakis.jpg",
+                            height: 120.0,
+                            width: constraints.maxWidth / 2 - 8,
+                            fit: BoxFit.cover,
+                          ),
+                          CachedNetworkImage(
+                            imageUrl:
+                                "https://cdn.pixabay.com/photo/2016/08/11/23/48/pnc-park-1587285_1280.jpg",
+                            width: constraints.maxWidth / 2 - 8,
+                            height: 120.0,
+                            fit: BoxFit.cover,
+                          ),
+                        ],
+                      );
+                    }),
                   ),
                 ],
               ),
@@ -271,8 +293,9 @@ class _HomePageState extends State<HomePage> {
 
   Widget _body() {
     return FlutterMap(
+      mapController: _mapController,
       options: MapOptions(
-        center: LatLng(40.441589, -80.010948),
+        center: _initMapCenterLatLong,
         zoom: 13,
         maxZoom: 15,
       ),
@@ -281,7 +304,7 @@ class _HomePageState extends State<HomePage> {
             urlTemplate: "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png"),
         MarkerLayerOptions(markers: [
           Marker(
-              point: LatLng(40.441753, -80.011476),
+              point: _markerLatLong,
               builder: (ctx) => Icon(
                     Icons.location_on,
                     color: Colors.blue,
