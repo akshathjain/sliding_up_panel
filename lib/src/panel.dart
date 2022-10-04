@@ -248,6 +248,11 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
 
   @override
   Widget build(BuildContext context) {
+    return LayoutBuilder(
+        builder: (context, constraints) => _build(context, constraints));
+  }
+
+  Widget _build(BuildContext context, BoxConstraints constraints) {
     return Stack(
       alignment: widget.slideDirection == SlideDirection.UP
           ? Alignment.bottomCenter
@@ -264,8 +269,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                   );
                 },
                 child: Container(
-                  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
+                  height: constraints.maxHeight,
+                  width: constraints.maxWidth,
                   child: widget.body,
                 ),
               )
@@ -290,8 +295,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                     animation: _ac,
                     builder: (context, _) {
                       return Container(
-                        height: MediaQuery.of(context).size.height,
-                        width: MediaQuery.of(context).size.width,
+                        height: constraints.maxHeight,
+                        width: constraints.maxWidth,
 
                         //set color to null so that touch events pass through
                         //to the body when the panel is closed, otherwise,
@@ -338,7 +343,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                           bottom: widget.slideDirection == SlideDirection.DOWN
                               ? 0.0
                               : null,
-                          width: MediaQuery.of(context).size.width -
+                          width: constraints.maxWidth -
                               (widget.margin != null
                                   ? widget.margin!.horizontal
                                   : 0) -
@@ -387,7 +392,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                         bottom: widget.slideDirection == SlideDirection.DOWN
                             ? 0.0
                             : null,
-                        width: MediaQuery.of(context).size.width -
+                        width: constraints.maxWidth -
                             (widget.margin != null
                                 ? widget.margin!.horizontal
                                 : 0) -
