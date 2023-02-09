@@ -6,18 +6,32 @@ Copyright: © 2020, Akshath Jain. All rights reserved.
 Licensing: More information can be found here: https://github.com/akshathjain/sliding_up_panel/blob/master/LICENSE
 */
 
+import 'dart:async';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
 import 'package:flutter/physics.dart';
+import 'package:rive/rive.dart';
+import 'package:sliding_up_panel/src/constants.dart';
 
 enum SlideDirection {
   UP,
   DOWN,
 }
 
-enum PanelState { OPEN, CLOSED }
+enum PanelState {
+  OPEN,
+  CLOSED,
+}
+
+enum ExpandablePanelPosition {
+  up,
+  mid,
+  down,
+  sliding,
+}
 
 class SlidingUpPanel extends StatefulWidget {
   /// The Widget that slides into view. When the
@@ -63,12 +77,12 @@ class SlidingUpPanel extends StatefulWidget {
   /// The height of the sliding panel when fully open.
   final double maxHeight;
 
-  /// A point between [minHeight] and [maxHeight] that the panel snaps to
-  /// while animating. A fast swipe on the panel will disregard this point
-  /// and go directly to the open/close position. This value is represented as a
-  /// percentage of the total animation distance ([maxHeight] - [minHeight]),
-  /// so it must be between 0.0 and 1.0, exclusive.
-  final double? snapPoint;
+  /// If this is set to true, the panel will snap to 40% open.
+  final bool useSnapPoint;
+
+  /// Whether to add header or not. By default, this is true. If no [header] is provided
+  /// and this is true, a animated header will be used.
+  final bool useHeader;
 
   /// A border to draw around the sliding panel sheet.
   final Border? border;
@@ -172,7 +186,8 @@ class SlidingUpPanel extends StatefulWidget {
       this.collapsed,
       this.minHeight = 100.0,
       this.maxHeight = 500.0,
-      this.snapPoint,
+      this.useSnapPoint = true,
+      this.useHeader = true,
       this.border,
       this.borderRadius,
       this.boxShadow = const <BoxShadow>[
@@ -204,7 +219,6 @@ class SlidingUpPanel extends StatefulWidget {
       this.footer})
       : assert(panel != null || panelBuilder != null),
         assert(0 <= backdropOpacity && backdropOpacity <= 1.0),
-        assert(snapPoint == null || 0 < snapPoint && snapPoint < 1.0),
         super(key: key);
 
   @override
@@ -220,6 +234,14 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   bool _isPanelVisible = true;
 
+  // ExpandablePanelPosition _panelPosition = ExpandablePanelPosition.mid;
+
+  // Timer? _delayedPanelPositionUpdate;
+
+  SMINumber? _panelIconStateMachineInput;
+
+  static const snapPoint = 0.4;
+
   @override
   void initState() {
     super.initState();
@@ -231,6 +253,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
         )
       ..addListener(() {
         if (widget.onPanelSlide != null) widget.onPanelSlide!(_ac.value);
+
+        _updatePanelPositionDelayed(_ac.value);
 
         if (widget.onPanelOpened != null && _ac.value == 1.0) widget.onPanelOpened!();
 
@@ -333,11 +357,34 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                           )),
 
                       // header
-                      widget.header != null
+                      widget.useHeader
                           ? Positioned(
                               top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
                               bottom: widget.slideDirection == SlideDirection.DOWN ? 0.0 : null,
-                              child: widget.header ?? SizedBox(),
+                              child: widget.header ??
+                                  SizedBox(
+                                    width: 40,
+                                    height: 40,
+                                    child: RiveAnimation.asset(
+                                      animatedArrow,
+                                      fit: BoxFit.fill,
+                                      alignment: Alignment.center,
+                                      stateMachines: const [],
+                                      onInit: (artboard) {
+                                        final controller = StateMachineController.fromArtboard(artboard, 'State Machine 1');
+                                        artboard.addController(controller!);
+
+                                        final number = controller.findInput<double>('ScrollLevel') as SMINumber;
+                                        _setPanelIconStateMachineInput(number);
+
+                                        artboard.forEachComponent((component) {
+                                          if (component is Shape) {
+                                            component.fills.first.paint.color = Colors.orange;
+                                          }
+                                        });
+                                      },
+                                    ),
+                                  ),
                             )
                           : Container(),
 
@@ -379,9 +426,57 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
   @override
   void dispose() {
+    //_delayedPanelPositionUpdate?.cancel();
     _ac.dispose();
     super.dispose();
   }
+
+  /// Updates [_panelPosition] with a sligth delay.
+  /// The delay helps prevent the UI snappping when eg. the panel is passing by the snap point.
+  Future _updatePanelPositionDelayed(double position) async {
+    //_delayedPanelPositionUpdate?.cancel();
+    _updatePanelIcon(position);
+
+    // final newPos = _getPanelPosition(position);
+
+    // final update = () {
+    //   setState(() {
+    //     _panelPosition = newPos;
+    //   });
+    // };
+
+    // if (newPos == ExpandablePanelPosition.sliding) {
+    //   update.call();
+    // }
+
+    // _delayedPanelPositionUpdate = Timer(
+    //   const Duration(milliseconds: 100),
+    //   () {
+    //     update.call();
+    //     _delayedPanelPositionUpdate?.cancel();
+    //   },
+    // );
+  }
+
+  /// Updates panel icon rive animation state machine with the given scroll extent (`position`)
+  void _updatePanelIcon(double position) {
+    _panelIconStateMachineInput?.change(position * 100);
+  }
+
+  /// Returns a new `ExpandablePanelPosition` based on the  `position` (double between 0.0 and 1.0).
+  // ExpandablePanelPosition _getPanelPosition(double position) {
+  //   /// Rounds the position to have only 1 decimal
+  //   position = double.parse(position.toStringAsFixed(1));
+  //   if (position == 0.0) {
+  //     return ExpandablePanelPosition.down;
+  //   } else if (position == snapPoint) {
+  //     return ExpandablePanelPosition.mid;
+  //   } else if (position == 1.0) {
+  //     return ExpandablePanelPosition.up;
+  //   } else {
+  //     return ExpandablePanelPosition.sliding;
+  //   }
+  // }
 
   double _getParallax() {
     if (widget.slideDirection == SlideDirection.UP)
@@ -463,17 +558,17 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     // get minimum distances to figure out where the panel is at
     double d2Close = _ac.value;
     double d2Open = 1 - _ac.value;
-    double d2Snap = ((widget.snapPoint ?? 3) - _ac.value).abs(); // large value if null results in not every being the min
+    double d2Snap = ((snapPoint) - _ac.value).abs(); // large value if null results in not every being the min
     double minDistance = min(d2Close, min(d2Snap, d2Open));
 
     // check if velocity is sufficient for a fling
     if (v.pixelsPerSecond.dy.abs() >= minFlingVelocity) {
       // snapPoint exists
-      if (widget.panelSnapping && widget.snapPoint != null) {
+      if (widget.panelSnapping) {
         if (v.pixelsPerSecond.dy.abs() >= kSnap * minFlingVelocity || minDistance == d2Snap)
           _ac.fling(velocity: visualVelocity);
         else
-          _flingPanelToPosition(widget.snapPoint!, visualVelocity);
+          _flingPanelToPosition(snapPoint, visualVelocity);
 
         // no snap point exists
       } else if (widget.panelSnapping) {
@@ -496,7 +591,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
       if (minDistance == d2Close) {
         _close();
       } else if (minDistance == d2Snap) {
-        _flingPanelToPosition(widget.snapPoint!, visualVelocity);
+        _flingPanelToPosition(snapPoint, visualVelocity);
       } else {
         _open();
       }
@@ -515,6 +610,13 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
         velocity);
 
     _ac.animateWith(simulation);
+  }
+
+  /// Updates the `panelIconStateMachineInput`
+  void _setPanelIconStateMachineInput(SMINumber input) {
+    setState(() {
+      _panelIconStateMachineInput = input;
+    });
   }
 
   //---------------------------------
@@ -557,10 +659,9 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   }
 
   //animate the panel position to the snap point
-  //REQUIRES that widget.snapPoint != null
+  //REQUIRES that snapPoint != null
   Future<void> _animatePanelToSnapPoint({Duration? duration, Curve curve = Curves.linear}) {
-    assert(widget.snapPoint != null);
-    return _ac.animateTo(widget.snapPoint!, duration: duration, curve: curve);
+    return _ac.animateTo(snapPoint, duration: duration, curve: curve);
   }
 
   //set the panel position to value - must
@@ -647,7 +748,6 @@ class PanelController {
   /// (optional) curve specifies the easing behavior of the animation.
   Future<void> animatePanelToSnapPoint({Duration? duration, Curve curve = Curves.linear}) {
     assert(isAttached, "PanelController must be attached to a SlidingUpPanel");
-    assert(_panelState!.widget.snapPoint != null, "SlidingUpPanel snapPoint property must not be null");
     return _panelState!._animatePanelToSnapPoint(duration: duration, curve: curve);
   }
 

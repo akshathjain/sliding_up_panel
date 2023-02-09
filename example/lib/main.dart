@@ -12,10 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:flutter/services.dart';
 
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong/latlong.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-
 void main() => runApp(SlidingUpPanelExample());
 
 class SlidingUpPanelExample extends StatelessWidget {
@@ -69,14 +65,13 @@ class _HomePageState extends State<HomePage> {
             minHeight: _panelHeightClosed,
             parallaxEnabled: true,
             parallaxOffset: .5,
+            useSnapPoint: true,
+            useHeader: true,
             body: _body(),
             panelBuilder: (sc) => _panel(sc),
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(18.0),
-                topRight: Radius.circular(18.0)),
+            borderRadius: BorderRadius.only(topLeft: Radius.circular(18.0), topRight: Radius.circular(18.0)),
             onPanelSlide: (double pos) => setState(() {
-              _fabHeight = pos * (_panelHeightOpen - _panelHeightClosed) +
-                  _initFabHeight;
+              _fabHeight = pos * (_panelHeightOpen - _panelHeightClosed) + _initFabHeight;
             }),
           ),
 
@@ -117,10 +112,7 @@ class _HomePageState extends State<HomePage> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(24.0),
-                boxShadow: [
-                  BoxShadow(
-                      color: Color.fromRGBO(0, 0, 0, .25), blurRadius: 16.0)
-                ],
+                boxShadow: [BoxShadow(color: Color.fromRGBO(0, 0, 0, .25), blurRadius: 16.0)],
               ),
             ),
           ),
@@ -138,18 +130,6 @@ class _HomePageState extends State<HomePage> {
           children: <Widget>[
             SizedBox(
               height: 12.0,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Container(
-                  width: 30,
-                  height: 5,
-                  decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.all(Radius.circular(12.0))),
-                ),
-              ],
             ),
             SizedBox(
               height: 18.0,
@@ -193,25 +173,6 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(
                     height: 12.0,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      CachedNetworkImage(
-                        imageUrl:
-                            "https://images.fineartamerica.com/images-medium-large-5/new-pittsburgh-emmanuel-panagiotakis.jpg",
-                        height: 120.0,
-                        width: (MediaQuery.of(context).size.width - 48) / 2 - 2,
-                        fit: BoxFit.cover,
-                      ),
-                      CachedNetworkImage(
-                        imageUrl:
-                            "https://cdn.pixabay.com/photo/2016/08/11/23/48/pnc-park-1587285_1280.jpg",
-                        width: (MediaQuery.of(context).size.width - 48) / 2 - 2,
-                        height: 120.0,
-                        fit: BoxFit.cover,
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),
@@ -254,8 +215,7 @@ class _HomePageState extends State<HomePage> {
             icon,
             color: Colors.white,
           ),
-          decoration:
-              BoxDecoration(color: color, shape: BoxShape.circle, boxShadow: [
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle, boxShadow: [
             BoxShadow(
               color: Color.fromRGBO(0, 0, 0, 0.15),
               blurRadius: 8.0,
@@ -271,26 +231,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _body() {
-    return FlutterMap(
-      options: MapOptions(
-        center: LatLng(40.441589, -80.010948),
-        zoom: 13,
-        maxZoom: 15,
-      ),
-      layers: [
-        TileLayerOptions(
-            urlTemplate: "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png"),
-        MarkerLayerOptions(markers: [
-          Marker(
-              point: LatLng(40.441753, -80.011476),
-              builder: (ctx) => Icon(
-                    Icons.location_on,
-                    color: Colors.blue,
-                    size: 48.0,
-                  ),
-              height: 60),
-        ]),
-      ],
+    return Container(
+      color: Colors.blue,
     );
   }
 }

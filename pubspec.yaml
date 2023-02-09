@@ -1,7 +1,9 @@
 name: sliding_up_panel
-description: A draggable Flutter widget that makes implementing a SlidingUpPanel much easier!
+description: A draggable Flutter widget that makes implementing a SlidingUpPanel
+  much easier!
 version: 2.0.0+1
-homepage: https://github.com/akshathjain/sliding_up_panel
+publish_to: "none"
+homepage: https://mankeli.co
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -9,7 +11,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  rive: ^0.10.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+flutter:
+  assets:
+    - ./assets/animated_arrow.riv
