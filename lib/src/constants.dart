@@ -1,1 +1,1 @@
-const animatedArrow = './assets/animated_arrow.riv';
+const arrow = 'packages/sliding_up_panel/assets/arrow.riv';
