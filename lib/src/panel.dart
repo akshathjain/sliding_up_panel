@@ -361,30 +361,40 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                           ? Positioned(
                               top: widget.slideDirection == SlideDirection.UP ? 0.0 : null,
                               bottom: widget.slideDirection == SlideDirection.DOWN ? 0.0 : null,
-                              child: widget.header ??
-                                  SizedBox(
-                                    width: 40,
-                                    height: 40,
-                                    child: RiveAnimation.asset(
-                                      animatedArrow,
-                                      fit: BoxFit.fill,
-                                      alignment: Alignment.center,
-                                      stateMachines: const [],
-                                      onInit: (artboard) {
-                                        final controller = StateMachineController.fromArtboard(artboard, 'State Machine 1');
-                                        artboard.addController(controller!);
+                              left: 0.0,
+                              right: 0.0,
+                              child: Center(
+                                child: widget.header ??
+                                    SizedBox(
+                                      width: 40,
+                                      height: 40,
+                                      child: Container(
+                                          color: Colors.red,
+                                          child: Image.asset(
+                                            'test.png',
+                                            fit: BoxFit.fill,
+                                          )),
+                                      // RiveAnimation.asset(
+                                      //   animatedArrow,
+                                      //   fit: BoxFit.fill,
+                                      //   alignment: Alignment.center,
+                                      //   stateMachines: const [],
+                                      //   onInit: (artboard) {
+                                      //     final controller = StateMachineController.fromArtboard(artboard, 'State Machine 1');
+                                      //     artboard.addController(controller!);
 
-                                        final number = controller.findInput<double>('ScrollLevel') as SMINumber;
-                                        _setPanelIconStateMachineInput(number);
+                                      //     final number = controller.findInput<double>('ScrollLevel') as SMINumber;
+                                      //     _setPanelIconStateMachineInput(number);
 
-                                        artboard.forEachComponent((component) {
-                                          if (component is Shape) {
-                                            component.fills.first.paint.color = Colors.orange;
-                                          }
-                                        });
-                                      },
+                                      //     artboard.forEachComponent((component) {
+                                      //       if (component is Shape) {
+                                      //         component.fills.first.paint.color = Colors.orange;
+                                      //       }
+                                      //     });
+                                      //   },
+                                      // ),
                                     ),
-                                  ),
+                              ),
                             )
                           : Container(),
 
