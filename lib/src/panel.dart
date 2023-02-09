@@ -368,31 +368,25 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                                     SizedBox(
                                       width: 40,
                                       height: 40,
-                                      child: Container(
-                                          color: Colors.red,
-                                          child: Image.asset(
-                                            'test.png',
-                                            fit: BoxFit.fill,
-                                          )),
-                                      // RiveAnimation.asset(
-                                      //   animatedArrow,
-                                      //   fit: BoxFit.fill,
-                                      //   alignment: Alignment.center,
-                                      //   stateMachines: const [],
-                                      //   onInit: (artboard) {
-                                      //     final controller = StateMachineController.fromArtboard(artboard, 'State Machine 1');
-                                      //     artboard.addController(controller!);
+                                      child: RiveAnimation.asset(
+                                        animatedArrow,
+                                        fit: BoxFit.fill,
+                                        alignment: Alignment.center,
+                                        stateMachines: const [],
+                                        onInit: (artboard) {
+                                          final controller = StateMachineController.fromArtboard(artboard, 'State Machine 1');
+                                          artboard.addController(controller!);
 
-                                      //     final number = controller.findInput<double>('ScrollLevel') as SMINumber;
-                                      //     _setPanelIconStateMachineInput(number);
+                                          final number = controller.findInput<double>('ScrollLevel') as SMINumber;
+                                          _setPanelIconStateMachineInput(number);
 
-                                      //     artboard.forEachComponent((component) {
-                                      //       if (component is Shape) {
-                                      //         component.fills.first.paint.color = Colors.orange;
-                                      //       }
-                                      //     });
-                                      //   },
-                                      // ),
+                                          artboard.forEachComponent((component) {
+                                            if (component is Shape) {
+                                              component.fills.first.paint.color = Colors.orange;
+                                            }
+                                          });
+                                        },
+                                      ),
                                     ),
                               ),
                             )
