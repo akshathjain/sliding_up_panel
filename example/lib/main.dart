@@ -65,7 +65,7 @@ class _HomePageState extends State<HomePage> {
             minHeight: _panelHeightClosed,
             parallaxEnabled: true,
             parallaxOffset: .5,
-            useSnapPoint: true,
+            snapPoint: 0.4,
             useHeader: true,
             body: _body(),
             panelBuilder: (sc) => _panel(sc),
