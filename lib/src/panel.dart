@@ -675,8 +675,15 @@ class PanelController {
   Future<void> open({double? maxHeight}) {
     assert(isAttached, "PanelController must be attached to a SlidingUpPanel");
     double defaultHeight = _panelState!.widget.maxHeight;
-    _panelState!._maxHeight = maxHeight ?? defaultHeight;
-    if (maxHeight != null && maxHeight != defaultHeight) {
+    bool hasChanges = false;
+    if (maxHeight == null && defaultHeight != _panelState!._maxHeight) {
+      _panelState!._maxHeight = defaultHeight;
+      hasChanges = true;
+    } else if (maxHeight != null && maxHeight != _panelState!._maxHeight) {
+      _panelState!._maxHeight = maxHeight;
+      hasChanges = true;
+    }
+    if (hasChanges) {
       _panelState!.sliderPartKey.currentState?.setState(() {});
     }
     return _panelState!._open();
