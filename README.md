@@ -315,7 +315,7 @@ Widget _floatingCollapsed(){
   return Container(
     decoration: BoxDecoration(
       color: Colors.blueGrey,
-      borderRadius: BorderRadius.only(topLeft: Radius.circular(24.0), topRight: Radius.circular(24.0)),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
     ),
     margin: const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 0.0),
     child: Center(
