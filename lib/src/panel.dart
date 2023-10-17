@@ -467,6 +467,9 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
 
   // handles the sliding gesture
   void _onGestureSlide(double dy) {
+    // Prevent from accessing AnimationController methods after calling dispose on it
+    if (!mounted) return;
+
     // only slide the panel if scrolling is not enabled
     if (!_scrollingEnabled) {
       if (widget.slideDirection == SlideDirection.UP)
@@ -491,6 +494,9 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
 
   // handles when user stops sliding
   void _onGestureEnd(Velocity v) {
+    // Prevent from accessing AnimationController methods after calling dispose on it
+    if (!mounted) return;
+
     double minFlingVelocity = 365.0;
     double kSnap = 8;
 
