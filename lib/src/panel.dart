@@ -6,6 +6,8 @@ Copyright: © 2020, Akshath Jain. All rights reserved.
 Licensing: More information can be found here: https://github.com/akshathjain/sliding_up_panel/blob/master/LICENSE
 */
 
+import 'dart:async';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
@@ -124,12 +126,20 @@ class SlidingUpPanel extends StatefulWidget {
   final void Function(double position)? onPanelSlide;
 
   /// If non-null, this callback is called when the
+  /// panel is starting to open
+  final VoidCallback? onPanelOpenStart;
+
+  /// If non-null, this callback is called when the
   /// panel is fully opened
   final VoidCallback? onPanelOpened;
 
   /// If non-null, this callback is called when the panel
   /// is fully collapsed.
   final VoidCallback? onPanelClosed;
+
+  /// Forcefully enable scrolling even at full height, for drag and drop
+  /// reordering
+  final Stream<bool>? onScrollEnabled;
 
   /// If non-null and true, the SlidingUpPanel exhibits a
   /// parallax effect as the panel slides up. Essentially,
@@ -180,6 +190,7 @@ class SlidingUpPanel extends StatefulWidget {
       this.padding,
       this.margin,
       this.renderPanelSheet = true,
+      this.onPanelOpenStart,
       this.panelSnapping = true,
       this.controller,
       this.backdropEnabled = false,
@@ -189,6 +200,7 @@ class SlidingUpPanel extends StatefulWidget {
       this.onPanelSlide,
       this.onPanelOpened,
       this.onPanelClosed,
+      this.onScrollEnabled,
       this.parallaxEnabled = false,
       this.parallaxOffset = 0.1,
       this.isDraggable = true,
@@ -210,37 +222,54 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
   late AnimationController _ac;
   late ScrollController _sc;
 
+  StreamSubscription<bool>? _scroll;
+  bool _forceScrollEnabled = false;
   bool _scrollingEnabled = false;
+
   VelocityTracker _vt = new VelocityTracker.withKind(PointerDeviceKind.touch);
 
   bool _isPanelVisible = true;
+  double _previousAnimationControllerValue = 0;
 
   @override
   void initState() {
     super.initState();
 
     _ac = new AnimationController(
-        vsync: this,
-        duration: const Duration(milliseconds: 300),
-        value: widget.defaultPanelState == PanelState.CLOSED
-            ? 0.0
-            : 1.0 //set the default panel state (i.e. set initial value of _ac)
-        )
-      ..addListener(() {
-        if (widget.onPanelSlide != null) widget.onPanelSlide!(_ac.value);
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+      value: widget.defaultPanelState == PanelState.CLOSED ? 0.0 : 1.0 //set the default panel state (i.e. set initial value of _ac)
+    )..addListener((){
+      if(widget.onPanelSlide != null) widget.onPanelSlide!(_ac.value);
 
-        if (widget.onPanelOpened != null && _ac.value == 1.0)
-          widget.onPanelOpened!();
+      if(widget.onPanelOpened != null && _isPanelOpen) widget.onPanelOpened!();
 
-        if (widget.onPanelClosed != null && _ac.value == 0.0)
-          widget.onPanelClosed!();
-      });
+      // to avoid floating point errors, these need to be rounded since numbers close to zero can trigger below events
+      final roundedPreviousValue = (_previousAnimationControllerValue * 100000).roundToDouble()/100000;
+      
+      if (widget.onPanelOpenStart != null && roundedPreviousValue == 0 && _roundedAcValue > 0) {
+        widget.onPanelOpenStart?.call();
+      }
+      
+      if (widget.onPanelClosed  != null && roundedPreviousValue > 0 && _roundedAcValue == 0) {
+        widget.onPanelClosed!();
+      }
+
+      _previousAnimationControllerValue = _ac.value;
+    });
 
     // prevent the panel content from being scrolled only if the widget is
     // draggable and panel scrolling is enabled
     _sc = new ScrollController();
     _sc.addListener(() {
-      if (widget.isDraggable && !_scrollingEnabled) _sc.jumpTo(0);
+      if (widget.isDraggable && !_scrollingEnabled && !_forceScrollEnabled) {
+        _sc.jumpTo(0);
+      }
+    });
+
+    // Listen to the scroll enabled to force scrolling enabled
+    _scroll = widget.onScrollEnabled?.listen((enable) {
+      _forceScrollEnabled = enable;
     });
 
     widget.controller?._addState(this);
@@ -249,6 +278,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
   @override
   Widget build(BuildContext context) {
     return Stack(
+      clipBehavior: Clip.none,
       alignment: widget.slideDirection == SlideDirection.UP
           ? Alignment.bottomCenter
           : Alignment.topCenter,
@@ -424,6 +454,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
     super.dispose();
   }
 
+
   double _getParallax() {
     if (widget.slideDirection == SlideDirection.UP)
       return -_ac.value *
@@ -480,7 +511,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
     // begin to close the panel if the user swipes down
     if (_isPanelOpen && _sc.hasClients && _sc.offset <= 0) {
       setState(() {
-        if (dy < 0) {
+        if (dy < 0 || _forceScrollEnabled) {
           _scrollingEnabled = true;
         } else {
           _scrollingEnabled = false;
@@ -632,17 +663,23 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
   //the panel is still animating
   bool get _isPanelAnimating => _ac.isAnimating;
 
+  static const THRESH = 0.05;
+  
   //returns whether or not the
   //panel is open
-  bool get _isPanelOpen => _ac.value == 1.0;
+  bool get _isPanelOpen => (_roundedAcValue - 1.0).abs() < THRESH;
 
   //returns whether or not the
   //panel is closed
-  bool get _isPanelClosed => _ac.value == 0.0;
+  bool get _isPanelClosed => _roundedAcValue.abs() < THRESH;
 
   //returns whether or not the
   //panel is shown/hidden
   bool get _isPanelShown => _isPanelVisible;
+
+  //uses rounded value to avoid floating point errors in 0.0 or 1.0 equality
+  double get _roundedAcValue => (_ac.value * 100000).roundToDouble() / 100000;
+
 }
 
 class PanelController {
