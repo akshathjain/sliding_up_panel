@@ -242,7 +242,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
     )..addListener((){
       if(widget.onPanelSlide != null) widget.onPanelSlide!(_ac.value);
 
-      if(widget.onPanelOpened != null && _ac.value == 1.0) widget.onPanelOpened!();
+      if(widget.onPanelOpened != null && _isPanelOpen) widget.onPanelOpened!();
 
       // to avoid floating point errors, these need to be rounded since numbers close to zero can trigger below events
       final roundedPreviousValue = (_previousAnimationControllerValue * 100000).roundToDouble()/100000;
