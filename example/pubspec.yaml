@@ -6,7 +6,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: '>=3.2.3 <4.0.0'
 
 dependencies:
   flutter:
@@ -15,11 +15,13 @@ dependencies:
   sliding_up_panel:
     path: ../
 
-  flutter_map: ^0.8.2
-  latlong: ^0.6.1
-  cached_network_image: ^2.0.0
+  flutter_map: ^6.1.0
+  latlong2: ^0.9.0
+  #deprecated (Dart 3 incompatible)
+  #latlong: ^0.6.1
+  cached_network_image: ^3.3.1
 
-  cupertino_icons: ^0.1.2
+  cupertino_icons: ^1.0.6
 
 dev_dependencies:
   flutter_test:
