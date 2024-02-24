@@ -159,9 +159,28 @@ class SlidingUpPanel extends StatefulWidget {
   /// by default the Panel is open and must be swiped closed by the user.
   final PanelState defaultPanelState;
 
+  /// allow adding snapping on dragging the panel at different points
+  final bool allowDraggableSnappingBehaviour;
+
+  /// allow fully panel closing behaviour like Google Maps by setting this to
+  /// true, snapPoint value will be set to 0.3 by default. However you can set
+  /// it to whatever you like then.
+  ///
+  /// You can again open panel by using [PanelController]'s show() or open()
+  /// method.
+  final bool allowFullyPanelClosingBehaviour;
+
+
+  /// Add a custom resize handle to the sliding panel.
+  final Widget? resizeHandle;
+
+
   SlidingUpPanel(
       {Key? key,
       this.panel,
+        this.allowDraggableSnappingBehaviour = false,
+        this.allowFullyPanelClosingBehaviour = false,
+        this.resizeHandle,
       this.panelBuilder,
       this.body,
       this.collapsed,
@@ -312,9 +331,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                   animation: _ac,
                   builder: (context, child) {
                     return Container(
-                      height:
-                          _ac.value * (widget.maxHeight - widget.minHeight) +
-                              widget.minHeight,
+                      height: widget.allowFullyPanelClosingBehaviour ? _ac.value * (widget.maxHeight - widget.minHeight) : _ac.value * (widget.maxHeight - widget.minHeight) + widget.minHeight,
                       margin: widget.margin,
                       padding: widget.padding,
                       decoration: widget.renderPanelSheet
@@ -424,6 +441,18 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
     super.dispose();
   }
 
+  Widget defaultResizeHandle() {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 15),
+      height: 5.0,
+      width: 40.0,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(2.5),
+        color: Colors.grey[400],
+      ),
+    );
+  }
+
   double _getParallax() {
     if (widget.slideDirection == SlideDirection.UP)
       return -_ac.value *
@@ -491,6 +520,61 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
 
   // handles when user stops sliding
   void _onGestureEnd(Velocity v) {
+    if (widget.allowDraggableSnappingBehaviour) {
+      _applySnappingBehavior(v);
+    } else {
+      applyImmediateSnapBehaviour(v);
+    }
+  }
+
+  void _applySnappingBehavior(Velocity v) {
+
+    double minFlingVelocity = 365.0;
+
+    // let the current animation finish before starting a new one
+    if (_ac.isAnimating) return;
+
+    // if the panel is open and scrolling is enabled, we don't want to close it
+    if (_isPanelOpen && _scrollingEnabled) return;
+
+    // check if the velocity is sufficient for a fling
+    double visualVelocity =
+        -v.pixelsPerSecond.dy / (widget.maxHeight - widget.minHeight);
+
+    // reverse visual velocity to account for slide direction
+    if (widget.slideDirection == SlideDirection.DOWN) {
+      visualVelocity = -visualVelocity;
+    }
+
+    // Step 1: Define your snap points
+    List<double> snapPoints = [0.0, 0.50, 0.1, 0.150, 0.2, 0.250, 0.3, 0.350, 0.4, 0.450, 0.5, 0.550, 0.6, 0.650, 0.7, 0.750, 0.8, 0.850, 0.9, 0.950, 1.0];
+
+    // Step 2: Calculate the closest snap point
+    double closestSnapPoint = snapPoints.reduce((a, b) {
+      return (a - _ac.value).abs() < (b - _ac.value).abs() ? a : b;
+    });
+
+    // Step 3: Use closestSnapPoint for snapping
+    if (widget.panelSnapping) {
+      if (v.pixelsPerSecond.dy.abs() >= minFlingVelocity) {
+        // Snap to the closest point when fling velocity is high enough
+        _flingPanelToPosition(closestSnapPoint, visualVelocity);
+      } else {
+        // Snap to closest point with no velocity
+        _flingPanelToPosition(closestSnapPoint, 0);
+      }
+    } else {
+      // Existing non-snapping behavior
+      if(mounted)
+        _ac.animateTo(
+          _ac.value + visualVelocity * 0.16,
+          duration: Duration(milliseconds: 410),
+          curve: Curves.decelerate,
+        );
+    }
+  }
+
+  void applyImmediateSnapBehaviour(Velocity v) {
     double minFlingVelocity = 365.0;
     double kSnap = 8;
 
@@ -532,11 +616,12 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
 
         // panel snapping disabled
       } else {
-        _ac.animateTo(
-          _ac.value + visualVelocity * 0.16,
-          duration: Duration(milliseconds: 410),
-          curve: Curves.decelerate,
-        );
+        if(mounted)
+          _ac.animateTo(
+            _ac.value + visualVelocity * 0.16,
+            duration: Duration(milliseconds: 410),
+            curve: Curves.decelerate,
+          );
       }
 
       return;
@@ -553,6 +638,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
       }
     }
   }
+
 
   void _flingPanelToPosition(double targetPos, double velocity) {
     final Simulation simulation = SpringSimulation(
@@ -598,6 +684,15 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
         _isPanelVisible = true;
       });
     });
+  }
+
+  Future<void> _showAt(double value) async {
+    if(mounted)
+      _ac.animateTo(value).then((x) {
+        setState(() {
+          _isPanelVisible = true;
+        });
+      });
   }
 
   //animate the panel position to value - must
@@ -681,6 +776,12 @@ class PanelController {
   Future<void> show() {
     assert(isAttached, "PanelController must be attached to a SlidingUpPanel");
     return _panelState!._show();
+  }
+
+  /// Show the sliding panel on desired point between 0.0 to 1.0
+  Future<void> showAt(double value) {
+    assert(isAttached, "PanelController must be attached to a SlidingUpPanel");
+    return _panelState!._showAt(value);
   }
 
   /// Animates the panel position to the value.
